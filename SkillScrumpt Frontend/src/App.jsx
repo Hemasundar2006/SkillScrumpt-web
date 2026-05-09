@@ -33,6 +33,7 @@ import { ZeroBrokeragePage } from './pages/ZeroBrokerage';
 import { AssessmentsPage } from './pages/AssessmentsPage';
 import { AdminDashboard, CreateProctoringTest } from './pages/AdminDashboard';
 import { MaintenancePage } from './pages/MaintenancePage';
+import { ProctoringSetup } from './pages/ProctoringSetup';
 import { MouseTrail } from './components/MouseTrail';
 
 import { Navigate } from 'react-router-dom';
@@ -166,7 +167,6 @@ function App() {
               <AboutPage />
             </PageWrapper>
           } />
-          <Route path="/assessments" element={<PageWrapper><AssessmentsPage /></PageWrapper>} />
           <Route path="/pricing" element={
             <PageWrapper>
               <PricingPage />
@@ -183,7 +183,11 @@ function App() {
             </PageWrapper>
           } />
           <Route path="/assessments/live" element={
-            <AIProctoringInterface />
+            <ProtectedRoute role="professional">
+              <PageWrapper>
+                <AIProctoringInterface />
+              </PageWrapper>
+            </ProtectedRoute>
           } />
           <Route path="/assessments/result" element={
             <PageWrapper>
@@ -223,10 +227,17 @@ function App() {
               </PageWrapper>
             </ProtectedRoute>
           } />
-          <Route path="/assessments/add" element={
+          <Route path="/dashboard/student/assessments" element={
             <ProtectedRoute role="professional">
               <PageWrapper>
-                <AddAssessment />
+                <AssessmentsPage />
+              </PageWrapper>
+            </ProtectedRoute>
+          } />
+          <Route path="/assessments/setup/:id" element={
+            <ProtectedRoute role="professional">
+              <PageWrapper>
+                <ProctoringSetup />
               </PageWrapper>
             </ProtectedRoute>
           } />

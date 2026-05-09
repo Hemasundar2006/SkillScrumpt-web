@@ -53,6 +53,7 @@ export function DashboardLayout({ children, user }) {
       { icon: Briefcase, label: 'Browse Projects', path: '/projects' },
       { icon: Briefcase, label: 'My Contracts', path: '/dashboard/student/projects' },
       { icon: Award, label: 'Skill Badges', path: '/dashboard/student/skills' },
+      { icon: Shield, label: 'Skill Assessments', path: '/dashboard/student/assessments' },
       { icon: TrendingUp, label: 'Earnings', path: '/dashboard/student/earnings' },
       { icon: Settings, label: 'Settings', path: '/dashboard/student/settings' },
     ];
@@ -65,11 +66,8 @@ export function DashboardLayout({ children, user }) {
       {/* Sidebar */}
       <aside className="w-64 bg-secondary text-white hidden lg:flex flex-col fixed h-full z-30">
         <div className="p-6">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="p-2 bg-primary rounded-custom text-white">
-              <Shield size={20} />
-            </div>
-            <span className="text-xl font-bold tracking-tight">SkillScrumpt</span>
+          <Link to="/" className="flex items-center gap-3">
+            <img src="/logo.png" alt="SkillScrumpt" className="h-8 w-auto brightness-0 invert" />
           </Link>
         </div>
 

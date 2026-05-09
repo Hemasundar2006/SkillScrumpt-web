@@ -1,51 +1,93 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/UI';
-import { Menu, X, Shield, Search, Bell, User } from 'lucide-react';
+import { Menu, X, Shield, Search, User } from 'lucide-react';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = React.useState(false);
+  const userStr = localStorage.getItem('user');
+  const user = userStr ? JSON.parse(userStr) : null;
+  const token = localStorage.getItem('token');
+
+  const getNavLinks = () => {
+    if (!user || !token) {
+      return [
+        { label: 'Marketplace', path: '/marketplace' },
+        { label: 'Assessments', path: '/assessments' },
+        { label: 'Pricing', path: '/pricing' },
+        { label: 'About', path: '/about' },
+      ];
+    }
+
+    if (user.role === 'admin') {
+      return [
+        { label: 'Overview', path: '/dashboard/admin' },
+        { label: 'Users', path: '/dashboard/admin/users' },
+        { label: 'Tests', path: '/admin/create-test' },
+        { label: 'Transactions', path: '/dashboard/admin/transactions' },
+      ];
+    }
+
+    if (user.role === 'client') {
+      return [
+        { label: 'My Projects', path: '/my-projects' },
+        { label: 'Post Project', path: '/post-project' },
+        { label: 'Find Talent', path: '/talent' },
+        { label: 'Support', path: '/help' },
+      ];
+    }
+
+    // Professional
+    return [
+      { label: 'Browse Jobs', path: '/projects' },
+      { label: 'My Contracts', path: '/dashboard/student/projects' },
+      { label: 'Skill Badges', path: '/dashboard/student/skills' },
+      { label: 'Earnings', path: '/dashboard/student/earnings' },
+    ];
+  };
+
+  const navLinks = getNavLinks();
 
   return (
     <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
+          {/* Logo and Desktop Links */}
           <div className="flex items-center">
-            <Link to="/" className="flex items-center gap-2 group">
-              <div className="p-2 bg-primary rounded-custom text-white group-hover:rotate-12 transition-transform">
-                <Shield size={24} />
-              </div>
-              <span className="text-xl font-bold tracking-tight">SkillScrumpt</span>
+            <Link to="/" className="flex items-center gap-3 group">
+              <img src="/logo.png" alt="SkillScrumpt" className="h-10 w-auto group-hover:scale-105 transition-transform" />
             </Link>
             
             <div className="hidden md:ml-8 md:flex md:space-x-8">
-              <Link to="/marketplace" className="text-gray-600 hover:text-primary px-3 py-2 text-sm font-medium">Marketplace</Link>
-              <Link to="/assessments" className="text-gray-600 hover:text-primary px-3 py-2 text-sm font-medium">Assessments</Link>
-              <Link to="/pricing" className="text-gray-600 hover:text-primary px-3 py-2 text-sm font-medium">Pricing</Link>
-              <Link to="/about" className="text-gray-600 hover:text-primary px-3 py-2 text-sm font-medium">About</Link>
+              {navLinks.map((link) => (
+                <Link key={link.path} to={link.path} className="text-gray-600 hover:text-primary px-3 py-2 text-sm font-bold transition-colors">
+                  {link.label}
+                </Link>
+              ))}
             </div>
           </div>
 
+          {/* Desktop Search and Auth */}
           <div className="hidden md:flex items-center gap-4">
             <div className="relative group">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary" size={18} />
               <input 
                 type="text" 
-                placeholder="Search talent..." 
-                className="pl-10 pr-4 py-2 bg-gray-100 border-transparent focus:bg-white focus:border-primary border rounded-custom text-sm outline-none transition-all w-64"
+                placeholder="Search..." 
+                className="pl-10 pr-4 py-2 bg-gray-100 border-transparent focus:bg-white focus:border-primary border rounded-custom text-sm outline-none transition-all w-48 focus:w-64"
               />
             </div>
-            {localStorage.getItem('token') ? (
-              <Link to="/dashboard" className="flex items-center gap-2">
-                 <Button className="flex items-center gap-2">
-                    <User size={18} /> Dashboard
+            {token ? (
+              <Link to="/dashboard">
+                 <Button className="flex items-center gap-2 h-10 px-6 font-bold shadow-lg shadow-primary/20">
+                    <User size={18} /> {user.role === 'admin' ? 'Admin Panel' : 'Dashboard'}
                  </Button>
               </Link>
             ) : (
               <>
-                <Link to="/login" className="text-gray-600 hover:text-primary text-sm font-semibold">Login</Link>
+                <Link to="/login" className="text-gray-600 hover:text-primary text-sm font-bold">Login</Link>
                 <Link to="/register">
-                  <Button>Join Now</Button>
+                  <Button className="h-10 px-6 font-bold shadow-lg shadow-primary/20">Join Now</Button>
                 </Link>
               </>
             )}
@@ -63,19 +105,20 @@ export function Navbar() {
       {isOpen && (
         <div className="md:hidden bg-white border-b border-border animate-in slide-in-from-top duration-300">
           <div className="px-2 pt-2 pb-3 space-y-1">
-            <Link to="/marketplace" className="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50">Marketplace</Link>
-            <Link to="/assessments" className="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50">Assessments</Link>
-            <Link to="/pricing" className="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50">Pricing</Link>
-            <Link to="/about" className="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50">About</Link>
+            {navLinks.map((link) => (
+              <Link key={link.path} to={link.path} className="block px-3 py-2 text-base font-bold text-gray-700 hover:bg-gray-50">
+                {link.label}
+              </Link>
+            ))}
           </div>
           <div className="pt-4 pb-3 border-t border-gray-200 px-4">
-            {localStorage.getItem('token') ? (
+            {token ? (
               <Link to="/dashboard" className="block w-full">
-                <Button className="w-full">Go to Dashboard</Button>
+                <Button className="w-full h-12 font-bold">Go to Dashboard</Button>
               </Link>
             ) : (
               <Link to="/register" className="block w-full text-center">
-                <Button className="w-full">Join Now</Button>
+                <Button className="w-full h-12 font-bold">Join Now</Button>
               </Link>
             )}
           </div>
@@ -91,11 +134,8 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-1">
-            <Link to="/" className="flex items-center gap-2 mb-4">
-              <div className="p-2 bg-primary rounded-custom text-white">
-                <Shield size={20} />
-              </div>
-              <span className="text-xl font-bold tracking-tight">SkillScrumpt</span>
+            <Link to="/" className="flex items-center gap-3 mb-4">
+              <img src="/logo.png" alt="SkillScrumpt" className="h-8 w-auto" />
             </Link>
             <p className="text-gray-500 text-sm leading-relaxed">
               The world's first AI-proctored skill verification and freelance marketplace. Bridging the gap between verified talent and global opportunities.
@@ -136,7 +176,6 @@ export function Footer() {
         <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-gray-500 text-xs">© 2026 SkillScrumpt. All rights reserved.</p>
           <div className="flex gap-6">
-            {/* Social icons placeholder */}
             <div className="w-5 h-5 bg-gray-200 rounded-full hover:bg-primary transition-colors cursor-pointer" />
             <div className="w-5 h-5 bg-gray-200 rounded-full hover:bg-primary transition-colors cursor-pointer" />
             <div className="w-5 h-5 bg-gray-200 rounded-full hover:bg-primary transition-colors cursor-pointer" />

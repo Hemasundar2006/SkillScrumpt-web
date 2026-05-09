@@ -1,18 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Lock, Monitor, Shield, Zap, ChevronRight, CheckCircle, Video, Loader2 } from 'lucide-react';
+import { Lock, Monitor, Shield, Zap, Video, Loader2, Play, CheckCircle } from 'lucide-react';
 import { Button, Card, Badge } from '../components/UI';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import api from '../utils/api';
+import { DashboardLayout } from '../layout/DashboardLayout';
 
 export const AssessmentsPage = () => {
   const navigate = useNavigate();
   const [showVideoPreview, setShowVideoPreview] = useState(false);
   const [assessments, setAssessments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     fetchAssessments();
+    const savedUser = JSON.parse(localStorage.getItem('user'));
+    setUser(savedUser);
   }, []);
 
   const fetchAssessments = async () => {
@@ -28,80 +32,83 @@ export const AssessmentsPage = () => {
   };
 
   const getIcon = (title) => {
-    if (title.toLowerCase().includes('react')) return Zap;
-    if (title.toLowerCase().includes('python')) return Monitor;
-    if (title.toLowerCase().includes('cloud')) return Shield;
+    const t = title.toLowerCase();
+    if (t.includes('react')) return Zap;
+    if (t.includes('python')) return Monitor;
+    if (t.includes('cloud')) return Shield;
     return Shield;
   };
 
   return (
-    <div className="pt-32 pb-20 px-4 min-h-screen bg-[#f8f9fb]">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col lg:flex-row justify-between items-end mb-12 gap-8">
-          <div className="max-w-2xl">
-            <Badge variant="primary" className="mb-4">Verified Assessments</Badge>
-            <h1 className="text-4xl lg:text-6xl font-black text-secondary tracking-tighter mb-4 leading-tight">
-              Prove Your Skills. <br />
-              <span className="text-primary">Earn Your Badge.</span>
-            </h1>
-            <p className="text-gray-500 text-lg">
-              Take proctored tests designed by industry experts. Every successful attempt earns you a verified badge on your profile.
-            </p>
+    <DashboardLayout user={user}>
+      <div className="pb-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+          <div className="flex flex-col lg:flex-row justify-between items-end mb-12 gap-8">
+            <div className="max-w-2xl">
+              <Badge variant="primary" className="mb-4">Verified Assessments</Badge>
+              <h1 className="text-4xl lg:text-5xl font-black text-secondary tracking-tighter mb-4 leading-tight">
+                Prove Your Skills. <br />
+                <span className="text-primary">Earn Your Badge.</span>
+              </h1>
+              <p className="text-gray-500 text-lg">
+                Take proctored tests designed by industry experts. Every successful attempt earns you a verified badge.
+              </p>
+            </div>
+            
+            <Button 
+              onClick={() => setShowVideoPreview(true)}
+              variant="outline" 
+              className="group h-14 px-8 border-2"
+            >
+              <Video className="mr-2 group-hover:text-primary transition-colors" />
+              Watch AI Proctoring Demo
+            </Button>
           </div>
-          
-          <Button 
-            onClick={() => setShowVideoPreview(true)}
-            variant="outline" 
-            className="group h-14 px-8 border-2"
-          >
-            <Video className="mr-2 group-hover:text-primary transition-colors" />
-            Watch AI Proctoring Demo
-          </Button>
-        </div>
 
-        {isLoading ? (
-          <div className="flex justify-center py-20">
-            <Loader2 className="animate-spin text-primary" size={48} />
-          </div>
-        ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {assessments.length > 0 ? assessments.map((test) => {
-              const Icon = getIcon(test.title);
-              return (
-                <motion.div
-                  key={test._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  whileHover={{ y: -5 }}
-                >
-                  <Card className="p-8 border-none shadow-xl bg-white h-full flex flex-col group">
-                    <div className="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center text-secondary group-hover:bg-primary/10 group-hover:text-primary transition-colors mb-6">
-                      <Icon size={28} />
-                    </div>
-                    
-                    <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">{test.title}</h3>
-                    
-                    <div className="flex items-center gap-3 mb-6">
-                      <Badge variant="neutral" className="bg-gray-100 text-[10px] text-gray-500 border-none">{test.difficulty}</Badge>
-                      <span className="text-xs text-gray-400 font-medium">{test.duration} mins</span>
-                    </div>
-                    
-                    <div className="mt-auto pt-6 border-t border-gray-100">
-                      <Button onClick={() => navigate('/assessments/live', { state: { testId: test._id } })} className="w-full group/btn">
-                        Take Test <Lock className="ml-2 w-4 h-4 opacity-50 group-hover/btn:opacity-100 transition-opacity" />
-                      </Button>
-                    </div>
-                  </Card>
-                </motion.div>
-              );
-            }) : (
-              <div className="col-span-4 text-center py-20 bg-white rounded-[2rem] shadow-sm">
-                <p className="text-gray-400 font-medium italic">No live assessments found. Please check back later.</p>
-              </div>
-            )}
-          </div>
-        )}
+          {isLoading ? (
+            <div className="flex justify-center py-20">
+              <Loader2 className="animate-spin text-primary" size={48} />
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {assessments.length > 0 ? assessments.map((test) => {
+                const Icon = getIcon(test.title);
+                return (
+                  <motion.div
+                    key={test._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    whileHover={{ y: -5 }}
+                  >
+                    <Card className="p-8 border-none shadow-xl bg-white h-full flex flex-col group">
+                      <div className="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center text-secondary group-hover:bg-primary/10 group-hover:text-primary transition-colors mb-6">
+                        <Icon size={28} />
+                      </div>
+                      
+                      <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">{test.title}</h3>
+                      
+                      <div className="flex items-center gap-3 mb-6">
+                        <Badge variant="neutral" className="bg-gray-100 text-[10px] text-gray-500 border-none">{test.difficulty}</Badge>
+                        <span className="text-xs text-gray-400 font-medium">{test.duration} mins</span>
+                      </div>
+                      
+                      <div className="mt-auto pt-6 border-t border-gray-100">
+                        <Button onClick={() => navigate(`/assessments/setup/${test._id}`)} className="w-full group/btn">
+                          Start Challenge <Lock className="ml-2 w-4 h-4 opacity-50 group-hover/btn:opacity-100 transition-opacity" />
+                        </Button>
+                      </div>
+                    </Card>
+                  </motion.div>
+                );
+              }) : (
+                <div className="col-span-3 text-center py-20 bg-white rounded-[2rem] shadow-sm border border-dashed border-gray-200">
+                  <p className="text-gray-400 font-medium italic">No live assessments found. Please check back later.</p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* AI Proctoring Video Preview Modal */}
         <AnimatePresence>
@@ -223,6 +230,6 @@ export const AssessmentsPage = () => {
           )}
         </AnimatePresence>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };
