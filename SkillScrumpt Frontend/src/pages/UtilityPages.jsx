@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Plus, 
@@ -9,13 +9,65 @@ import {
   Clock, 
   FileText, 
   CheckCircle,
-  Zap
+  Zap,
+  Loader2
 } from 'lucide-react';
 import { Card, Badge, Button } from '../components/UI';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import api from '../utils/api';
 
 export function PostNewProject() {
-  const [step, setStep] = React.useState(1);
+  const navigate = useNavigate();
+  const [step, setStep] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  
+  // Form State
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    skills: [],
+    budget: '',
+    deadline: ''
+  });
+
+  const availableSkills = [
+    "React Expert", "Next.js Core", "TypeScript Pro", 
+    "System Design", "Node.js Backend", "UI/UX Verified"
+  ];
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const toggleSkill = (skill) => {
+    setFormData(prev => ({
+      ...prev,
+      skills: prev.skills.includes(skill) 
+        ? prev.skills.filter(s => s !== skill)
+        : [...prev.skills, skill]
+    }));
+  };
+
+  const handleSubmit = async () => {
+    if (!formData.title || !formData.description || !formData.budget || !formData.deadline) {
+      return alert('Please fill all required fields');
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await api.post('/projects', {
+        ...formData,
+        budget: Number(formData.budget)
+      });
+      alert('Project posted successfully!');
+      navigate(`/projects/${response.data._id}`);
+    } catch (err) {
+      alert(err.response?.data?.message || 'Error posting project');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="pt-24 pb-20 bg-[#f8f9fb] min-h-screen">
@@ -47,6 +99,9 @@ export function PostNewProject() {
                   <label className="text-sm font-bold text-gray-700 ml-1">Project Title</label>
                   <input 
                     type="text" 
+                    name="title"
+                    value={formData.title}
+                    onChange={handleInputChange}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-custom outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all font-medium"
                     placeholder="e.g. Next.js Frontend Developer for E-commerce Rebrand"
                   />
@@ -55,14 +110,17 @@ export function PostNewProject() {
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-gray-700 ml-1">Project Description</label>
                   <textarea 
+                    name="description"
                     rows={6}
+                    value={formData.description}
+                    onChange={handleInputChange}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-custom outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all font-medium resize-none"
                     placeholder="Describe the project goals, requirements, and deliverables..."
                   />
                 </div>
 
                 <div className="pt-6">
-                  <Button className="w-full h-12" onClick={() => setStep(2)}>Continue to Skills</Button>
+                  <Button disabled={!formData.title || !formData.description} className="w-full h-12" onClick={() => setStep(2)}>Continue to Skills</Button>
                 </div>
               </motion.div>
             )}
@@ -80,12 +138,14 @@ export function PostNewProject() {
                   <p className="text-xs text-gray-500 font-medium leading-relaxed">Select the AI-verified badges that talent must possess to bid on this project.</p>
                   
                   <div className="grid grid-cols-2 gap-4">
-                    <SkillToggle label="React Expert" />
-                    <SkillToggle label="Next.js Core" />
-                    <SkillToggle label="TypeScript Pro" />
-                    <SkillToggle label="System Design" />
-                    <SkillToggle label="Node.js Backend" />
-                    <SkillToggle label="UI/UX Verified" />
+                    {availableSkills.map(skill => (
+                      <SkillToggle 
+                        key={skill}
+                        label={skill} 
+                        selected={formData.skills.includes(skill)}
+                        onClick={() => toggleSkill(skill)}
+                      />
+                    ))}
                   </div>
                 </div>
 
@@ -94,7 +154,7 @@ export function PostNewProject() {
                     <Shield className="text-primary flex-shrink-0" size={24} />
                     <div>
                       <h4 className="font-bold text-primary mb-1">AI-Enforced Quality</h4>
-                      <p className="text-xs text-gray-600 leading-relaxed">By requiring verified badges, only the top 5% of talent will be able to apply. This ensures you only receive high-quality proposals.</p>
+                      <p className="text-xs text-gray-600 leading-relaxed">By requiring verified badges, only the top talent will be able to apply. This ensures you only receive high-quality proposals.</p>
                     </div>
                   </div>
                 </div>
@@ -123,13 +183,16 @@ export function PostNewProject() {
                     </select>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-bold text-gray-700 ml-1">Budget Range (USD)</label>
+                    <label className="text-sm font-bold text-gray-700 ml-1">Budget Amount (USD)</label>
                     <div className="relative">
                       <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                       <input 
-                        type="text" 
+                        type="number" 
+                        name="budget"
+                        value={formData.budget}
+                        onChange={handleInputChange}
                         className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-custom outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all font-bold"
-                        placeholder="5,000"
+                        placeholder="5000"
                       />
                     </div>
                   </div>
@@ -141,6 +204,9 @@ export function PostNewProject() {
                     <Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                     <input 
                       type="date" 
+                      name="deadline"
+                      value={formData.deadline}
+                      onChange={handleInputChange}
                       className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-custom outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all font-bold"
                     />
                   </div>
@@ -163,7 +229,9 @@ export function PostNewProject() {
 
                 <div className="flex gap-4 pt-4">
                   <Button variant="outline" className="flex-1" onClick={() => setStep(2)}>Back</Button>
-                  <Button className="flex-[2] h-12 shadow-primary/30">Post Project Now</Button>
+                  <Button disabled={isLoading} onClick={handleSubmit} className="flex-[2] h-12 shadow-primary/30">
+                    {isLoading ? <Loader2 className="animate-spin mx-auto" size={20} /> : 'Post Project Now'}
+                  </Button>
                 </div>
               </motion.div>
             )}
@@ -174,11 +242,10 @@ export function PostNewProject() {
   );
 }
 
-function SkillToggle({ label }) {
-  const [selected, setSelected] = React.useState(false);
+function SkillToggle({ label, selected, onClick }) {
   return (
     <button 
-      onClick={() => setSelected(!selected)}
+      onClick={onClick}
       className={`flex items-center justify-between p-4 border rounded-custom transition-all group ${
         selected ? 'bg-primary/10 border-primary' : 'bg-white border-gray-100 hover:border-gray-200'
       }`}
@@ -192,8 +259,6 @@ function SkillToggle({ label }) {
     </button>
   );
 }
-
-// AnimatePresence is now imported from framer-motion
 
 export function HelpCenter() {
   return (

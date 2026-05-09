@@ -1,18 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Lock, Monitor, Shield, Zap, ChevronRight, CheckCircle, Video } from 'lucide-react';
-import { Button, Card, Badge, GlassContainer } from '../components/UI';
-import { Link } from 'react-router-dom';
-
-const assessments = [
-  { id: 1, title: 'React Expert Certification', level: 'Advanced', time: '45 mins', questions: 30, icon: Zap },
-  { id: 2, title: 'Python Backend Specialist', level: 'Intermediate', time: '60 mins', questions: 45, icon: Monitor },
-  { id: 3, title: 'UI/UX Design Patterns', level: 'Advanced', time: '30 mins', questions: 20, icon: Shield },
-  { id: 4, title: 'Cloud Infrastructure (AWS)', level: 'Expert', time: '90 mins', questions: 60, icon: Shield },
-];
+import { Play, Lock, Monitor, Shield, Zap, ChevronRight, CheckCircle, Video, Loader2 } from 'lucide-react';
+import { Button, Card, Badge } from '../components/UI';
+import { Link, useNavigate } from 'react-router-dom';
+import api from '../utils/api';
 
 export const AssessmentsPage = () => {
+  const navigate = useNavigate();
   const [showVideoPreview, setShowVideoPreview] = useState(false);
+  const [assessments, setAssessments] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchAssessments();
+  }, []);
+
+  const fetchAssessments = async () => {
+    setIsLoading(true);
+    try {
+      const response = await api.get('/assessments');
+      setAssessments(response.data);
+    } catch (err) {
+      console.error('Error fetching assessments:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getIcon = (title) => {
+    if (title.toLowerCase().includes('react')) return Zap;
+    if (title.toLowerCase().includes('python')) return Monitor;
+    if (title.toLowerCase().includes('cloud')) return Shield;
+    return Shield;
+  };
 
   return (
     <div className="pt-32 pb-20 px-4 min-h-screen bg-[#f8f9fb]">
@@ -39,38 +59,49 @@ export const AssessmentsPage = () => {
           </Button>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {assessments.map((test) => (
-            <motion.div
-              key={test.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              whileHover={{ y: -5 }}
-            >
-              <Card className="p-8 border-none shadow-xl bg-white h-full flex flex-col group">
-                <div className="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center text-secondary mb-6 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                  <test.icon size={28} />
-                </div>
-                
-                <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">{test.title}</h3>
-                
-                <div className="flex items-center gap-3 mb-6">
-                  <Badge variant="neutral" className="bg-gray-100 text-[10px] text-gray-500 border-none">{test.level}</Badge>
-                  <span className="text-xs text-gray-400 font-medium">{test.time}</span>
-                </div>
-                
-                <div className="mt-auto pt-6 border-t border-gray-100">
-                  <Link to="/register">
-                    <Button className="w-full group/btn">
-                      Take Test <Lock className="ml-2 w-4 h-4 opacity-50 group-hover/btn:opacity-100 transition-opacity" />
-                    </Button>
-                  </Link>
-                </div>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="flex justify-center py-20">
+            <Loader2 className="animate-spin text-primary" size={48} />
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {assessments.length > 0 ? assessments.map((test) => {
+              const Icon = getIcon(test.title);
+              return (
+                <motion.div
+                  key={test._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  whileHover={{ y: -5 }}
+                >
+                  <Card className="p-8 border-none shadow-xl bg-white h-full flex flex-col group">
+                    <div className="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center text-secondary group-hover:bg-primary/10 group-hover:text-primary transition-colors mb-6">
+                      <Icon size={28} />
+                    </div>
+                    
+                    <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">{test.title}</h3>
+                    
+                    <div className="flex items-center gap-3 mb-6">
+                      <Badge variant="neutral" className="bg-gray-100 text-[10px] text-gray-500 border-none">{test.difficulty}</Badge>
+                      <span className="text-xs text-gray-400 font-medium">{test.duration} mins</span>
+                    </div>
+                    
+                    <div className="mt-auto pt-6 border-t border-gray-100">
+                      <Button onClick={() => navigate('/assessments/live', { state: { testId: test._id } })} className="w-full group/btn">
+                        Take Test <Lock className="ml-2 w-4 h-4 opacity-50 group-hover/btn:opacity-100 transition-opacity" />
+                      </Button>
+                    </div>
+                  </Card>
+                </motion.div>
+              );
+            }) : (
+              <div className="col-span-4 text-center py-20 bg-white rounded-[2rem] shadow-sm">
+                <p className="text-gray-400 font-medium italic">No live assessments found. Please check back later.</p>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* AI Proctoring Video Preview Modal */}
         <AnimatePresence>
@@ -95,9 +126,7 @@ export const AssessmentsPage = () => {
                 </button>
                 
                 <div className="grid lg:grid-cols-3">
-                  {/* Simulated Video Player (Test Interface) */}
                   <div className="lg:col-span-2 aspect-video bg-gray-50 relative flex flex-col overflow-hidden">
-                    {/* Fake Browser/Platform Header */}
                     <div className="h-12 bg-white border-b border-gray-200 flex items-center justify-between px-4 z-10">
                       <div className="flex items-center gap-2">
                         <div className="p-1 bg-primary rounded text-white">
@@ -114,7 +143,6 @@ export const AssessmentsPage = () => {
                       </div>
                     </div>
 
-                    {/* Fake Test Content */}
                     <div className="flex-1 p-6 flex flex-col relative z-0">
                       <div className="mb-4">
                         <h4 className="text-lg font-bold text-secondary">Question 4 of 30</h4>
@@ -138,17 +166,12 @@ export const AssessmentsPage = () => {
                       </div>
                     </div>
 
-                    {/* Simulated WebCam Feed Overlay (Proctoring) */}
                     <div className="absolute bottom-6 right-6 w-48 bg-[#0f1115] rounded-xl border border-gray-700/50 overflow-hidden shadow-2xl z-20">
                       <div className="aspect-[4/3] relative flex items-center justify-center bg-[#1a1d24]">
                         <div className="absolute top-2 right-2 w-2 h-2 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.8)]" />
-                        
-                        {/* AI Face Box Overlay */}
                         <div className="absolute inset-4 border border-primary/40 border-dashed rounded-lg flex items-center justify-center">
                            <div className="w-16 h-16 border border-primary/20 rounded-full absolute" />
                         </div>
-                        
-                        {/* HUD Elements */}
                         <div className="absolute bottom-2 left-2 text-[9px] text-green-400 font-mono tracking-wider bg-black/50 px-1.5 py-0.5 rounded backdrop-blur-sm">
                           ID: MATCHED
                         </div>
@@ -164,7 +187,6 @@ export const AssessmentsPage = () => {
                       </div>
                     </div>
 
-                    {/* Play Overlay (to indicate it's a video demo) */}
                     <div className="absolute inset-0 bg-secondary/5 hover:bg-secondary/10 flex items-center justify-center group cursor-pointer transition-colors z-30">
                       <div className="w-16 h-16 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-primary shadow-xl scale-100 group-hover:scale-110 transition-transform border border-white/20">
                         <Play fill="currentColor" className="ml-1 w-6 h-6" />
@@ -172,7 +194,6 @@ export const AssessmentsPage = () => {
                     </div>
                   </div>
 
-                  {/* System Info Sidebar */}
                   <div className="p-10 flex flex-col justify-center bg-gray-50">
                     <h3 className="text-2xl font-black text-secondary mb-6">AI Proctoring V3</h3>
                     <div className="space-y-6">

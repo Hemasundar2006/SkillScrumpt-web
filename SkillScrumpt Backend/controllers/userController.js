@@ -80,6 +80,18 @@ exports.getUserProfile = async (req, res) => {
   }
 };
 
+// @desc    Get all professionals
+// @route   GET /api/v1/users/professionals
+// @access  Protected
+exports.getProfessionals = async (req, res) => {
+  try {
+    const professionals = await User.find({ role: 'professional' }).select('-password');
+    res.json(professionals);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET || 'secret', {
     expiresIn: '30d',
