@@ -183,6 +183,129 @@ export function AdminDashboard() {
   );
 }
 
+export function CreateProctoringTest() {
+  const [isSaving, setIsSaving] = useState(false);
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    category: 'Technical',
+    difficulty: 'Intermediate',
+    duration: 60,
+    cutoffScore: 70,
+    isProctored: true
+  });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSaving(true);
+    try {
+      await api.post('/admin/assessments', formData);
+      alert('Assessment created successfully!');
+      setFormData({
+        title: '',
+        description: '',
+        category: 'Technical',
+        difficulty: 'Intermediate',
+        duration: 60,
+        cutoffScore: 70,
+        isProctored: true
+      });
+    } catch (err) {
+      alert('Error creating assessment');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <DashboardLayout user={{ role: 'admin', firstName: 'Admin' }}>
+      <header className="mb-10">
+        <h1 className="text-3xl font-bold text-secondary mb-2">Create Proctoring Test</h1>
+        <p className="text-gray-500 font-medium text-sm">Configure a new skill-based assessment for students.</p>
+      </header>
+
+      <Card className="max-w-3xl p-10 bg-white border-none shadow-xl">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="space-y-2 md:col-span-2">
+              <label className="text-sm font-bold text-gray-700 ml-1">Test Title</label>
+              <input 
+                type="text" required
+                value={formData.title}
+                onChange={(e) => setFormData({...formData, title: e.target.value})}
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-custom outline-none focus:bg-white focus:border-primary transition-all font-medium" 
+                placeholder="e.g. Advanced React & Architecture"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-gray-700 ml-1">Category</label>
+              <select 
+                value={formData.category}
+                onChange={(e) => setFormData({...formData, category: e.target.value})}
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-custom outline-none focus:bg-white focus:border-primary transition-all font-medium"
+              >
+                <option>Technical</option>
+                <option>Design</option>
+                <option>Management</option>
+                <option>Marketing</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-gray-700 ml-1">Cutoff Score (%)</label>
+              <input 
+                type="number" required
+                value={formData.cutoffScore}
+                onChange={(e) => setFormData({...formData, cutoffScore: parseInt(e.target.value)})}
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-custom outline-none focus:bg-white focus:border-primary transition-all font-medium" 
+                min="0" max="100"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-gray-700 ml-1">Duration (Minutes)</label>
+              <input 
+                type="number" required
+                value={formData.duration}
+                onChange={(e) => setFormData({...formData, duration: parseInt(e.target.value)})}
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-custom outline-none focus:bg-white focus:border-primary transition-all font-medium" 
+              />
+            </div>
+
+            <div className="flex items-center gap-3 pt-8">
+              <input 
+                type="checkbox" 
+                checked={formData.isProctored}
+                onChange={(e) => setFormData({...formData, isProctored: e.target.checked})}
+                className="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary"
+              />
+              <label className="text-sm font-bold text-secondary">Enable AI Proctoring</label>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-gray-700 ml-1">Test Description</label>
+            <textarea 
+              rows={4} required
+              value={formData.description}
+              onChange={(e) => setFormData({...formData, description: e.target.value})}
+              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-custom outline-none focus:bg-white focus:border-primary transition-all font-medium resize-none"
+              placeholder="Provide clear instructions for the students..."
+            ></textarea>
+          </div>
+
+          <div className="pt-6 flex justify-end">
+             <Button type="submit" disabled={isSaving} className="px-12 h-14 shadow-xl shadow-primary/20">
+               {isSaving ? <Loader2 className="animate-spin" /> : 'Create Assessment'}
+             </Button>
+          </div>
+        </form>
+      </Card>
+    </DashboardLayout>
+  );
+}
+
 function StatCard({ label, value, icon: Icon, color }) {
   return (
     <Card className="p-6 border-none shadow-sm flex items-center justify-between bg-white">
