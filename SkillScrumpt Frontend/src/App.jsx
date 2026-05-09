@@ -13,6 +13,7 @@ import { AIProctoringInterface } from './pages/ProctoringInterface';
 import { AssessmentResult } from './pages/AssessmentResult';
 import { PostNewProject, HelpCenter } from './pages/UtilityPages';
 import { StudentEarnings } from './pages/EarningsPage';
+import { SharedSettingsPage } from './pages/SharedSettingsPage';
 import { 
   StudentProjects, 
   StudentSkills, 
@@ -30,6 +31,8 @@ import {
 } from './pages/ProjectAndPaymentPages';
 import { ZeroBrokeragePage } from './pages/ZeroBrokerage';
 import { AssessmentsPage } from './pages/AssessmentsPage';
+import { AdminDashboard, CreateProctoringTest } from './pages/AdminDashboard';
+import { MaintenancePage } from './pages/MaintenancePage';
 import { MouseTrail } from './components/MouseTrail';
 
 // Layout wrapper to handle Navbar/Footer visibility
@@ -107,6 +110,11 @@ function App() {
               <PricingPage />
             </PageWrapper>
           } />
+          <Route path="/settings" element={
+            <PageWrapper>
+              <SharedSettingsPage />
+            </PageWrapper>
+          } />
           <Route path="/zero-brokerage" element={
             <PageWrapper>
               <ZeroBrokeragePage />
@@ -144,7 +152,7 @@ function App() {
           } />
           <Route path="/dashboard/student/settings" element={
             <PageWrapper>
-              <StudentSettings />
+              <SharedSettingsPage />
             </PageWrapper>
           } />
           <Route path="/assessments/add" element={
@@ -186,6 +194,20 @@ function App() {
               <ConfirmReceipt />
             </PageWrapper>
           } />
+
+          {/* Admin Management */}
+          <Route path="/dashboard/admin" element={
+            <PageWrapper>
+              <AdminDashboard />
+            </PageWrapper>
+          } />
+          <Route path="/admin/create-test" element={
+            <PageWrapper>
+              <CreateProctoringTest />
+            </PageWrapper>
+          } />
+
+          <Route path="/maintenance" element={<MaintenancePage />} />
 
           {/* Fallback to 404 */}
           <Route path="*" element={<NotFoundPage />} />

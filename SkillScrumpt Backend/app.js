@@ -20,10 +20,14 @@ app.use(cors({
   credentials: true
 }));
 
+const maintenanceMiddleware = require('./middleware/maintenanceMiddleware');
+app.use(maintenanceMiddleware);
+
 // Mount routers
 app.use('/api/v1/users', require('./routes/userRoutes'));
 app.use('/api/v1/projects', require('./routes/projectRoutes'));
 app.use('/api/v1/assessments', require('./routes/assessmentRoutes'));
+app.use('/api/v1/admin', require('./routes/adminRoutes'));
 
 app.get('/', (req, res) => {
   res.send('SkillScrumpt API is running...');

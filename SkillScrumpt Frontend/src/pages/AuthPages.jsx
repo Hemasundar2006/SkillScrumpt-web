@@ -21,7 +21,9 @@ export function Login() {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data));
       
-      if (response.data.role === 'professional') {
+      if (response.data.role === 'admin') {
+        navigate('/dashboard/admin');
+      } else if (response.data.role === 'professional') {
         navigate('/dashboard/student');
       } else {
         navigate('/dashboard/client');
@@ -210,25 +212,35 @@ export function Register() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <button className="text-left group relative" onClick={() => setRole('professional')}>
-            <Card className={`h-full border-2 transition-all p-6 bg-white ${role === 'professional' ? 'border-primary shadow-xl shadow-primary/5' : 'border-transparent hover:border-primary/50'}`}>
-              <div className={`w-12 h-12 rounded-custom flex items-center justify-center mb-4 group-hover:scale-110 transition-transform ${role === 'professional' ? 'bg-primary text-white' : 'bg-primary/10 text-primary'}`}>
+          <button type="button" className="text-left group relative" onClick={() => setRole('professional')}>
+            <Card className={`h-full border-2 transition-all p-6 bg-white ${role === 'professional' ? 'border-primary shadow-xl shadow-primary/10' : 'border-transparent hover:border-primary/50'}`}>
+              <div className={`w-12 h-12 rounded-custom flex items-center justify-center mb-4 group-hover:scale-110 transition-transform ${role === 'professional' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-primary/10 text-primary'}`}>
                 <Monitor size={24} />
               </div>
-              <h4 className="font-bold text-lg mb-1">I'm a Professional</h4>
-              <p className="text-xs text-primary font-black uppercase tracking-widest mb-2 opacity-80">Get Verified & Retain 100% Pay</p>
+              <h4 className={`font-bold text-lg mb-1 ${role === 'professional' ? 'text-primary' : 'text-secondary'}`}>I'm a Professional</h4>
+              <p className="text-[10px] text-primary font-black uppercase tracking-widest mb-2 opacity-80">Get Verified & Retain 100% Pay</p>
               <p className="text-[11px] text-gray-500 font-medium leading-relaxed">Showcase your skills through AI-proctored tests and earn verified badges.</p>
+              {role === 'professional' && (
+                <div className="absolute top-4 right-4 w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center">
+                  <CheckCircle size={14} />
+                </div>
+              )}
             </Card>
           </button>
           
-          <button className="text-left group relative" onClick={() => setRole('client')}>
-            <Card className={`h-full border-2 transition-all p-6 bg-white ${role === 'client' ? 'border-primary shadow-xl shadow-primary/5' : 'border-transparent hover:border-primary/50'}`}>
-              <div className={`w-12 h-12 rounded-custom flex items-center justify-center mb-4 group-hover:scale-110 transition-transform ${role === 'client' ? 'bg-secondary text-white' : 'bg-secondary/10 text-secondary'}`}>
+          <button type="button" className="text-left group relative" onClick={() => setRole('client')}>
+            <Card className={`h-full border-2 transition-all p-6 bg-white ${role === 'client' ? 'border-secondary shadow-xl shadow-secondary/10' : 'border-transparent hover:border-secondary/50'}`}>
+              <div className={`w-12 h-12 rounded-custom flex items-center justify-center mb-4 group-hover:scale-110 transition-transform ${role === 'client' ? 'bg-secondary text-white shadow-lg shadow-secondary/20' : 'bg-secondary/10 text-secondary'}`}>
                 <Code size={24} />
               </div>
-              <h4 className="font-bold text-lg mb-1">I'm a Client</h4>
-              <p className="text-xs text-secondary font-black uppercase tracking-widest mb-2 opacity-80">Hire Top 1% Verified Talent</p>
+              <h4 className={`font-bold text-lg mb-1 ${role === 'client' ? 'text-secondary' : 'text-secondary'}`}>I'm a Client</h4>
+              <p className="text-[10px] text-secondary font-black uppercase tracking-widest mb-2 opacity-80">Hire Top 1% Verified Talent</p>
               <p className="text-[11px] text-gray-500 font-medium leading-relaxed">Access a pool of pre-vetted professionals with proctored assessment data.</p>
+              {role === 'client' && (
+                <div className="absolute top-4 right-4 w-6 h-6 bg-secondary text-white rounded-full flex items-center justify-center">
+                  <CheckCircle size={14} />
+                </div>
+              )}
             </Card>
           </button>
         </div>

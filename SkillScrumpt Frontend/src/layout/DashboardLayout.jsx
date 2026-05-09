@@ -9,11 +9,14 @@ import {
   LogOut, 
   Shield,
   Bell,
-  BadgeCheck
+  BadgeCheck,
+  Users,
+  DollarSign,
+  Plus
 } from 'lucide-react';
 import { Badge } from '../components/UI';
 
-export function DashboardLayout({ children, user, activeTab }) {
+export function DashboardLayout({ children, user }) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -23,13 +26,38 @@ export function DashboardLayout({ children, user, activeTab }) {
     navigate('/login');
   };
 
-  const navItems = [
-    { icon: LayoutDashboard, label: 'Overview', path: '/dashboard/student' },
-    { icon: Briefcase, label: 'My Projects', path: '/dashboard/student/projects' },
-    { icon: Award, label: 'Skill Badges', path: '/dashboard/student/skills' },
-    { icon: TrendingUp, label: 'Earnings', path: '/dashboard/student/earnings' },
-    { icon: Settings, label: 'Settings', path: '/dashboard/student/settings' },
-  ];
+  const getNavItems = () => {
+    if (user?.role === 'admin') {
+      return [
+        { icon: LayoutDashboard, label: 'Overview', path: '/dashboard/admin' },
+        { icon: Users, label: 'User Management', path: '/dashboard/admin/users' },
+        { icon: Award, label: 'Proctoring Tests', path: '/admin/create-test' },
+        { icon: DollarSign, label: 'Financial Tracking', path: '/dashboard/admin/transactions' },
+        { icon: Settings, label: 'Settings', path: '/settings' },
+      ];
+    }
+
+    if (user?.role === 'client') {
+      return [
+        { icon: LayoutDashboard, label: 'Overview', path: '/dashboard/client' },
+        { icon: Briefcase, label: 'My Projects', path: '/my-projects' },
+        { icon: Users, label: 'Verified Talent', path: '/talent' },
+        { icon: Plus, label: 'Post Project', path: '/post-project' },
+        { icon: Settings, label: 'Settings', path: '/settings' },
+      ];
+    }
+
+    // Default: Professional/Student
+    return [
+      { icon: LayoutDashboard, label: 'Overview', path: '/dashboard/student' },
+      { icon: Briefcase, label: 'My Projects', path: '/dashboard/student/projects' },
+      { icon: Award, label: 'Skill Badges', path: '/dashboard/student/skills' },
+      { icon: TrendingUp, label: 'Earnings', path: '/dashboard/student/earnings' },
+      { icon: Settings, label: 'Settings', path: '/dashboard/student/settings' },
+    ];
+  };
+
+  const navItems = getNavItems();
 
   return (
     <div className="flex min-h-screen bg-[#f8f9fb]">
@@ -60,15 +88,17 @@ export function DashboardLayout({ children, user, activeTab }) {
         </nav>
 
         <div className="p-4 mt-auto">
-          <div className="bg-white/5 rounded-custom p-4 mb-4 border border-white/10">
-            <p className="text-xs text-gray-400 font-bold mb-2 uppercase tracking-widest">Your AI Score</p>
-            <div className="flex items-center gap-2">
-              <div className="text-2xl font-bold text-primary">{user?.aiScore || 0}</div>
-              {user?.aiScore > 500 && (
-                <Badge variant="primary" className="bg-primary/20 text-blue-300 border-none text-[10px]">TOP {user?.aiScore > 800 ? '1%' : '5%'}</Badge>
-              )}
+          {user?.role === 'professional' && (
+            <div className="bg-white/5 rounded-custom p-4 mb-4 border border-white/10">
+              <p className="text-xs text-gray-400 font-bold mb-2 uppercase tracking-widest">Your AI Score</p>
+              <div className="flex items-center gap-2">
+                <div className="text-2xl font-bold text-primary">{user?.aiScore || 0}</div>
+                {user?.aiScore > 500 && (
+                  <Badge variant="primary" className="bg-primary/20 text-blue-300 border-none text-[10px]">TOP {user?.aiScore > 800 ? '1%' : '5%'}</Badge>
+                )}
+              </div>
             </div>
-          </div>
+          )}
           <button 
             onClick={handleLogout}
             className="flex items-center gap-3 w-full px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-custom transition-all"
@@ -93,7 +123,7 @@ export function DashboardLayout({ children, user, activeTab }) {
                 <p className="text-sm font-bold text-secondary flex items-center gap-1 justify-end">
                   {user?.firstName} {user?.lastName} {user?.isVerified && <BadgeCheck size={14} className="text-primary fill-primary/10" />}
                 </p>
-                <p className="text-xs font-bold text-primary">{user?.isVerified ? 'Verified Expert' : 'Standard Account'}</p>
+                <p className="text-xs font-bold text-primary">{user?.role === 'admin' ? 'Super Admin' : (user?.isVerified ? 'Verified Expert' : 'Standard Account')}</p>
               </div>
               <div className="w-10 h-10 bg-primary rounded-custom flex items-center justify-center text-white font-bold">
                 {user?.firstName?.[0]}{user?.lastName?.[0]}

@@ -13,15 +13,20 @@ exports.registerUser = async (req, res) => {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    const user = await User.create({
+    const userData = {
       firstName,
       lastName,
       email,
       password,
-      role,
-      college: role === 'professional' ? college : undefined,
-      graduationYear: role === 'professional' ? graduationYear : undefined
-    });
+      role
+    };
+
+    if (role === 'professional') {
+      userData.college = college;
+      userData.graduationYear = graduationYear;
+    }
+
+    const user = await User.create(userData);
 
     if (user) {
       res.status(201).json({
@@ -87,6 +92,41 @@ exports.getProfessionals = async (req, res) => {
   try {
     const professionals = await User.find({ role: 'professional' }).select('-password');
     res.json(professionals);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Update user profile
+// @route   PUT /api/v1/users/profile
+// @access  Protected
+exports.updateUserProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (user) {
+      user.firstName = req.body.firstName || user.firstName;
+      user.lastName = req.body.lastName || user.lastName;
+      user.bio = req.body.bio || user.bio;
+      
+      if (req.body.password) {
+        user.password = req.body.password;
+      }
+
+      const updatedUser = await user.save();
+
+      res.json({
+        _id: updatedUser._id,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+        email: updatedUser.email,
+        role: updatedUser.role,
+        bio: updatedUser.bio,
+        token: generateToken(updatedUser._id),
+      });
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -6,8 +6,9 @@ const userSchema = new mongoose.Schema({
   lastName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  role: { type: String, enum: ['professional', 'client'], required: true },
+  role: { type: String, enum: ['professional', 'client', 'admin'], required: true },
   avatar: { type: String }, // URL or initials
+  bio: { type: String },
   isVerified: { type: Boolean, default: false },
   
   // Professional specific fields

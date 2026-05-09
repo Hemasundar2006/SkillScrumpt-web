@@ -23,4 +23,17 @@ api.interceptors.request.use(
   }
 );
 
+// Add a response interceptor to handle maintenance mode
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 503 && error.response.data.maintenanceMode) {
+      if (window.location.pathname !== '/maintenance' && window.location.pathname !== '/login') {
+        window.location.href = '/maintenance';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default api;
