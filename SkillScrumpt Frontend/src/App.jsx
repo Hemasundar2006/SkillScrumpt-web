@@ -35,6 +35,8 @@ import { AdminDashboard, CreateProctoringTest } from './pages/AdminDashboard';
 import { MaintenancePage } from './pages/MaintenancePage';
 import { MouseTrail } from './components/MouseTrail';
 
+import { Navigate } from 'react-router-dom';
+
 // Layout wrapper to handle Navbar/Footer visibility
 function AppLayout({ children }) {
   const location = useLocation();
@@ -52,6 +54,41 @@ function AppLayout({ children }) {
   );
 }
 
+// Redirects logged in users away from public pages like landing, login, register
+function PublicRoute({ children }) {
+  const token = localStorage.getItem('token');
+  const userStr = localStorage.getItem('user');
+  
+  if (token && userStr) {
+    const user = JSON.parse(userStr);
+    if (user.role === 'admin') return <Navigate to="/dashboard/admin" replace />;
+    if (user.role === 'professional') return <Navigate to="/dashboard/student" replace />;
+    return <Navigate to="/dashboard/client" replace />;
+  }
+  
+  return children;
+}
+
+// Blocks access to dashboard pages for unauthenticated users
+function ProtectedRoute({ children, role }) {
+  const token = localStorage.getItem('token');
+  const userStr = localStorage.getItem('user');
+  
+  if (!token || !userStr) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  const user = JSON.parse(userStr);
+  if (role && user.role !== role) {
+    // If user has wrong role, redirect to their correct dashboard
+    if (user.role === 'admin') return <Navigate to="/dashboard/admin" replace />;
+    if (user.role === 'professional') return <Navigate to="/dashboard/student" replace />;
+    return <Navigate to="/dashboard/client" replace />;
+  }
+  
+  return children;
+}
+
 function App() {
   const location = useLocation();
 
@@ -60,24 +97,32 @@ function App() {
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={
-            <PageWrapper>
-              <LandingPage />
-            </PageWrapper>
+            <PublicRoute>
+              <PageWrapper>
+                <LandingPage />
+              </PageWrapper>
+            </PublicRoute>
           } />
           <Route path="/login" element={
-            <PageWrapper>
-              <Login />
-            </PageWrapper>
+            <PublicRoute>
+              <PageWrapper>
+                <Login />
+              </PageWrapper>
+            </PublicRoute>
           } />
           <Route path="/register" element={
-            <PageWrapper>
-              <Register />
-            </PageWrapper>
+            <PublicRoute>
+              <PageWrapper>
+                <Register />
+              </PageWrapper>
+            </PublicRoute>
           } />
           <Route path="/dashboard/student" element={
-            <PageWrapper>
-              <StudentDashboard />
-            </PageWrapper>
+            <ProtectedRoute role="professional">
+              <PageWrapper>
+                <StudentDashboard />
+              </PageWrapper>
+            </ProtectedRoute>
           } />
           <Route path="/profile/:id" element={
             <PageWrapper>
@@ -85,19 +130,25 @@ function App() {
             </PageWrapper>
           } />
           <Route path="/dashboard/student/earnings" element={
-            <PageWrapper>
-              <StudentEarnings />
-            </PageWrapper>
+            <ProtectedRoute role="professional">
+              <PageWrapper>
+                <StudentEarnings />
+              </PageWrapper>
+            </ProtectedRoute>
           } />
           <Route path="/dashboard/client" element={
-            <PageWrapper>
-              <ClientDashboard />
-            </PageWrapper>
+            <ProtectedRoute role="client">
+              <PageWrapper>
+                <ClientDashboard />
+              </PageWrapper>
+            </ProtectedRoute>
           } />
           <Route path="/workspace/:id" element={
-            <PageWrapper>
-              <ProjectWorkspace />
-            </PageWrapper>
+            <ProtectedRoute>
+              <PageWrapper>
+                <ProjectWorkspace />
+              </PageWrapper>
+            </ProtectedRoute>
           } />
           <Route path="/about" element={
             <PageWrapper>
@@ -141,24 +192,32 @@ function App() {
           
           {/* Student Experience Sub-routes */}
           <Route path="/dashboard/student/projects" element={
-            <PageWrapper>
-              <StudentProjects />
-            </PageWrapper>
+            <ProtectedRoute role="professional">
+              <PageWrapper>
+                <StudentProjects />
+              </PageWrapper>
+            </ProtectedRoute>
           } />
           <Route path="/dashboard/student/skills" element={
-            <PageWrapper>
-              <StudentSkills />
-            </PageWrapper>
+            <ProtectedRoute role="professional">
+              <PageWrapper>
+                <StudentSkills />
+              </PageWrapper>
+            </ProtectedRoute>
           } />
           <Route path="/dashboard/student/settings" element={
-            <PageWrapper>
-              <SharedSettingsPage />
-            </PageWrapper>
+            <ProtectedRoute role="professional">
+              <PageWrapper>
+                <SharedSettingsPage />
+              </PageWrapper>
+            </ProtectedRoute>
           } />
           <Route path="/assessments/add" element={
-            <PageWrapper>
-              <AddAssessment />
-            </PageWrapper>
+            <ProtectedRoute role="professional">
+              <PageWrapper>
+                <AddAssessment />
+              </PageWrapper>
+            </ProtectedRoute>
           } />
 
           {/* Client & Project Management */}
@@ -197,14 +256,18 @@ function App() {
 
           {/* Admin Management */}
           <Route path="/dashboard/admin" element={
-            <PageWrapper>
-              <AdminDashboard />
-            </PageWrapper>
+            <ProtectedRoute role="admin">
+              <PageWrapper>
+                <AdminDashboard />
+              </PageWrapper>
+            </ProtectedRoute>
           } />
           <Route path="/admin/create-test" element={
-            <PageWrapper>
-              <CreateProctoringTest />
-            </PageWrapper>
+            <ProtectedRoute role="admin">
+              <PageWrapper>
+                <CreateProctoringTest />
+              </PageWrapper>
+            </ProtectedRoute>
           } />
 
           <Route path="/maintenance" element={<MaintenancePage />} />

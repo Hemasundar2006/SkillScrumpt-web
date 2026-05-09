@@ -11,8 +11,8 @@ const router = express.Router();
 const { protect, authorize } = require('../middleware/authMiddleware');
 
 router.route('/')
-  .get(getProjects)
-  .post(protect, authorize('client'), createProject);
+  .get(protect, authorize('professional', 'admin'), getProjects)
+  .post(protect, authorize('client', 'admin'), createProject);
 
 router.get('/:id', protect, getProjectById);
 router.post('/:id/apply', protect, authorize('professional'), applyToProject);

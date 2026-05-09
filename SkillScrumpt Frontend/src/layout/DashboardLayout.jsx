@@ -50,7 +50,8 @@ export function DashboardLayout({ children, user }) {
     // Default: Professional/Student
     return [
       { icon: LayoutDashboard, label: 'Overview', path: '/dashboard/student' },
-      { icon: Briefcase, label: 'My Projects', path: '/dashboard/student/projects' },
+      { icon: Briefcase, label: 'Browse Projects', path: '/projects' },
+      { icon: Briefcase, label: 'My Contracts', path: '/dashboard/student/projects' },
       { icon: Award, label: 'Skill Badges', path: '/dashboard/student/skills' },
       { icon: TrendingUp, label: 'Earnings', path: '/dashboard/student/earnings' },
       { icon: Settings, label: 'Settings', path: '/dashboard/student/settings' },

@@ -1,31 +1,39 @@
 const mongoose = require('mongoose');
 const User = require('./models/User');
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 const createAdmin = async () => {
   try {
-    const mongoURI = 'mongodb://teluguinfostudent_db_user:Qwertyuiop%40123@skillscrumpt-shard-00-00.pi1vnue.mongodb.net:27017,skillscrumpt-shard-00-01.pi1vnue.mongodb.net:27017,skillscrumpt-shard-00-02.pi1vnue.mongodb.net:27017/skillscrumpt?ssl=true&replicaSet=atlas-13z7v9-shard-0&authSource=admin';
+    const mongoURI = process.env.MONGO_URI || 'mongodb://teluguinfostudent_db_user:Qwertyuiop%40123@skillscrumpt-shard-00-00.pi1vnue.mongodb.net:27017,skillscrumpt-shard-00-01.pi1vnue.mongodb.net:27017,skillscrumpt-shard-00-02.pi1vnue.mongodb.net:27017/skillscrumpt?ssl=true&replicaSet=atlas-13z7v9-shard-0&authSource=admin';
+    console.log('Connecting to MongoDB...');
     await mongoose.connect(mongoURI);
     
-    let existingAdmin = await User.findOne({ email: 'marotinani06@gmail.com' });
-    if (existingAdmin) {
-      existingAdmin.password = '9666180813';
-      existingAdmin.role = 'admin';
-      await existingAdmin.save();
+    const adminEmail = 'marotinani06@gmail.com';
+    const adminPass = '9666180813';
+
+    let admin = await User.findOne({ email: adminEmail });
+    
+    if (admin) {
+      admin.password = adminPass;
+      admin.role = 'admin';
+      await admin.save();
       console.log('Admin user updated successfully!');
-      process.exit();
+    } else {
+      admin = new User({
+        firstName: 'Maroti',
+        lastName: 'Nani',
+        email: adminEmail,
+        password: adminPass,
+        role: 'admin'
+      });
+      await admin.save();
+      console.log('Admin user created successfully!');
     }
-
-    const newAdmin = new User({
-      firstName: 'Maroti',
-      lastName: 'Nani',
-      email: 'marotinani06@gmail.com',
-      password: '9666180813',
-      role: 'admin'
-    });
-
-    await newAdmin.save();
-    console.log('Admin user created successfully!');
-    process.exit();
+    
+    mongoose.connection.close();
+    process.exit(0);
   } catch (err) {
     console.error('Error seeding admin:', err.message);
     process.exit(1);
