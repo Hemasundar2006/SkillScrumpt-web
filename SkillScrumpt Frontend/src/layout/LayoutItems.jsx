@@ -35,10 +35,20 @@ export function Navbar() {
                 className="pl-10 pr-4 py-2 bg-gray-100 border-transparent focus:bg-white focus:border-primary border rounded-custom text-sm outline-none transition-all w-64"
               />
             </div>
-            <Link to="/login" className="text-gray-600 hover:text-primary text-sm font-semibold">Login</Link>
-            <Link to="/register">
-              <Button>Join Now</Button>
-            </Link>
+            {localStorage.getItem('token') ? (
+              <Link to="/dashboard" className="flex items-center gap-2">
+                 <Button className="flex items-center gap-2">
+                    <User size={18} /> Dashboard
+                 </Button>
+              </Link>
+            ) : (
+              <>
+                <Link to="/login" className="text-gray-600 hover:text-primary text-sm font-semibold">Login</Link>
+                <Link to="/register">
+                  <Button>Join Now</Button>
+                </Link>
+              </>
+            )}
           </div>
 
           <div className="flex md:hidden items-center">
@@ -59,9 +69,15 @@ export function Navbar() {
             <Link to="/about" className="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50">About</Link>
           </div>
           <div className="pt-4 pb-3 border-t border-gray-200 px-4">
-            <Link to="/register" className="block w-full text-center">
-              <Button className="w-full">Join Now</Button>
-            </Link>
+            {localStorage.getItem('token') ? (
+              <Link to="/dashboard" className="block w-full">
+                <Button className="w-full">Go to Dashboard</Button>
+              </Link>
+            ) : (
+              <Link to="/register" className="block w-full text-center">
+                <Button className="w-full">Join Now</Button>
+              </Link>
+            )}
           </div>
         </div>
       )}

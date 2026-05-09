@@ -89,6 +89,17 @@ function ProtectedRoute({ children, role }) {
   return children;
 }
 
+// Redirects to specific role dashboard
+function DashboardRedirect() {
+  const userStr = localStorage.getItem('user');
+  if (!userStr) return <Navigate to="/login" replace />;
+  
+  const user = JSON.parse(userStr);
+  if (user.role === 'admin') return <Navigate to="/dashboard/admin" replace />;
+  if (user.role === 'professional') return <Navigate to="/dashboard/student" replace />;
+  return <Navigate to="/dashboard/client" replace />;
+}
+
 function App() {
   const location = useLocation();
 
@@ -273,6 +284,7 @@ function App() {
           <Route path="/maintenance" element={<MaintenancePage />} />
 
           {/* Fallback to 404 */}
+          <Route path="/dashboard" element={<ProtectedRoute><DashboardRedirect /></ProtectedRoute>} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </AnimatePresence>
