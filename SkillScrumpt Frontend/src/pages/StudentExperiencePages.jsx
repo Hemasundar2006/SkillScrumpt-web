@@ -129,9 +129,10 @@ export function StudentSkills() {
               {user?.badges?.length > 0 ? user.badges.map((badge, i) => (
                 <BadgeCard 
                   key={i} 
-                  title={badge.title} 
+                  id={badge.assessmentId}
+                  title={badge.name || badge.title} 
                   score={badge.score} 
-                  date={new Date(badge.earnedAt).toLocaleDateString()} 
+                  date={new Date(badge.issuedAt || badge.earnedAt).toLocaleDateString()} 
                   color={i % 2 === 0 ? 'bg-blue-500' : 'bg-purple-500'} 
                 />
               )) : (
@@ -339,9 +340,22 @@ function StatCard({ label, value, color }) {
   );
 }
 
-function BadgeCard({ title, score, date, color }) {
+function BadgeCard({ title, score, date, color, id }) {
+  const navigate = useNavigate();
+  
+  const handleClick = () => {
+    if (id) {
+      navigate(`/dashboard/student/skills/${id}`);
+    } else {
+      alert("Detail report not available for this legacy badge.");
+    }
+  };
+
   return (
-    <Card className="p-8 border-none shadow-xl hover:-translate-y-1 transition-all group overflow-hidden relative bg-white">
+    <Card 
+      onClick={handleClick}
+      className={`p-8 border-none shadow-xl hover:-translate-y-1 transition-all group overflow-hidden relative bg-white cursor-pointer ${!id ? 'opacity-80' : ''}`}
+    >
       <div className={`absolute top-0 right-0 w-24 h-24 ${color} opacity-5 rounded-full -mr-12 -mt-12 group-hover:scale-150 transition-transform duration-700`} />
       <div className="flex items-center gap-5 mb-8">
         <div className={`w-14 h-14 ${color} text-white rounded-custom flex items-center justify-center shadow-lg shadow-black/10`}>
@@ -357,7 +371,12 @@ function BadgeCard({ title, score, date, color }) {
           <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">AI Match Score</p>
           <p className={`text-3xl font-black ${color.replace('bg-', 'text-')}`}>{score}</p>
         </div>
-        <Badge variant="neutral" className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest">Verified ID</Badge>
+        <div className="flex flex-col items-end gap-2">
+           <Badge variant="neutral" className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest">Verified ID</Badge>
+           <span className={`text-[9px] font-black uppercase tracking-tighter ${id ? 'text-primary' : 'text-gray-400'}`}>
+             {id ? 'Click for Details' : 'Details Not Available'}
+           </span>
+        </div>
       </div>
     </Card>
   );
