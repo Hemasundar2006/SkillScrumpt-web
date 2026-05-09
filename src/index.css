@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #146ef5;
+  --color-secondary: #000000;
+  --color-background: #f5f5f5;
+  --color-foreground: #1a1a1a;
+  --color-surface: #ffffff;
+  --color-border: #d1d5db;
+  
+  --font-inter: "Inter", sans-serif;
+  
+  --radius-custom: 4px;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground font-inter antialiased;
+    margin: 0;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-white px-6 py-2 rounded-custom font-semibold transition-all hover:bg-primary/90 active:scale-95;
+  }
+  
+  .card {
+    @apply bg-white border border-border rounded-custom p-6 shadow-sm;
+  }
+
+  .glass {
+    @apply bg-white/70 backdrop-blur-md border border-white/20 rounded-custom;
+  }
+
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
+  .rotateX-2 {
+    transform: rotateX(2deg);
+  }
+
+  .rotateY-2 {
+    transform: rotateY(2deg);
+  }
+
+  .hover-3d {
+    transition: transform 0.5s ease;
+    transform-style: preserve-3d;
+  }
+
+  .hover-3d:hover {
+    transform: rotateX(5deg) rotateY(5deg);
+  }
+}
