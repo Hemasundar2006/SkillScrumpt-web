@@ -45,7 +45,7 @@ export function ProctoringOverlay({ userId, examId, onScoreChange }) {
 
       {/* Top Right Mini Alerts */}
       <div className="fixed top-5 right-5 flex flex-col gap-3 z-[9999] max-w-[340px]">
-        {activeAlerts.filter(a => a.severity === 'low' || a.severity === 'medium').map((alert) => {
+        {activeAlerts.filter(a => a.severity === 'low').map((alert) => {
           const colors = SEVERITY_COLORS[alert.severity] || SEVERITY_COLORS.medium;
           return (
             <div 
@@ -60,11 +60,11 @@ export function ProctoringOverlay({ userId, examId, onScoreChange }) {
         })}
       </div>
 
-      {/* CENTER POPUP FOR SUSPICIOUS ACTIVITY */}
-      {activeAlerts.find(a => a.severity === 'high' || a.severity === 'critical') && (
+      {/* CENTER POPUP FOR SUSPICIOUS ACTIVITY & PROTOCOL BREACHES */}
+      {activeAlerts.find(a => a.severity === 'medium' || a.severity === 'high' || a.severity === 'critical') && (
         <div className="fixed inset-0 flex items-center justify-center z-[10000] pointer-events-none p-6">
           <div className="absolute inset-0 bg-red-950/20 backdrop-blur-[2px]" />
-          {activeAlerts.filter(a => a.severity === 'high' || a.severity === 'critical').slice(-1).map((alert) => {
+          {activeAlerts.filter(a => a.severity === 'medium' || a.severity === 'high' || a.severity === 'critical').slice(-1).map((alert) => {
              const colors = SEVERITY_COLORS[alert.severity];
              return (
                <motion.div 
