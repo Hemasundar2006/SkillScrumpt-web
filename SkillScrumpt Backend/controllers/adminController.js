@@ -134,3 +134,22 @@ exports.getAllUsers = async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 };
+// @desc    Get all proctoring audits/results
+// @route   GET /api/v1/admin/audits
+// @access  Private/Admin
+exports.getAllAudits = async (req, res) => {
+  try {
+    const audits = await AssessmentResult.find()
+      .populate('user', 'firstName lastName email')
+      .populate('assessment', 'title category')
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: audits.length,
+      data: audits
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};

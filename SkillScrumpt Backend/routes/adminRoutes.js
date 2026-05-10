@@ -6,7 +6,8 @@ const {
   createAssessment, 
   getAllUsers,
   getSystemSettings,
-  updateSystemSettings
+  updateSystemSettings,
+  getAllAudits
 } = require('../controllers/adminController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 
@@ -20,5 +21,6 @@ router.get('/users', getAllUsers);
 router.post('/assessments', createAssessment);
 router.get('/settings', getSystemSettings);
 router.put('/settings', updateSystemSettings);
+router.get('/audits', getAllAudits);
 
 module.exports = router;

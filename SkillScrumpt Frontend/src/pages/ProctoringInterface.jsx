@@ -38,6 +38,29 @@ export function AIProctoringInterface() {
   const [answers, setAnswers] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [realScore, setRealScore] = useState(100);
+  const [isRunning, setIsRunning] = useState(false);
+  const [consoleOutput, setConsoleOutput] = useState("");
+  const [isLocked, setIsLocked] = useState(false);
+  const [lockMessage, setLockMessage] = useState("");
+  const [remainingHours, setRemainingHours] = useState(null);
+
+  useEffect(() => {
+    // Check attempt status
+    const checkAttempt = async () => {
+      try {
+        const response = await api.get(`/assessments/${testId || 'react-assessment-01'}`);
+        // If it succeeds, the user is not locked
+      } catch (error) {
+        if (error.response && error.response.status === 403) {
+          setIsLocked(true);
+          setLockMessage(error.response.data.message);
+          setRemainingHours(error.response.data.remainingHours);
+        }
+      }
+    };
+    
+    checkAttempt();
+  }, [testId]);
 
   const {
     startProctoring,
@@ -117,6 +140,44 @@ export function AIProctoringInterface() {
         } 
     });
   };
+
+  if (isLocked) {
+    return (
+      <div className="min-h-screen bg-[#05070a] flex items-center justify-center p-4">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="max-w-md w-full bg-black border border-red-500/20 p-12 rounded-[2.5rem] text-center relative overflow-hidden shadow-[0_0_100px_rgba(239,68,68,0.1)]"
+        >
+          <div className="absolute top-0 left-0 w-full h-1 bg-red-500" />
+          <div className="w-24 h-24 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-8 border border-red-500/20">
+            <Lock size={48} />
+          </div>
+          <h2 className="text-3xl font-black mb-4 tracking-tighter text-white">Access Restricted</h2>
+          <p className="text-gray-400 mb-6 leading-relaxed font-medium">
+            {lockMessage || "Our security systems detect that you have already attempted this assessment."}
+          </p>
+
+          {remainingHours && (
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-10">
+               <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Unlocks In</p>
+               <div className="flex items-center justify-center gap-2">
+                  <Clock size={20} className="text-primary animate-pulse" />
+                  <span className="text-3xl font-black text-white">{remainingHours} Hours</span>
+               </div>
+            </div>
+          )}
+
+          <Button 
+            className="w-full h-14 bg-white text-black hover:bg-gray-200 font-black uppercase tracking-widest"
+            onClick={() => navigate('/dashboard/student')}
+          >
+            Return to Dashboard
+          </Button>
+        </motion.div>
+      </div>
+    );
+  }
 
   if (!isDesktop) return <DesktopRequiredView />;
 
@@ -239,23 +300,74 @@ export function AIProctoringInterface() {
                   ))}
                 </div>
               ) : (
-                <div className="flex-1 flex flex-col min-h-[400px]">
-                   <div className="bg-[#1e1e1e] rounded-2xl border border-white/5 flex flex-col overflow-hidden shadow-2xl flex-1">
-                      <div className="bg-[#181818] px-6 py-3 border-b border-white/5 flex items-center justify-between">
-                         <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/40" />
-                            <div className="w-3 h-3 rounded-full bg-amber-500/20 border border-amber-500/40" />
-                            <div className="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/40" />
-                            <span className="ml-4 text-[10px] font-mono text-gray-500">solution.js</span>
+                <div className="flex-1 flex flex-col min-h-[600px] gap-4">
+                   <div className="bg-[#0d1117] rounded-[2rem] border border-white/5 flex flex-col overflow-hidden shadow-2xl flex-[2] relative">
+                      <div className="bg-[#161b22] px-8 py-4 border-b border-white/5 flex items-center justify-between">
+                         <div className="flex items-center gap-3">
+                            <div className="flex gap-1.5">
+                              <div className="w-3 h-3 rounded-full bg-[#ff5f56]" />
+                              <div className="w-3 h-3 rounded-full bg-[#ffbd2e]" />
+                              <div className="w-3 h-3 rounded-full bg-[#27c93f]" />
+                            </div>
+                            <span className="ml-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">solution.js</span>
                          </div>
-                         <Badge variant="neutral" className="bg-primary/10 text-primary border-none text-[8px] font-black uppercase tracking-widest">Node.js Environment</Badge>
+                         <div className="flex items-center gap-4">
+                            <Button 
+                              onClick={async () => {
+                                setIsRunning(true);
+                                setConsoleOutput("Compiling and executing...");
+                                try {
+                                  const response = await fetch('https://api.onlinecompiler.io/api/run-code-sync/', {
+                                    method: 'POST',
+                                    headers: {
+                                      'Authorization': 'd84ad1b74006567a756e106544b35896',
+                                      'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                      compiler: 'nodejs20',
+                                      code: answers[currentQuestionIdx] || currentQuestion.initialCode,
+                                      input: ''
+                                    })
+                                  });
+                                  const data = await response.json();
+                                  setConsoleOutput(data.output || data.error || "Program executed with no output.");
+                                } catch (err) {
+                                  setConsoleOutput("Execution Error: " + err.message);
+                                } finally {
+                                  setIsRunning(false);
+                                }
+                              }}
+                              disabled={isRunning}
+                              className="h-8 px-4 bg-green-500 hover:bg-green-600 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-green-500/20"
+                            >
+                              {isRunning ? 'Running...' : 'Run Solution'}
+                            </Button>
+                         </div>
                       </div>
+                      
                       <textarea
-                        className="flex-1 bg-transparent p-8 font-mono text-sm leading-relaxed text-gray-300 outline-none resize-none"
+                        className="flex-1 bg-transparent p-8 font-mono text-sm leading-relaxed text-blue-100/80 outline-none resize-none"
                         spellCheck="false"
-                        defaultValue={currentQuestion.initialCode}
+                        value={answers[currentQuestionIdx] || currentQuestion.initialCode}
                         onChange={(e) => setAnswers({...answers, [currentQuestionIdx]: e.target.value})}
                       />
+                   </div>
+
+                   {/* Terminal Area */}
+                   <div className="bg-black/40 rounded-[1.5rem] border border-white/5 flex flex-col overflow-hidden h-48">
+                      <div className="bg-white/5 px-6 py-2 border-b border-white/5 flex items-center justify-between">
+                         <span className="text-[9px] font-black text-gray-500 uppercase tracking-[0.2em]">Live Debug Terminal</span>
+                         <button onClick={() => setConsoleOutput("")} className="text-[9px] text-gray-600 hover:text-white uppercase font-bold transition-colors">Clear</button>
+                      </div>
+                      <div className="flex-1 p-6 font-mono text-[11px] leading-relaxed overflow-y-auto whitespace-pre-wrap">
+                        {consoleOutput ? (
+                          <div className={consoleOutput.includes('Error') ? 'text-red-400' : 'text-green-400'}>
+                             {consoleOutput}
+                          </div>
+                        ) : (
+                          <span className="text-gray-600 italic">No output yet. Run your code to see results.</span>
+                        )}
+                      </div>
                    </div>
                 </div>
               )}

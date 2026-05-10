@@ -277,14 +277,14 @@ function App() {
           } />
 
           {/* Admin Management */}
-          <Route path="/dashboard/admin" element={
+          <Route path="/dashboard/admin/*" element={
             <ProtectedRoute role="admin">
               <PageWrapper>
                 <AdminDashboard />
               </PageWrapper>
             </ProtectedRoute>
           } />
-          <Route path="/admin/create-test" element={
+          <Route path="/dashboard/admin/create-test" element={
             <ProtectedRoute role="admin">
               <PageWrapper>
                 <CreateProctoringTest />

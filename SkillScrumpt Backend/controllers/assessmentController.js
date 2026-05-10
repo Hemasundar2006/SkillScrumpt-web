@@ -17,6 +17,26 @@ exports.getAssessments = async (req, res) => {
 // @route   GET /api/v1/assessments/:id
 exports.getAssessmentById = async (req, res) => {
   try {
+    const user = await User.findById(req.user._id);
+    const lastAttempt = user.attemptedExams
+      .filter(attempt => attempt.examId === req.params.id)
+      .sort((a, b) => b.attemptedAt - a.attemptedAt)[0];
+    
+    if (lastAttempt) {
+      const coolingPeriodMs = 48 * 60 * 60 * 1000; // 48 hours
+      const timePassed = Date.now() - new Date(lastAttempt.attemptedAt).getTime();
+      
+      if (timePassed < coolingPeriodMs) {
+        const remainingHours = Math.ceil((coolingPeriodMs - timePassed) / (1000 * 60 * 60));
+        return res.status(403).json({ 
+          message: `Cooling Period Active: Your previous attempt was rejected. Our security protocol requires a 48-hour cooling period for skill improvement.`,
+          isLocked: true,
+          remainingHours,
+          canRetryAt: new Date(new Date(lastAttempt.attemptedAt).getTime() + coolingPeriodMs)
+        });
+      }
+    }
+
     const assessment = await Assessment.findById(req.params.id);
     if (assessment) {
       res.json(assessment);
@@ -40,6 +60,12 @@ exports.submitResult = async (req, res) => {
       proctoringLogs 
     } = req.body;
 
+    // Check if already attempted (secondary server-side check)
+    const user = await User.findById(req.user._id);
+    if (user.attemptedExams.some(a => a.examId === req.params.id)) {
+      return res.status(403).json({ message: 'Submission rejected: Duplicate attempt detected.' });
+    }
+
     // AI Analysis Simulation (This would use the BACKEND_PROMPT.md logic)
     const cheatingProbability = calculateCheatingProbability(proctoringLogs);
     const status = (score / totalQuestions > 0.7 && cheatingProbability < 0.3) ? 'passed' : 'failed';
@@ -59,14 +85,24 @@ exports.submitResult = async (req, res) => {
       }
     });
 
-    // If passed, update user AI score and add badge
+    // Update user: Record attempt and rewards
+    const updateData = {
+      $push: { 
+        attemptedExams: { 
+          examId: req.params.id, 
+          status: status === 'passed' ? 'completed' : 'failed' 
+        } 
+      }
+    };
+
     if (status === 'passed') {
       const assessment = await Assessment.findById(req.params.id);
-      await User.findByIdAndUpdate(req.user._id, {
-        $inc: { aiScore: 50 },
-        $push: { badges: { name: assessment.reward, assessmentId: assessment._id } }
-      });
+      updateData.$inc = { aiScore: 50 };
+      if (!updateData.$push.badges) updateData.$push.badges = [];
+      updateData.$push.badges = { name: assessment.reward, assessmentId: assessment._id };
     }
+
+    await User.findByIdAndUpdate(req.user._id, updateData);
 
     res.status(201).json(result);
   } catch (error) {

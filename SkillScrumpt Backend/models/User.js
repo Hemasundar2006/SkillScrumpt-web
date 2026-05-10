@@ -32,7 +32,14 @@ const userSchema = new mongoose.Schema({
   activeContractsCount: { type: Number, default: 0 },
   
   // Subscription status
-  isPro: { type: Boolean, default: false }
+  isPro: { type: Boolean, default: false },
+  
+  // Security: Tracking attempts to prevent retakes
+  attemptedExams: [{
+    examId: { type: String, required: true },
+    attemptedAt: { type: Date, default: Date.now },
+    status: { type: String, enum: ['completed', 'failed', 'abandoned'] }
+  }]
 }, { timestamps: true });
 
 userSchema.pre('save', async function(next) {

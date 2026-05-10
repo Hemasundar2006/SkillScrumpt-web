@@ -31,7 +31,7 @@ export function DashboardLayout({ children, user }) {
       return [
         { icon: LayoutDashboard, label: 'Overview', path: '/dashboard/admin' },
         { icon: Users, label: 'User Management', path: '/dashboard/admin/users' },
-        { icon: Award, label: 'Proctoring Tests', path: '/admin/create-test' },
+        { icon: Award, label: 'Proctoring Tests', path: '/dashboard/admin/create-test' },
         { icon: DollarSign, label: 'Financial Tracking', path: '/dashboard/admin/transactions' },
         { icon: Settings, label: 'Settings', path: '/settings' },
       ];

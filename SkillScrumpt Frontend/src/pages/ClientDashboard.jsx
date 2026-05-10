@@ -150,9 +150,16 @@ export function ClientDashboard() {
     }
   };
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good Morning';
+    if (hour < 18) return 'Good Afternoon';
+    return 'Good Evening';
+  };
+
   if (isLoading && !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f8f9fb]">
+      <div className="min-h-screen flex items-center justify-center bg-[#05070a]">
         <Loader2 className="animate-spin text-primary" size={48} />
       </div>
     );
@@ -160,19 +167,35 @@ export function ClientDashboard() {
 
   return (
     <DashboardLayout user={user}>
+      {/* Natural Depth Elements */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute top-[-5%] right-[-5%] w-[35%] h-[35%] bg-blue-500/5 rounded-full blur-[100px] animate-pulse" />
+        <div className="absolute bottom-[-5%] left-[-5%] w-[35%] h-[35%] bg-primary/5 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '3s' }} />
+      </div>
+
       <AnimatePresence>
         {showUpgradeModal && <UpgradeModal onClose={() => setShowUpgradeModal(false)} />}
       </AnimatePresence>
 
-      <header className="flex justify-between items-center mb-10">
-        <div>
-          <h1 className="text-3xl font-bold text-secondary">Employer Dashboard</h1>
-          <p className="text-gray-500 font-medium text-sm">Welcome back, {user?.firstName}. Ready to hire verified talent?</p>
-        </div>
+      <header className="flex justify-between items-end mb-12 relative z-10">
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+        >
+          <div className="flex items-center gap-2 mb-2">
+             <div className="px-2 py-0.5 bg-primary/10 rounded text-[9px] font-black text-primary uppercase tracking-widest">Employer Hub</div>
+          </div>
+          <h1 className="text-4xl font-black text-secondary tracking-tighter">
+            {getGreeting()}, <span className="text-primary">{user?.firstName}</span>
+          </h1>
+          <p className="text-gray-500 font-medium text-sm mt-1">Discover verified experts for your next big project.</p>
+        </motion.div>
         
         <Link to="/post-project">
-          <Button className="flex items-center gap-2 shadow-primary/20">
-            <Plus size={18} /> Post New Project
+          <Button className="flex items-center gap-2 shadow-2xl shadow-primary/20 h-14 px-8 rounded-2xl group overflow-hidden relative">
+            <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
+            <Plus size={20} className="relative z-10" /> 
+            <span className="relative z-10 font-black uppercase tracking-widest text-xs">Post New Project</span>
           </Button>
         </Link>
       </header>
@@ -284,43 +307,52 @@ function StatItem({ label, value, color }) {
 function TalentCard({ id, name, role, rating, skills, score, avatar }) {
   const navigate = useNavigate();
   return (
-    <Card className="p-6 group hover:shadow-xl hover:-translate-y-1 transition-all border-none shadow-sm relative overflow-hidden bg-white">
-      <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -mr-12 -mt-12 group-hover:scale-150 transition-transform duration-700" />
+    <Card className="p-8 group hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] hover:-translate-y-2 transition-all duration-500 border-white/5 shadow-sm relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-[2.5rem]">
+      <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-1000 blur-2xl" />
       
-      <div className="flex items-center gap-4 mb-6 relative z-10">
-        <div className="w-12 h-12 bg-gray-100 rounded-custom flex items-center justify-center font-bold text-primary border border-primary/20">
+      <div className="flex items-center gap-5 mb-8 relative z-10">
+        <div className="w-16 h-16 bg-secondary text-white rounded-2xl flex items-center justify-center font-black text-xl shadow-lg shadow-secondary/20 group-hover:rotate-6 transition-transform">
           {avatar}
         </div>
         <div>
-          <h4 className="font-bold text-secondary flex items-center gap-2">
-            {name} <BadgeCheck size={18} className="text-primary fill-primary/10" />
+          <h4 className="font-black text-xl text-secondary flex items-center gap-2 tracking-tight">
+            {name} <BadgeCheck size={20} className="text-primary fill-primary/10" />
           </h4>
-          <p className="text-xs text-gray-500 font-medium">{role}</p>
+          <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">{role}</p>
         </div>
       </div>
 
-      <div className="space-y-4 relative z-10">
-        <div className="flex justify-between items-center p-3 bg-gray-50 rounded-custom">
-          <div>
-            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">AI Score</p>
-            <p className="text-lg font-bold text-primary">{score}</p>
-          </div>
-          <div className="text-right">
-            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Rating</p>
-            <p className="text-sm font-bold text-secondary flex items-center justify-end gap-1">
-              <Star size={14} className="text-yellow-400 fill-yellow-400" /> {rating}
-            </p>
-          </div>
+      <div className="space-y-6 relative z-10">
+        <div className="grid grid-cols-2 gap-4">
+           <div className="p-4 bg-gray-50/50 rounded-2xl border border-gray-100">
+             <p className="text-[9px] text-gray-400 font-black uppercase tracking-widest mb-1">AI Trust Score</p>
+             <p className="text-2xl font-black text-primary">{score}</p>
+           </div>
+           <div className="p-4 bg-gray-50/50 rounded-2xl border border-gray-100">
+             <p className="text-[9px] text-gray-400 font-black uppercase tracking-widest mb-1">Peer Rating</p>
+             <div className="flex items-center gap-1.5">
+               <Star size={16} className="text-yellow-400 fill-yellow-400" />
+               <span className="text-xl font-black text-secondary">{rating}</span>
+             </div>
+           </div>
         </div>
 
         <div className="flex flex-wrap gap-2">
           {skills.slice(0, 3).map((skill, i) => (
-            <Badge key={i} variant="neutral" className="bg-white border-gray-200 text-gray-600">{skill}</Badge>
+            <Badge key={i} variant="neutral" className="bg-white/50 border-gray-100 text-gray-500 px-3 py-1 font-bold text-[10px] rounded-lg">
+              {skill}
+            </Badge>
           ))}
-          {skills.length > 3 && <Badge variant="neutral">+{skills.length - 3}</Badge>}
+          {skills.length > 3 && <Badge variant="neutral" className="bg-gray-100 border-none text-gray-400">+{skills.length - 3}</Badge>}
         </div>
 
-        <Button onClick={() => navigate(`/profile/${id}`)} variant="outline" className="w-full text-xs py-2 mt-2">View Profile</Button>
+        <Button 
+          onClick={() => navigate(`/profile/${id}`)} 
+          variant="outline" 
+          className="w-full h-12 font-black uppercase tracking-widest text-[10px] border-gray-200 hover:border-primary rounded-xl"
+        >
+          View Full Dossier
+        </Button>
       </div>
     </Card>
   );

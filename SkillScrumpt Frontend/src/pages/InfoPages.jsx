@@ -143,7 +143,7 @@ export function PricingPage() {
                       </div>
                       <div className="text-right">
                         <div className="flex items-baseline gap-1">
-                          <span className="text-5xl font-black text-primary">₹{role === 'student' ? '99' : '49'}</span>
+                          <span className="text-5xl font-black text-primary">₹{role === 'student' ? '69' : '49'}</span>
                           <span className="text-gray-400 font-bold">/mo</span>
                         </div>
                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Billed Monthly</p>
@@ -173,11 +173,27 @@ export function PricingPage() {
                     </div>
 
                     <div className="pt-10 border-t border-border flex flex-col sm:flex-row gap-4 items-center">
-                      <Link to="/checkout" className="w-full sm:w-auto">
-                        <Button className="h-14 px-12 text-lg shadow-xl shadow-primary/20 w-full">
-                          Get Started Now
-                        </Button>
-                      </Link>
+                      {(() => {
+                        const userStr = localStorage.getItem('user');
+                        const user = userStr ? JSON.parse(userStr) : null;
+                        const isAlreadyPro = user?.isPro === true;
+
+                        if (isAlreadyPro) {
+                          return (
+                            <Button disabled className="h-14 px-12 text-lg shadow-xl bg-green-500/10 text-green-600 border-green-500/20 w-full sm:w-auto">
+                              Already Upgraded to Pro
+                            </Button>
+                          );
+                        }
+
+                        return (
+                          <Link to="/checkout" className="w-full sm:w-auto">
+                            <Button className="h-14 px-12 text-lg shadow-xl shadow-primary/20 w-full">
+                              Get Started Now
+                            </Button>
+                          </Link>
+                        );
+                      })()}
                       <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">No Commitment, Cancel Anytime</p>
                     </div>
                   </div>

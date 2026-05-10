@@ -124,72 +124,114 @@ export function LandingPage() {
   const uspScale = useTransform(scrollYProgress, [0.1, 0.3], [0.9, 1]);
 
   return (
-    <div className="pt-20 overflow-x-hidden bg-white perspective-1000 relative">
+    <div className="pt-20 overflow-x-hidden bg-white perspective-1000 relative mesh-gradient">
+      {/* Background Aura */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[120px] pulse-slow" />
+        <div className="absolute bottom-[20%] right-[-5%] w-[30%] h-[30%] bg-blue-600/5 rounded-full blur-[100px] pulse-slow" style={{ animationDelay: '2s' }} />
+      </div>
+
       {/* Hero Section */}
       <motion.section 
         style={{ rotateX, scale, opacity, transformStyle: 'preserve-3d' }}
         className="relative py-20 lg:py-32 px-4 overflow-hidden min-h-[90vh] flex items-center bg-transparent"
       >
-        <ParticleBackground />
-        
-        <div className="max-w-7xl mx-auto text-center relative z-10">
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <Badge variant="primary" className="mb-6 px-6 py-2 uppercase tracking-[0.3em] font-black text-[10px] bg-primary/10 text-primary border-none rounded-full shadow-lg shadow-primary/5">
-              Next-Gen Verification
-            </Badge>
-          </motion.div>
-          
-          <h1 className="text-6xl lg:text-8xl font-black tracking-tighter text-secondary mb-8 leading-[0.9]">
-            Verify Talent. <br />
-            <span className="text-primary bg-clip-text">Eliminate Risk.</span>
-          </h1>
-          
-          <p className="text-xl text-gray-500 max-w-2xl mx-auto mb-12 leading-relaxed font-medium">
-            The world's first decentralized talent marketplace powered by live AI proctoring. Stop guessing and start hiring verified expertise.
-          </p>
- 
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-            <Link to="/register?role=professional">
-              <Button className="h-16 px-12 text-xl shadow-2xl shadow-primary/30 group hover:scale-105 transition-transform">
-                Join as Student
-              </Button>
-            </Link>
-            <Link to="/assessments">
-              <Button variant="secondary" className="h-16 px-12 text-xl group hover:bg-gray-800 transition-all border-2">
-                Explore Assessments
-              </Button>
-            </Link>
-            <Link to="/register?role=client">
-              <Button variant="outline" className="h-16 px-12 text-xl group hover:bg-gray-50 transition-all border-2">
-                Hire Talent <ArrowRight className="ml-2 group-hover:translate-x-2 transition-transform" />
-              </Button>
-            </Link>
+        <div className="max-w-7xl mx-auto relative z-10 grid lg:grid-cols-2 gap-12 items-center">
+          <div className="text-left">
+            <motion.div
+              initial={{ x: -20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <Badge variant="primary" className="mb-8 px-6 py-2 uppercase tracking-[0.4em] font-black text-[10px] bg-white border border-gray-100 text-secondary shadow-sm rounded-full">
+                The New Standard of Trust
+              </Badge>
+            </motion.div>
+            
+            <h1 className="text-7xl lg:text-[10rem] font-black tracking-tighter text-secondary mb-6 leading-[0.8]">
+              Verify <br />
+              <span className="text-primary tracking-[-0.05em]">Talent.</span>
+            </h1>
+            
+            <p className="text-2xl text-gray-400 max-w-xl mb-12 leading-relaxed font-medium tracking-tight">
+              A decentralized talent ecosystem powered by <span className="text-secondary font-black">Live AI Proctoring</span>. Stop guessing and start hiring verified expertise.
+            </p>
+  
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link to="/register?role=professional">
+                <Button className="h-16 px-10 text-lg shadow-2xl shadow-primary/30 font-black rounded-2xl group">
+                  Get Verified <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+              <Link to="/register?role=client">
+                <Button variant="outline" className="h-16 px-10 text-lg font-black rounded-2xl bg-white/50 backdrop-blur-sm">
+                  Hire Elite Talent
+                </Button>
+              </Link>
+            </div>
+
+            <div className="mt-16 flex items-center gap-8">
+               <div>
+                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">Platform Volume</p>
+                 <p className="text-2xl font-black text-secondary">₹12.4Cr+</p>
+               </div>
+               <div className="w-px h-10 bg-gray-100" />
+               <div>
+                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">Integrity Rate</p>
+                 <p className="text-2xl font-black text-primary">99.9%</p>
+               </div>
+            </div>
           </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1, duration: 0.8 }}
-            className="mt-20 max-w-4xl mx-auto perspective-1000"
+          <motion.div 
+            initial={{ scale: 0.8, opacity: 0, rotate: 5 }}
+            animate={{ scale: 1, opacity: 1, rotate: 0 }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            className="relative hidden lg:block"
           >
-            <Card className="p-10 border-none bg-white shadow-[0_50px_100px_-20px_rgba(0,0,0,0.1)] rounded-[2rem] transform hover:rotateX-2 hover:rotateY-2 transition-transform duration-500">
-               <div className="grid grid-cols-2 lg:grid-cols-4 gap-12">
-                  <StatItem label="Verified Talent" value="150k+" />
-                  <StatItem label="Avg. Test Score" value="84%" />
-                  <StatItem label="Fraud Prevention" value="100%" />
-                  <StatItem label="Payout Ratio" value="1:1" />
+            <div className="absolute inset-0 bg-primary/20 blur-[150px] rounded-full animate-pulse" />
+            <img 
+              src="/verified_elite_badge_hologram_1778417747836.png" 
+              alt="Verified Elite Hologram" 
+              className="w-full h-auto relative z-10 floating drop-shadow-[0_0_50px_rgba(20,110,245,0.3)]"
+            />
+            
+            {/* Stats Overlay Card */}
+            <motion.div 
+              initial={{ x: 100, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="absolute -bottom-10 -right-10 bg-white/80 backdrop-blur-xl border border-white p-8 rounded-[2.5rem] shadow-2xl z-20 max-w-[280px]"
+            >
+               <div className="flex items-center gap-4 mb-6">
+                 <div className="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-green-500/20">
+                   <Shield size={24} />
+                 </div>
+                 <div>
+                   <p className="text-sm font-black text-secondary">AI Proctored</p>
+                   <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Active Protection</p>
+                 </div>
                </div>
-            </Card>
+               <div className="space-y-4">
+                 <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                   <motion.div 
+                     initial={{ width: 0 }}
+                     animate={{ width: '92%' }}
+                     transition={{ duration: 1.5, delay: 1 }}
+                     className="bg-primary h-full" 
+                   />
+                 </div>
+                 <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
+                   <span className="text-gray-400">Integrity Score</span>
+                   <span className="text-primary">92% Match</span>
+                 </div>
+               </div>
+            </motion.div>
           </motion.div>
         </div>
       </motion.section>
 
-
-      {/* Feature Section */}
+      {/* Feature Section: High-Integrity Talent Ecosystem */}
       <motion.section 
         style={{ rotateX: uspRotateX, scale: uspScale, transformStyle: 'preserve-3d' }}
         className="py-24 bg-secondary text-white relative"

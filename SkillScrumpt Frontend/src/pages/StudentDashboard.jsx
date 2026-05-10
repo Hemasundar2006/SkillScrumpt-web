@@ -151,7 +151,14 @@ export function StudentDashboard() {
 
       setUser(profileRes.data);
       setProjects(projectsRes.data.slice(0, 3)); 
-      setAssessments(assessmentsRes.data.slice(0, 2));
+      
+      // Merge real assessments with premium challenge presets
+      const challengePresets = [
+        { _id: 'ai-01', title: 'Python AI Specialist', duration: 90, difficulty: 'Expert', reward: 'Neural Network Badge' },
+        { _id: 'cloud-01', title: 'Cloud Infrastructure', duration: 120, difficulty: 'Senior', reward: 'SRE Verified Badge' },
+        { _id: 'ux-01', title: 'UI/UX Technical Design', duration: 45, difficulty: 'Intermediate', reward: 'Design Master Badge' }
+      ];
+      setAssessments([...assessmentsRes.data, ...challengePresets]);
     } catch (err) {
       console.error('Error fetching dashboard data:', err);
     } finally {
@@ -159,9 +166,16 @@ export function StudentDashboard() {
     }
   };
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good Morning';
+    if (hour < 18) return 'Good Afternoon';
+    return 'Good Evening';
+  };
+
   if (isLoading && !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f8f9fb]">
+      <div className="min-h-screen flex items-center justify-center bg-[#05070a]">
         <Loader2 className="animate-spin text-primary" size={48} />
       </div>
     );
@@ -169,13 +183,32 @@ export function StudentDashboard() {
 
   return (
     <DashboardLayout user={user}>
+      {/* Natural Depth Elements */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/5 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }} />
+      </div>
+
       <AnimatePresence>
         {showUpgradeModal && <UpgradeModal onClose={() => setShowUpgradeModal(false)} />}
       </AnimatePresence>
 
-      <header className="mb-10">
-        <h1 className="text-3xl font-bold text-secondary">Dashboard Overview</h1>
-        <p className="text-gray-500 font-medium text-sm">Welcome back, {user?.firstName}. Here's what's happening today.</p>
+      <header className="mb-12 relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-2 h-2 bg-primary rounded-full animate-ping" />
+            <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Live Status: Active</span>
+          </div>
+          <h1 className="text-4xl font-black text-secondary tracking-tighter mb-2">
+            {getGreeting()}, <span className="text-primary">{user?.firstName}</span>
+          </h1>
+          <p className="text-gray-400 font-medium text-sm flex items-center gap-2">
+             <Clock size={14} /> You have 2 assessments scheduled for today.
+          </p>
+        </motion.div>
       </header>
 
       {/* Stats Grid */}
@@ -319,20 +352,35 @@ function ProjectRow({ id, title, client, status, deadline, amount, isCompleted =
 
 function AssessmentCard({ title, duration, difficulty, reward }) {
   const navigate = useNavigate();
+  const getColors = () => {
+    if (title.includes('AI')) return { bg: 'bg-indigo-500/10', text: 'text-indigo-500', border: 'hover:border-indigo-500' };
+    if (title.includes('Cloud')) return { bg: 'bg-emerald-500/10', text: 'text-emerald-500', border: 'hover:border-emerald-500' };
+    if (title.includes('Design')) return { bg: 'bg-rose-500/10', text: 'text-rose-500', border: 'hover:border-rose-500' };
+    return { bg: 'bg-primary/5', text: 'text-primary', border: 'hover:border-primary' };
+  };
+
+  const colors = getColors();
+
   return (
-    <Card className="p-6 hover:border-primary transition-all group bg-white">
+    <Card className={`p-6 ${colors.border} transition-all group bg-white shadow-sm hover:shadow-xl`}>
       <div className="flex justify-between items-start mb-4">
-        <div className="p-2 bg-gray-50 rounded-custom text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+        <div className={`p-3 ${colors.bg} ${colors.text} rounded-2xl group-hover:bg-primary group-hover:text-white transition-all duration-500`}>
           <Zap size={20} />
         </div>
-        <Badge variant="neutral">{difficulty}</Badge>
+        <Badge variant="neutral" className="bg-gray-50 border-none font-bold text-[10px] uppercase tracking-widest">{difficulty}</Badge>
       </div>
-      <h4 className="font-bold text-lg mb-2">{title}</h4>
-      <div className="flex items-center gap-4 text-xs text-gray-400 font-bold uppercase tracking-widest mb-4">
-        <span className="flex items-center gap-1"><Clock size={14} /> {duration}</span>
-        <span className="flex items-center gap-1 text-primary"><Award size={14} /> {reward}</span>
+      <h4 className="font-black text-xl mb-2 tracking-tight">{title}</h4>
+      <div className="flex items-center gap-4 text-[10px] text-gray-400 font-black uppercase tracking-widest mb-6">
+        <span className="flex items-center gap-1.5"><Clock size={14} /> {duration}</span>
+        <span className={`flex items-center gap-1.5 ${colors.text}`}><Award size={14} /> {reward}</span>
       </div>
-      <Button onClick={() => navigate('/assessments')} variant="outline" className="w-full text-xs py-2">Start Challenge</Button>
+      <Button 
+        onClick={() => navigate('/assessments')} 
+        variant="outline" 
+        className={`w-full text-[10px] font-black uppercase tracking-widest py-3 rounded-xl border-gray-200 hover:border-primary`}
+      >
+        Take Challenge
+      </Button>
     </Card>
   );
 }

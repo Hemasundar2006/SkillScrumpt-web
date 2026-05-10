@@ -43,11 +43,10 @@ sessions: Dict[str, dict] = {}
 
 # ── Score weights ─────────────────────────────────────────────────────────────
 VIOLATION_WEIGHTS = {
-    "no_face":         8,   # face not visible
-    "multiple_faces":  15,  # more than one person
-    "looking_away":    5,   # eyes/gaze deviated
-    "tab_switch":      10,  # left the exam tab
-    "phone_detected":  20,  # phone-like object near face
+    "no_face":         8,   # -8 pts every 5s (High)
+    "multiple_people": 15,  # -15 pts every 5s (Critical)
+    "looking_away":    5,   # -5 pts every 5s (Medium)
+    "tab_switch":      10,  # -10 pts (High)
 }
 
 MAX_SCORE = 100
@@ -202,15 +201,19 @@ async def websocket_proctor(websocket: WebSocket, session_id: str):
                     session["score"] = max(0, session["score"] - VIOLATION_WEIGHTS["no_face"])
                     v = _make_violation("no_face", "high", "No face detected in frame")
                     session["violations"].append(v)
-                    alerts.append({"type": "no_face", "message": "⚠️ No face detected! Please stay visible.", "severity": "high"})
+                    alerts.append({"type": "no_face", "message": "⚠️ No face detected! -8 pts", "severity": "high"})
 
             elif num_faces > 1:
                 session["multiple_face_count"] += 1
-                if _should_alert("multiple_faces", last_alert_time, ALERT_COOLDOWN):
-                    session["score"] = max(0, session["score"] - VIOLATION_WEIGHTS["multiple_faces"])
-                    v = _make_violation("multiple_faces", "critical", f"{num_faces} faces detected")
+                if _should_alert("multiple_people", last_alert_time, ALERT_COOLDOWN):
+                    session["score"] = max(0, session["score"] - VIOLATION_WEIGHTS["multiple_people"])
+                    v = _make_violation("multiple_people", "critical", f"Security Alert: {num_faces} people detected in frame")
                     session["violations"].append(v)
-                    alerts.append({"type": "multiple_faces", "message": f"🚨 Multiple people detected ({num_faces} faces)!", "severity": "critical"})
+                    alerts.append({
+                        "type": "multiple_people", 
+                        "message": f"🚨 Multiple people detected ({num_faces})! -15 pts", 
+                        "severity": "critical"
+                    })
 
             else:
                 # ── Eye / gaze tracking (only if exactly 1 face) ─────────────
@@ -223,7 +226,7 @@ async def websocket_proctor(websocket: WebSocket, session_id: str):
                             session["score"] = max(0, session["score"] - VIOLATION_WEIGHTS["looking_away"])
                             v = _make_violation("looking_away", "medium", "Candidate looking away from screen")
                             session["violations"].append(v)
-                            alerts.append({"type": "looking_away", "message": "👁️ Please look at the screen.", "severity": "medium"})
+                            alerts.append({"type": "looking_away", "message": "👁️ Please look at the screen. -5 pts", "severity": "medium"})
 
             # Send analysis result back
             await websocket.send_json({

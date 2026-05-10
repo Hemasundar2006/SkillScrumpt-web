@@ -8,18 +8,23 @@ import {
   DollarSign,
   PieChart,
   Activity,
-  Loader2
+  Loader2,
+  Shield
 } from 'lucide-react';
 import { Card, Badge, Button } from '../components/UI';
 import api from '../utils/api';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { DashboardLayout } from '../layout/DashboardLayout';
 
 export function AdminDashboard() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [user, setUser] = useState(null);
   const [stats, setStats] = useState(null);
   const [recentActivity, setRecentActivity] = useState({ users: [], projects: [] });
+  const [fullUsers, setFullUsers] = useState([]);
+  const [fullAudits, setFullAudits] = useState([]);
+  const [fullTransactions, setFullTransactions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
   const [settings, setSettings] = useState({ maintenanceMode: false, maintenanceMessage: '' });
@@ -29,6 +34,32 @@ export function AdminDashboard() {
     fetchAdminData();
     fetchSettings();
   }, []);
+
+  useEffect(() => {
+    // Extract tab from URL: /dashboard/admin/users -> users
+    const pathParts = location.pathname.split('/');
+    const tabFromUrl = pathParts[pathParts.length - 1];
+    
+    if (['users', 'audits', 'finances'].includes(tabFromUrl)) {
+      setActiveTab(tabFromUrl);
+    } else {
+      setActiveTab('overview');
+    }
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (activeTab === 'users' && fullUsers.length === 0) fetchAllUsers();
+    if (activeTab === 'audits' && fullAudits.length === 0) fetchAllAudits();
+    if (activeTab === 'finances' && fullTransactions.length === 0) fetchAllTransactions();
+  }, [activeTab]);
+
+  const handleTabChange = (tab) => {
+    if (tab === 'overview') {
+      navigate('/dashboard/admin');
+    } else {
+      navigate(`/dashboard/admin/${tab}`);
+    }
+  };
 
   const fetchAdminData = async () => {
     setIsLoading(true);
@@ -46,6 +77,34 @@ export function AdminDashboard() {
       console.error('Error fetching admin data:', err);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchAllUsers = async () => {
+    try {
+      const { data } = await api.get('/admin/users');
+      // Enforce data originality: standardizing state update to prevent duplicates
+      setFullUsers([...data.data]);
+    } catch (err) {
+      console.error('Error fetching users:', err);
+    }
+  };
+
+  const fetchAllAudits = async () => {
+    try {
+      const { data } = await api.get('/admin/audits');
+      setFullAudits(data.data);
+    } catch (err) {
+      console.error('Error fetching audits:', err);
+    }
+  };
+
+  const fetchAllTransactions = async () => {
+    try {
+      const { data } = await api.get('/admin/transactions');
+      setFullTransactions(data.data);
+    } catch (err) {
+      console.error('Error fetching transactions:', err);
     }
   };
 
@@ -86,7 +145,7 @@ export function AdminDashboard() {
            <Button variant="outline" className="flex items-center gap-2">
              <PieChart size={18} /> Generate Report
            </Button>
-           <Link to="/admin/create-test">
+           <Link to="/dashboard/admin/create-test">
              <Button className="flex items-center gap-2">
                <Plus size={18} /> Create Proctoring Test
              </Button>
@@ -94,90 +153,254 @@ export function AdminDashboard() {
         </div>
       </header>
 
-      <div className="space-y-8">
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <StatCard label="Total Users" value={stats?.totalUsers} icon={Users} color="text-blue-500" />
-          <StatCard label="Total Projects" value={stats?.totalProjects} icon={Briefcase} color="text-primary" />
-          <StatCard label="Total Tests" value={stats?.totalAssessments} icon={Award} color="text-purple-500" />
-          <StatCard label="Total Volume" value={`$${stats?.totalVolume?.toLocaleString()}`} icon={DollarSign} color="text-green-500" />
-        </div>
+      <div className="flex bg-white/50 backdrop-blur-md p-1.5 rounded-2xl border border-gray-100 mb-10 w-fit">
+        {['overview', 'users', 'audits', 'finances'].map((tab) => (
+          <button
+            key={tab}
+            onClick={() => handleTabChange(tab)}
+            className={`px-8 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+              activeTab === tab ? 'bg-secondary text-white shadow-xl shadow-secondary/20' : 'text-gray-400 hover:text-secondary'
+            }`}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
-           <div className="lg:col-span-2 space-y-8">
-              <section>
-                <h3 className="text-xl font-bold mb-6 flex items-center gap-2 text-secondary">
-                  <Activity size={20} className="text-primary" /> Recent Projects
-                </h3>
-                <div className="bg-white rounded-custom border border-border overflow-hidden shadow-sm">
-                   <table className="w-full text-left border-collapse">
+      <div className="space-y-8 relative z-10">
+        {activeTab === 'overview' && (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <StatCard label="Total Users" value={stats?.totalUsers || 0} icon={Users} color="text-blue-500" />
+              <StatCard label="Active Projects" value={stats?.totalProjects || 0} icon={Briefcase} color="text-primary" />
+              <StatCard label="Live Audits" value={stats?.totalAssessments || 0} icon={Activity} color="text-purple-500" />
+              <StatCard label="Platform Volume" value={`₹${stats?.totalVolume?.toLocaleString() || 0}`} icon={DollarSign} color="text-green-500" />
+            </div>
+
+            <div className="grid lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2 space-y-8">
+                <section>
+                  <h3 className="text-xl font-black mb-6 flex items-center gap-2 text-secondary tracking-tighter">
+                    <Activity size={24} className="text-primary" /> Recent Platform Pulse
+                  </h3>
+                  <div className="bg-white rounded-[2rem] border border-gray-100 overflow-hidden shadow-xl shadow-blue-900/5">
+                    <table className="w-full text-left">
                       <thead>
-                        <tr className="bg-gray-50 border-b border-border">
-                           <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Project</th>
-                           <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Client</th>
-                           <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Budget</th>
-                           <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Status</th>
+                        <tr className="bg-gray-50/50 border-b border-gray-100">
+                          <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Entity</th>
+                          <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Type</th>
+                          <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Metric</th>
+                          <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Status</th>
                         </tr>
                       </thead>
-                      <tbody>
+                      <tbody className="divide-y divide-gray-50">
                         {recentActivity.projects.map(proj => (
-                          <tr key={proj._id} className="border-b border-border hover:bg-gray-50 transition-colors">
-                            <td className="p-4 font-bold text-secondary text-sm">{proj.title}</td>
-                            <td className="p-4 text-sm font-medium text-gray-500">{proj.client?.firstName} {proj.client?.lastName}</td>
-                            <td className="p-4 font-black text-secondary">${proj.budget}</td>
+                          <tr key={proj._id} className="hover:bg-gray-50/80 transition-colors">
+                            <td className="p-6">
+                               <p className="font-black text-secondary text-sm">{proj.title}</p>
+                               <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{proj.client?.firstName}</p>
+                            </td>
+                            <td className="p-4"><Badge variant="neutral" className="bg-gray-100 border-none font-black text-[9px]">Project</Badge></td>
+                            <td className="p-4 font-black text-secondary text-sm">₹{proj.budget}</td>
                             <td className="p-4">
-                              <Badge variant={proj.status === 'completed' ? 'success' : 'primary'}>{proj.status}</Badge>
+                              <div className="flex items-center gap-2">
+                                <div className={`w-2 h-2 rounded-full ${proj.status === 'completed' ? 'bg-green-500' : 'bg-primary'}`} />
+                                <span className="text-[10px] font-black text-secondary uppercase tracking-widest">{proj.status}</span>
+                              </div>
                             </td>
                           </tr>
                         ))}
                       </tbody>
-                   </table>
-                </div>
-              </section>
-           </div>
+                    </table>
+                  </div>
+                </section>
+              </div>
 
-           <aside className="space-y-8">
-              <section>
-                <h3 className="text-xl font-bold mb-6 text-secondary">System Settings</h3>
-                <Card className="p-6 border-none shadow-sm bg-white space-y-4 mb-8">
-                   <div className="flex items-center justify-between">
+              <aside className="space-y-8">
+                <section>
+                  <h3 className="text-xl font-black mb-6 text-secondary tracking-tighter">Ecosystem Vitals</h3>
+                  <Card className="p-8 border-none shadow-xl bg-white space-y-6 rounded-[2rem]">
+                    <div className="flex items-center justify-between">
                       <div>
-                         <p className="text-sm font-bold text-secondary">Maintenance Mode</p>
-                         <p className="text-[10px] text-gray-400 font-medium">Block non-admin access</p>
+                        <p className="text-sm font-black text-secondary">Maintenance Mode</p>
+                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Seal ecosystem access</p>
                       </div>
                       <button 
-                        type="button"
                         onClick={handleToggleMaintenance}
-                        disabled={isUpdatingSettings}
-                        className={`w-12 h-6 rounded-full transition-all relative ${settings.maintenanceMode ? 'bg-red-500' : 'bg-gray-200'}`}
+                        className={`w-14 h-7 rounded-full transition-all relative p-1 ${settings.maintenanceMode ? 'bg-red-500 shadow-lg shadow-red-500/30' : 'bg-gray-200'}`}
                       >
-                         <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${settings.maintenanceMode ? 'right-1' : 'left-1'}`} />
+                         <div className={`w-5 h-5 rounded-full bg-white shadow-sm transition-all ${settings.maintenanceMode ? 'translate-x-7' : 'translate-x-0'}`} />
                       </button>
-                   </div>
-                   {settings.maintenanceMode && (
-                     <Badge variant="warning" className="w-full justify-center py-2">MAINTENANCE ACTIVE</Badge>
-                   )}
-                </Card>
-              </section>
+                    </div>
+                  </Card>
+                </section>
+              </aside>
+            </div>
+          </>
+        )}
 
-              <section>
-                <h3 className="text-xl font-bold mb-6 text-secondary">User Activity</h3>
-                <div className="space-y-4">
-                   {recentActivity.users.map(user => (
-                     <div key={user._id} className="flex items-center gap-4 bg-white p-4 rounded-custom border border-border shadow-sm">
-                        <div className="w-10 h-10 bg-primary/10 text-primary rounded-full flex items-center justify-center font-bold">
-                          {user.firstName[0]}
+        {activeTab === 'users' && (
+          <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="flex justify-between items-center mb-8">
+              <h3 className="text-2xl font-black text-secondary tracking-tighter">User Management Hub</h3>
+              <div className="relative">
+                <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input className="pl-12 pr-6 py-3 bg-white border border-gray-100 rounded-2xl w-80 shadow-sm outline-none focus:border-primary transition-all font-bold text-sm" placeholder="Search by name or email..." />
+              </div>
+            </div>
+            <div className="bg-white rounded-[2.5rem] border border-gray-100 overflow-hidden shadow-2xl shadow-blue-900/5">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="bg-gray-50/50 border-b border-gray-100">
+                    <th className="p-8 text-[10px] font-black text-gray-400 uppercase tracking-widest">Candidate / Client</th>
+                    <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Role</th>
+                    <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">AI Integrity</th>
+                    <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Status</th>
+                    <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {fullUsers.map(u => (
+                    <tr key={u._id} className="hover:bg-gray-50/80 transition-colors">
+                      <td className="p-8">
+                        <div className="flex items-center gap-4">
+                           <div className="w-12 h-12 rounded-2xl bg-secondary flex items-center justify-center text-white font-black">{u.firstName[0]}</div>
+                           <div>
+                             <p className="font-black text-secondary text-sm">{u.firstName} {u.lastName}</p>
+                             <p className="text-[10px] text-gray-400 font-bold tracking-tight">{u.email}</p>
+                           </div>
                         </div>
-                        <div>
-                           <p className="text-sm font-bold text-secondary">{user.firstName} {user.lastName}</p>
-                           <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{user.role}</p>
-                        </div>
-                     </div>
-                   ))}
+                      </td>
+                      <td className="p-4"><Badge variant="neutral" className="bg-gray-100 text-gray-500 border-none font-black text-[9px] uppercase">{u.role}</Badge></td>
+                      <td className="p-4">
+                         <div className="flex items-center gap-3">
+                           <div className="w-24 bg-gray-100 h-1.5 rounded-full overflow-hidden">
+                             <div className="bg-primary h-full" style={{ width: `${u.aiScore || 0}%` }} />
+                           </div>
+                           <span className="text-xs font-black text-secondary">{u.aiScore || 0}%</span>
+                         </div>
+                      </td>
+                      <td className="p-4">
+                         {u.isVerified ? 
+                           <Badge className="bg-green-100 text-green-700 border-none font-black text-[9px] uppercase">Verified Elite</Badge> : 
+                           <Badge className="bg-amber-100 text-amber-700 border-none font-black text-[9px] uppercase">Pending</Badge>
+                         }
+                      </td>
+                      <td className="p-4">
+                         <div className="flex gap-2">
+                           <Button onClick={() => navigate(`/profile/${u._id || u.id}`)} size="sm" variant="outline" className="text-[9px] font-black uppercase tracking-widest px-4 h-9">View Profile</Button>
+                           <Button size="sm" className="text-[9px] font-black uppercase tracking-widest px-4 h-9">Verify</Button>
+                         </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
+
+        {activeTab === 'audits' && (
+           <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="flex justify-between items-center mb-8">
+                <h3 className="text-2xl font-black text-secondary tracking-tighter">Proctoring Audit Vault</h3>
+                <Badge variant="primary">{fullAudits.length} Sessions Recorded</Badge>
+              </div>
+              <div className="bg-white rounded-[2.5rem] border border-gray-100 overflow-hidden shadow-2xl shadow-blue-900/5">
+                <table className="w-full text-left">
+                  <thead>
+                    <tr className="bg-gray-50/50 border-b border-gray-100">
+                      <th className="p-8 text-[10px] font-black text-gray-400 uppercase tracking-widest">Candidate</th>
+                      <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Assessment</th>
+                      <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Integrity Score</th>
+                      <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Status</th>
+                      <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50">
+                    {fullAudits.map(audit => (
+                      <tr key={audit._id} className="hover:bg-gray-50/80 transition-colors">
+                        <td className="p-8">
+                          <p className="font-black text-secondary text-sm">{audit.user?.firstName} {audit.user?.lastName}</p>
+                          <p className="text-[10px] text-gray-400 font-bold tracking-tight">{audit.user?.email}</p>
+                        </td>
+                        <td className="p-4">
+                           <p className="text-xs font-black text-secondary">{audit.assessment?.title || 'General Test'}</p>
+                           <Badge variant="neutral" className="bg-gray-100 border-none font-bold text-[8px] uppercase">{audit.assessment?.category}</Badge>
+                        </td>
+                        <td className="p-4">
+                           <div className="flex items-center gap-2">
+                             <div className={`w-3 h-3 rounded-full ${audit.score >= 80 ? 'bg-green-500' : 'bg-red-500'}`} />
+                             <span className="font-black text-secondary text-sm">{audit.score}%</span>
+                           </div>
+                        </td>
+                        <td className="p-4">
+                           <Badge className={audit.isPassed ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}>
+                             {audit.isPassed ? 'CLEARED' : 'FLAGGED'}
+                           </Badge>
+                        </td>
+                        <td className="p-4 text-xs font-bold text-gray-400">
+                          {new Date(audit.createdAt).toLocaleDateString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+           </section>
+        )}
+
+        {activeTab === 'finances' && (
+           <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="flex justify-between items-center mb-8">
+                <h3 className="text-2xl font-black text-secondary tracking-tighter">Financial Tracking Ledger</h3>
+                <div className="flex items-center gap-4">
+                  <div className="text-right">
+                    <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Total Platform Volume</p>
+                    <p className="text-xl font-black text-emerald-500 tracking-tight">₹{fullTransactions.reduce((acc, curr) => acc + (curr.amount || 0), 0).toLocaleString()}</p>
+                  </div>
+                  <Badge variant="primary">{fullTransactions.length} TXNS</Badge>
                 </div>
-              </section>
-           </aside>
-        </div>
+              </div>
+              <div className="bg-white rounded-[2.5rem] border border-gray-100 overflow-hidden shadow-2xl shadow-blue-900/5">
+                <table className="w-full text-left">
+                  <thead>
+                    <tr className="bg-gray-50/50 border-b border-gray-100">
+                      <th className="p-8 text-[10px] font-black text-gray-400 uppercase tracking-widest">Transaction ID</th>
+                      <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Amount</th>
+                      <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Client (Payer)</th>
+                      <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Expert (Payee)</th>
+                      <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50">
+                    {fullTransactions.map(txn => (
+                      <tr key={txn._id} className="hover:bg-gray-50/80 transition-colors">
+                        <td className="p-8">
+                          <p className="font-mono text-[10px] font-black text-primary bg-primary/5 px-3 py-1 rounded-full w-fit uppercase tracking-widest">
+                            TXN-{txn._id?.slice(-10).toUpperCase() || 'EXTERNAL'}
+                          </p>
+                          <p className="text-[10px] text-gray-400 font-bold mt-1 uppercase tracking-tight">{new Date(txn.date).toLocaleDateString()} {new Date(txn.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                        </td>
+                        <td className="p-4 font-black text-secondary text-lg">₹{txn.amount?.toLocaleString()}</td>
+                        <td className="p-4">
+                           <p className="text-sm font-black text-secondary">{txn.client?.firstName} {txn.client?.lastName}</p>
+                           <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{txn.client?.email}</p>
+                        </td>
+                        <td className="p-4">
+                           <p className="text-sm font-black text-secondary">{txn.professional?.firstName} {txn.professional?.lastName || 'N/A'}</p>
+                           <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{txn.professional?.email || 'N/A'}</p>
+                        </td>
+                        <td className="p-4">
+                           <Badge className="bg-emerald-100 text-emerald-700 border-none font-black text-[9px] uppercase tracking-widest">SUCCESSFUL</Badge>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+           </section>
+        )}
       </div>
     </DashboardLayout>
   );
@@ -189,6 +412,7 @@ export function CreateProctoringTest() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
+    reward: '',
     category: 'Technical',
     difficulty: 'Intermediate',
     duration: 60,
@@ -291,6 +515,38 @@ export function CreateProctoringTest() {
                   onChange={(e) => setFormData({...formData, title: e.target.value})}
                   className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-custom outline-none focus:bg-white focus:border-primary transition-all font-medium" 
                   placeholder="e.g. Fullstack Developer Assessment"
+                />
+              </div>
+              <div className="space-y-2 col-span-2">
+                <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Description</label>
+                <textarea 
+                  value={formData.description}
+                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-custom outline-none focus:bg-white focus:border-primary transition-all font-medium h-20 resize-none" 
+                  placeholder="Describe the skills this test validates..."
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Difficulty</label>
+                <select 
+                  value={formData.difficulty}
+                  onChange={(e) => setFormData({...formData, difficulty: e.target.value})}
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-custom outline-none focus:bg-white focus:border-primary transition-all font-medium"
+                >
+                  <option value="Entry">Entry</option>
+                  <option value="Intermediate">Intermediate</option>
+                  <option value="Senior">Senior</option>
+                  <option value="Expert">Expert</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Reward Badge Name</label>
+                <input 
+                  type="text" required
+                  value={formData.reward}
+                  onChange={(e) => setFormData({...formData, reward: e.target.value})}
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-custom outline-none focus:bg-white focus:border-primary transition-all font-medium" 
+                  placeholder="e.g. React Master Badge"
                 />
               </div>
               <div className="space-y-2">
