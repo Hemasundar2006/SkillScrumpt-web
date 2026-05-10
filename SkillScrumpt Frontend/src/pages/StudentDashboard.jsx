@@ -213,8 +213,10 @@ export function StudentDashboard() {
                     ? 'Your profile is live and visible to premium clients. Keep your AI score high to stay in the top 1%.' 
                     : 'Unlock high-paying projects and get noticed by top companies by completing your first AI assessment.'}
                 </p>
-                {!user?.isVerified && (
+                {!user?.isVerified ? (
                   <Button onClick={() => navigate('/assessments')} className="w-full bg-white text-primary hover:bg-white/90">Start Verification</Button>
+                ) : (
+                  <Button onClick={() => setShowUpgradeModal(true)} className="w-full bg-white/20 text-white border border-white/30 hover:bg-white/30 backdrop-blur-sm">Upgrade to Pro</Button>
                 )}
               </div>
             </Card>
@@ -223,6 +225,7 @@ export function StudentDashboard() {
           <section>
             <h3 className="text-xl font-bold text-secondary mb-6">Quick Actions</h3>
             <div className="space-y-3">
+              <QuickActionButton onClick={() => setShowUpgradeModal(true)} icon={Zap} label="Upgrade Account" />
               <QuickActionButton onClick={() => navigate('/assessments')} icon={Zap} label="Take Assessment" />
               <QuickActionButton onClick={() => navigate('/dashboard/student/projects')} icon={Briefcase} label="Find Work" />
               <QuickActionButton icon={Users} label="Refer a Friend" />
