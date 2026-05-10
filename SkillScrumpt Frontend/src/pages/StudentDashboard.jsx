@@ -17,6 +17,7 @@ import { Card, Badge, Button } from '../components/UI';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '../layout/DashboardLayout';
 import api from '../utils/api';
+import RazorpayPayment from '../components/RazorpayPayment';
 
 const UpgradeModal = ({ onClose }) => (
   <motion.div 
@@ -59,7 +60,18 @@ const UpgradeModal = ({ onClose }) => (
       </div>
       
       <div className="flex flex-col gap-3">
-        <Button className="w-full h-14 shadow-xl shadow-primary/20">View Pro Plans</Button>
+        <RazorpayPayment 
+          amount={49} 
+          buttonText="Upgrade to Pro (₹49)"
+          className="w-full h-14 shadow-xl shadow-primary/20 flex items-center justify-center"
+          onSuccess={(data) => {
+            alert('Payment Successful! Your account has been upgraded.');
+            onClose();
+          }}
+          onError={(error) => {
+            alert('Payment Failed: ' + error);
+          }}
+        />
         <button 
           onClick={onClose}
           className="w-full h-12 text-gray-400 font-bold hover:text-secondary transition-colors"
