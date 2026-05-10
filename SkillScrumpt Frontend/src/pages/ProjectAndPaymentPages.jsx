@@ -167,7 +167,24 @@ export function ProjectDetails() {
               </section>
 
               <div className="pt-10 flex gap-4">
-                  <Button onClick={() => navigate(`/projects/${id}/apply`)} className="h-14 px-12 text-lg">Apply for Project</Button>
+                  {(() => {
+                    const user = JSON.parse(localStorage.getItem('user') || '{}');
+                    if (user.isPro) {
+                      return <Button onClick={() => navigate(`/projects/${id}/apply`)} className="h-14 px-12 text-lg">Apply for Project</Button>;
+                    } else {
+                      return (
+                        <div className="flex flex-col gap-2">
+                          <Button 
+                            onClick={() => navigate(user.role === 'professional' ? '/dashboard/student' : '/dashboard/client', { state: { showUpgrade: true } })} 
+                            className="h-14 px-12 text-lg bg-primary/10 text-primary border-2 border-primary hover:bg-primary hover:text-white"
+                          >
+                            Upgrade to Apply
+                          </Button>
+                          <p className="text-[10px] font-black text-primary uppercase tracking-widest text-center">Pro Membership Required</p>
+                        </div>
+                      );
+                    }
+                  })()}
                   <Button variant="outline" className="h-14 px-10 text-lg">Save Project</Button>
               </div>
             </div>

@@ -119,10 +119,16 @@ export function DashboardLayout({ children, user }) {
             </button>
             <div className="flex items-center gap-3 pl-4 border-l border-border">
               <div className="text-right hidden sm:block mr-3">
-                <p className="text-sm font-bold text-secondary flex items-center gap-1 justify-end">
-                  {user?.firstName} {user?.lastName} {user?.isVerified && <BadgeCheck size={14} className="text-primary fill-primary/10" />}
+                <p className="text-sm font-bold text-secondary flex items-center gap-2 justify-end">
+                  {user?.firstName} {user?.lastName} 
+                  {user?.isPro && (
+                    <span className="px-2.5 py-1 bg-gradient-to-r from-amber-300 via-yellow-500 to-amber-600 text-secondary text-[10px] font-black rounded-lg shadow-[0_0_15px_rgba(245,158,11,0.3)] animate-pulse border border-white/20">PRO</span>
+                  )}
+                  {user?.isVerified && <BadgeCheck size={14} className="text-primary fill-primary/10" />}
                 </p>
-                <p className="text-xs font-bold text-primary">{user?.role === 'admin' ? 'Super Admin' : (user?.isVerified ? 'Verified Expert' : 'Standard Account')}</p>
+                <p className="text-xs font-bold text-primary">
+                  {user?.role === 'admin' ? 'Super Admin' : (user?.isPro ? 'Pro Member' : (user?.isVerified ? 'Verified Expert' : 'Standard Account'))}
+                </p>
               </div>
               <div className="w-10 h-10 bg-primary rounded-custom flex items-center justify-center text-white font-bold">
                 {user?.firstName?.[0]}{user?.lastName?.[0]}

@@ -175,10 +175,12 @@ export function Register() {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data));
 
+      const isUpgradeRequested = queryParams.get('upgrade') === 'true';
+      
       if (role === 'professional') {
-        navigate('/dashboard/student', { state: { showUpgrade: true } });
+        navigate('/dashboard/student', { state: { showUpgrade: isUpgradeRequested } });
       } else {
-        navigate('/dashboard/client');
+        navigate('/dashboard/client', { state: { showUpgrade: isUpgradeRequested } });
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed. Please check your information.');

@@ -109,7 +109,11 @@ export function LandingPage() {
         console.error('Error fetching pricing:', err);
       }
     };
+    
     fetchPricing();
+    const interval = setInterval(fetchPricing, 30000); // Poll every 30s for real-time slot updates
+    
+    return () => clearInterval(interval);
   }, []);
 
   const { scrollYProgress } = useScroll();
@@ -387,32 +391,59 @@ export function LandingPage() {
             <p className="text-gray-500 max-w-2xl mx-auto font-medium">Join the next generation of verified talent and unlock high-paying global opportunities.</p>
           </div>
 
-          <div className="max-w-4xl mx-auto">
-             <Card className="p-8 lg:p-12 border-2 border-primary/20 bg-white shadow-2xl rounded-[3rem] relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-32 -mt-32 group-hover:scale-150 transition-transform duration-1000" />
-                <div className="grid lg:grid-cols-2 gap-12 items-center relative z-10">
-                   <div>
-                      <div className="flex items-center gap-3 mb-6">
-                        <div className="w-12 h-12 bg-primary/10 text-primary rounded-2xl flex items-center justify-center"><Zap size={24} /></div>
-                        <h3 className="text-2xl font-black text-secondary">SkillScrumpt Pro</h3>
-                      </div>
-                      <ul className="space-y-4 mb-8">
-                        {['Verified Elite Status', 'AI Proctoring Priority', 'Direct Client Access', 'Zero Service Fees'].map((feature, i) => (
-                          <li key={i} className="flex items-center gap-3 text-sm font-bold text-gray-600">
-                            <CheckCircle size={18} className="text-green-500" /> {feature}
-                          </li>
-                        ))}
-                      </ul>
+          <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+             {/* Student Pro Card */}
+             <Card className="p-8 border-2 border-primary/20 bg-white shadow-2xl rounded-[3rem] relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full blur-3xl -mr-24 -mt-24 group-hover:scale-150 transition-transform duration-1000" />
+                <div className="relative z-10">
+                   <div className="flex items-center gap-3 mb-6">
+                     <div className="w-12 h-12 bg-primary/10 text-primary rounded-2xl flex items-center justify-center"><Zap size={24} /></div>
+                     <h3 className="text-2xl font-black text-secondary">Student Pro</h3>
                    </div>
-                   <div className="bg-gray-50 p-8 rounded-[2rem] text-center border border-gray-100">
-                      <p className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-2">Lifetime Access</p>
+                   <ul className="space-y-4 mb-8">
+                     {['Verified Elite Status', 'AI Proctoring Priority', 'Apply to Premium Projects', 'Zero Service Fees'].map((feature, i) => (
+                       <li key={i} className="flex items-center gap-3 text-sm font-bold text-gray-600">
+                         <CheckCircle size={18} className="text-green-500" /> {feature}
+                       </li>
+                     ))}
+                   </ul>
+                   <div className="bg-gray-50 p-6 rounded-[2rem] text-center border border-gray-100">
                       <div className="flex items-baseline justify-center gap-2 mb-2">
-                        <span className="text-5xl font-black text-secondary">₹{pricing.currentPrice}</span>
-                        {pricing.isPromoActive && <span className="text-lg text-gray-400 line-through font-bold">₹499</span>}
+                        <span className="text-4xl font-black text-secondary">₹{pricing.professionalPrice || pricing.currentPrice}</span>
+                        {pricing.isPromoActive && <span className="text-lg text-gray-400 line-through font-bold">₹69</span>}
                       </div>
-                      {pricing.isPromoActive && <p className="text-xs font-black text-green-600 uppercase tracking-widest mb-6">{pricing.remainingPromoSpots} Spots Left!</p>}
-                      <Button onClick={() => setShowUpgradeModal(true)} className="w-full h-14 text-lg shadow-xl shadow-primary/20 font-black">Upgrade Now</Button>
-                      <p className="mt-4 text-[10px] text-gray-400 font-medium">Secure payment via Razorpay</p>
+                      {pricing.isPromoActive && <p className="text-[10px] font-black text-green-600 uppercase tracking-widest mb-4">{pricing.remainingPromoSpots} Spots Left!</p>}
+                      <Link to={`/register?role=professional&upgrade=true`} className="block">
+                        <Button className="w-full h-12 text-sm shadow-xl shadow-primary/20 font-black">Get Student Pro</Button>
+                      </Link>
+                   </div>
+                </div>
+             </Card>
+
+             {/* Client Pro Card */}
+             <Card className="p-8 border-2 border-secondary/20 bg-white shadow-2xl rounded-[3rem] relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-48 h-48 bg-secondary/5 rounded-full blur-3xl -mr-24 -mt-24 group-hover:scale-150 transition-transform duration-1000" />
+                <div className="relative z-10">
+                   <div className="flex items-center gap-3 mb-6">
+                     <div className="w-12 h-12 bg-secondary/10 text-secondary rounded-2xl flex items-center justify-center"><Shield size={24} /></div>
+                     <h3 className="text-2xl font-black text-secondary">Client Pro</h3>
+                   </div>
+                   <ul className="space-y-4 mb-8">
+                     {['Elite Verified Talent', 'Priority Project Promotion', 'Direct Chat Access', 'Dedicated Support'].map((feature, i) => (
+                       <li key={i} className="flex items-center gap-3 text-sm font-bold text-gray-600">
+                         <CheckCircle size={18} className="text-blue-500" /> {feature}
+                       </li>
+                     ))}
+                   </ul>
+                   <div className="bg-gray-50 p-6 rounded-[2rem] text-center border border-gray-100">
+                      <div className="flex items-baseline justify-center gap-2 mb-2">
+                        <span className="text-4xl font-black text-secondary">₹{pricing.clientPrice || pricing.currentPrice}</span>
+                        {pricing.isPromoActive && <span className="text-lg text-gray-400 line-through font-bold">₹49</span>}
+                      </div>
+                      {pricing.isPromoActive && <p className="text-[10px] font-black text-green-600 uppercase tracking-widest mb-4">{pricing.remainingPromoSpots} Spots Left!</p>}
+                      <Link to={`/register?role=client&upgrade=true`} className="block">
+                        <Button variant="secondary" className="w-full h-12 text-sm shadow-xl shadow-secondary/20 font-black">Get Client Pro</Button>
+                      </Link>
                    </div>
                 </div>
              </Card>

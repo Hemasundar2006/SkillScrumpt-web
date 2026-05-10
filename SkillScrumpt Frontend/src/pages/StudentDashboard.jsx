@@ -20,18 +20,26 @@ import api from '../utils/api';
 import RazorpayPayment from '../components/RazorpayPayment';
 
 const UpgradeModal = ({ onClose }) => {
-  const [pricing, setPricing] = useState({ currentPrice: 49, isPromoActive: false, remainingPromoSpots: 0 });
+  const [pricing, setPricing] = useState({ currentPrice: 69, isPromoActive: false, remainingPromoSpots: 0 });
 
   useEffect(() => {
     const fetchPricing = async () => {
       try {
         const { data } = await api.get('/payments/pricing-info');
-        if (data.success) setPricing(data);
+        if (data.success) {
+          setPricing({
+            ...data,
+            currentPrice: data.professionalPrice || data.currentPrice
+          });
+        }
       } catch (err) {
         console.error('Error fetching pricing:', err);
       }
     };
+    
     fetchPricing();
+    const interval = setInterval(fetchPricing, 30000); // Poll for slot updates
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -84,8 +92,17 @@ const UpgradeModal = ({ onClose }) => {
           amount={pricing.currentPrice} 
           buttonText={`Upgrade to Pro (₹${pricing.currentPrice})`}
           className="w-full h-14 shadow-xl shadow-primary/20 flex items-center justify-center font-bold"
-          onSuccess={(data) => {
+          onSuccess={async (data) => {
             alert('Payment Successful! Your account has been upgraded.');
+            // Refetch user data to update Pro status globally
+            try {
+              const savedUser = JSON.parse(localStorage.getItem('user'));
+              const res = await api.get(`/users/profile/${savedUser._id || savedUser.id}`);
+              localStorage.setItem('user', JSON.stringify(res.data));
+              setUser(res.data);
+            } catch (err) {
+              console.error('Error refreshing user status:', err);
+            }
             onClose();
           }}
           onError={(error) => {
@@ -107,7 +124,7 @@ const UpgradeModal = ({ onClose }) => {
 export function StudentDashboard() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(location.state?.showUpgrade || false);
   const [user, setUser] = useState(null);
   const [projects, setProjects] = useState([]);
   const [assessments, setAssessments] = useState([]);

@@ -78,7 +78,10 @@ export function Navbar() {
               />
             </div>
             {token ? (
-              <Link to="/dashboard">
+              <Link to="/dashboard" className="flex items-center gap-3">
+                 {user?.isPro && (
+                   <span className="px-2.5 py-1 bg-gradient-to-r from-amber-300 via-yellow-500 to-amber-600 text-secondary text-[10px] font-black rounded-lg shadow-[0_0_15px_rgba(245,158,11,0.3)] animate-pulse border border-white/20">PRO</span>
+                 )}
                  <Button className="flex items-center gap-2 h-10 px-6 font-bold shadow-lg shadow-primary/20">
                     <User size={18} /> {user.role === 'admin' ? 'Admin Panel' : 'Dashboard'}
                  </Button>

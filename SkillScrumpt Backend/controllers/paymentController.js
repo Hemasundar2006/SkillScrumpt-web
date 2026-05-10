@@ -19,7 +19,17 @@ exports.createOrder = async (req, res) => {
 
     // Calculate price based on promotion: first 200 users get it for ₹1
     const proUserCount = await User.countDocuments({ isPro: true });
-    const amount = proUserCount < 200 ? 100 : 4900; // 100 paise = ₹1, 4900 paise = ₹49
+    let amount = 100; // Default to promo price (100 paise = ₹1)
+
+    if (proUserCount >= 200) {
+      // Find user to determine role-based price
+      const user = await User.findById(userId);
+      if (user && user.role === 'client') {
+        amount = 4900; // ₹49 for clients
+      } else {
+        amount = 6900; // ₹69 for professionals/default
+      }
+    }
 
     const options = {
       amount: amount, // amount in the smallest currency unit (paise)
@@ -118,7 +128,9 @@ exports.getPricingInfo = async (req, res) => {
     
     res.status(200).json({
       success: true,
-      currentPrice: isPromoActive ? 1 : 49,
+      currentPrice: isPromoActive ? 1 : 69, // Default to professional price
+      professionalPrice: isPromoActive ? 1 : 69,
+      clientPrice: isPromoActive ? 1 : 49,
       isPromoActive: isPromoActive,
       remainingPromoSpots: Math.max(0, limit - proUserCount),
       totalProUsers: proUserCount
