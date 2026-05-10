@@ -72,20 +72,20 @@ export function ProctoringOverlay({ userId, examId, onScoreChange }) {
                  initial={{ scale: 0.8, opacity: 0, y: 20 }}
                  animate={{ scale: 1, opacity: 1, y: 0 }}
                  exit={{ scale: 1.1, opacity: 0 }}
-                 className="relative bg-white/90 backdrop-blur-2xl p-8 rounded-[40px] shadow-[0_0_100px_rgba(239,68,68,0.4)] border-4 flex flex-col items-center text-center max-w-md w-full"
+                 className="relative bg-white/95 backdrop-blur-3xl p-10 rounded-[3rem] shadow-[0_0_150px_rgba(239,68,68,0.5)] border-8 flex flex-col items-center text-center max-w-lg w-full pointer-events-auto"
                  style={{ borderColor: colors.border }}
                >
-                 <div className="w-20 h-20 rounded-full flex items-center justify-center text-5xl mb-6 animate-bounce" style={{ backgroundColor: `${colors.border}22` }}>
+                 <div className="w-24 h-24 rounded-full flex items-center justify-center text-6xl mb-8 animate-bounce" style={{ backgroundColor: `${colors.border}22` }}>
                    {colors.icon}
                  </div>
-                 <h2 className="text-2xl font-black uppercase tracking-tighter mb-2" style={{ color: colors.text }}>
-                   Suspicious Activity
+                 <h2 className="text-3xl font-black uppercase tracking-tighter mb-4" style={{ color: colors.text }}>
+                   Critical Security Warning
                  </h2>
-                 <p className="text-lg font-bold text-secondary leading-tight">
+                 <p className="text-xl font-bold text-secondary leading-tight mb-6">
                    {alert.message}
                  </p>
-                 <div className="mt-6 px-4 py-2 bg-red-500 text-white rounded-full text-[10px] font-black uppercase tracking-widest animate-pulse">
-                   Deduction Recorded
+                 <div className="px-6 py-3 bg-red-500 text-white rounded-full text-xs font-black uppercase tracking-[0.2em] animate-pulse">
+                   Automatic Termination Initiated
                  </div>
                </motion.div>
              )

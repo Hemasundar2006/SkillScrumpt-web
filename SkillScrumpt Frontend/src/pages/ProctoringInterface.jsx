@@ -78,6 +78,15 @@ export function AIProctoringInterface() {
     }
   });
 
+  // Watch for critical violations to auto-terminate test
+  useEffect(() => {
+    const criticalViolation = violations.find(v => v.severity === 'critical');
+    if (criticalViolation && isActive) {
+      console.warn("CRITICAL VIOLATION DETECTED: TERMINATING SESSION", criticalViolation);
+      handleFinish();
+    }
+  }, [violations, isActive]);
+
   // Generate 20 MCQs and 1 Coding Question
   const questions = [
     ...Array.from({ length: 20 }, (_, i) => ({
@@ -317,19 +326,12 @@ export function AIProctoringInterface() {
                                 setIsRunning(true);
                                 setConsoleOutput("Compiling and executing...");
                                 try {
-                                  const response = await fetch('https://api.onlinecompiler.io/api/run-code-sync/', {
-                                    method: 'POST',
-                                    headers: {
-                                      'Authorization': 'd84ad1b74006567a756e106544b35896',
-                                      'Content-Type': 'application/json'
-                                    },
-                                    body: JSON.stringify({
-                                      compiler: 'nodejs20',
-                                      code: answers[currentQuestionIdx] || currentQuestion.initialCode,
-                                      input: ''
-                                    })
+                                  const response = await api.post('/compiler/run', {
+                                    compiler: 'nodejs20',
+                                    code: answers[currentQuestionIdx] || currentQuestion.initialCode,
+                                    input: ''
                                   });
-                                  const data = await response.json();
+                                  const data = response.data;
                                   setConsoleOutput(data.output || data.error || "Program executed with no output.");
                                 } catch (err) {
                                   setConsoleOutput("Execution Error: " + err.message);

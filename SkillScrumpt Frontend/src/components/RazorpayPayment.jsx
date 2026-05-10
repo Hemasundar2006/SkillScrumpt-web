@@ -90,7 +90,26 @@ const RazorpayPayment = ({
           address: 'SkillScrumpt Corporate Office'
         },
         theme: {
-          color: '#6366f1' // Indigo-500
+          color: '#146ef5' // Matching SkillScrumpt Primary Blue
+        },
+        // UPI Specific Configuration
+        config: {
+          display: {
+            blocks: {
+              upi: {
+                name: 'Pay via UPI',
+                instruments: [
+                  {
+                    method: 'upi'
+                  }
+                ]
+              }
+            },
+            sequence: ['block.upi', 'block.card'],
+            preferences: {
+              show_default_blocks: true
+            }
+          }
         },
         modal: {
           ondismiss: () => {
