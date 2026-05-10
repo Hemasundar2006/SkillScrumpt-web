@@ -29,6 +29,9 @@ const RazorpayPayment = ({
     setLoading(true);
 
     try {
+      const user = JSON.parse(localStorage.getItem('user'));
+      const userId = user?._id || user?.id;
+
       // Load Razorpay script if not already loaded
       if (!window.Razorpay) {
         const res = await loadScript('https://checkout.razorpay.com/v1/checkout.js');
@@ -39,7 +42,7 @@ const RazorpayPayment = ({
 
       // 1. Create order on the backend
       const { data } = await api.post('/payments/create-order', {
-        amount: amount * 100, // Razorpay expects amount in paise
+        userId: userId,
         currency: currency
       });
 
@@ -62,6 +65,7 @@ const RazorpayPayment = ({
           // 3. Verify payment on the backend
           try {
             const verificationRes = await api.post('/payments/verify-payment', {
+              userId: userId,
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature

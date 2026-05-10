@@ -19,8 +19,23 @@ import { DashboardLayout } from '../layout/DashboardLayout';
 import api from '../utils/api';
 import RazorpayPayment from '../components/RazorpayPayment';
 
-const UpgradeModal = ({ onClose }) => (
-  <motion.div 
+const UpgradeModal = ({ onClose }) => {
+  const [pricing, setPricing] = useState({ currentPrice: 49, isPromoActive: false, remainingPromoSpots: 0 });
+
+  useEffect(() => {
+    const fetchPricing = async () => {
+      try {
+        const { data } = await api.get('/payments/pricing-info');
+        if (data.success) setPricing(data);
+      } catch (err) {
+        console.error('Error fetching pricing:', err);
+      }
+    };
+    fetchPricing();
+  }, []);
+
+  return (
+    <motion.div 
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     exit={{ opacity: 0 }}
@@ -40,6 +55,11 @@ const UpgradeModal = ({ onClose }) => (
       
       <div className="text-center mb-8">
         <h3 className="text-2xl font-black text-secondary mb-2">Upgrade Your Plan</h3>
+        {pricing.isPromoActive ? (
+          <div className="inline-block px-4 py-1 bg-green-100 text-green-700 text-[10px] font-black uppercase tracking-widest rounded-full mb-4 animate-pulse">
+            Early Bird Offer: ₹1 for first 200 users! ({pricing.remainingPromoSpots} spots left)
+          </div>
+        ) : null}
         <p className="text-gray-500 font-medium text-sm">
           Welcome to the professional ecosystem! To access premium assessments and higher-paying projects, consider upgrading your student account.
         </p>
@@ -61,9 +81,9 @@ const UpgradeModal = ({ onClose }) => (
       
       <div className="flex flex-col gap-3">
         <RazorpayPayment 
-          amount={49} 
-          buttonText="Upgrade to Pro (₹49)"
-          className="w-full h-14 shadow-xl shadow-primary/20 flex items-center justify-center"
+          amount={pricing.currentPrice} 
+          buttonText={`Upgrade to Pro (₹${pricing.currentPrice})`}
+          className="w-full h-14 shadow-xl shadow-primary/20 flex items-center justify-center font-bold"
           onSuccess={(data) => {
             alert('Payment Successful! Your account has been upgraded.');
             onClose();
@@ -81,7 +101,8 @@ const UpgradeModal = ({ onClose }) => (
       </div>
     </motion.div>
   </motion.div>
-);
+  );
+};
 
 export function StudentDashboard() {
   const location = useLocation();

@@ -14,8 +14,23 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Zap, CheckCircle } from 'lucide-react';
 import RazorpayPayment from '../components/RazorpayPayment';
 
-const UpgradeModal = ({ onClose }) => (
-  <motion.div 
+const UpgradeModal = ({ onClose }) => {
+  const [pricing, setPricing] = useState({ currentPrice: 49, isPromoActive: false, remainingPromoSpots: 0 });
+
+  useEffect(() => {
+    const fetchPricing = async () => {
+      try {
+        const { data } = await api.get('/payments/pricing-info');
+        if (data.success) setPricing(data);
+      } catch (err) {
+        console.error('Error fetching pricing:', err);
+      }
+    };
+    fetchPricing();
+  }, []);
+
+  return (
+    <motion.div 
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     exit={{ opacity: 0 }}
@@ -35,6 +50,11 @@ const UpgradeModal = ({ onClose }) => (
       
       <div className="text-center mb-8">
         <h3 className="text-2xl font-black text-secondary mb-2">Upgrade to Client Pro</h3>
+        {pricing.isPromoActive ? (
+          <div className="inline-block px-4 py-1 bg-green-100 text-green-700 text-[10px] font-black uppercase tracking-widest rounded-full mb-4 animate-pulse">
+            Early Bird Offer: ₹1 for first 200 users! ({pricing.remainingPromoSpots} spots left)
+          </div>
+        ) : null}
         <p className="text-gray-500 font-medium text-sm">
           Hire the top 1% of AI-verified talent faster. Upgrade your employer account to unlock premium features and priority support.
         </p>
@@ -56,9 +76,9 @@ const UpgradeModal = ({ onClose }) => (
       
       <div className="flex flex-col gap-3">
         <RazorpayPayment 
-          amount={49} 
-          buttonText="Upgrade to Pro (₹49)"
-          className="w-full h-14 shadow-xl shadow-primary/20 flex items-center justify-center"
+          amount={pricing.currentPrice} 
+          buttonText={`Upgrade to Pro (₹${pricing.currentPrice})`}
+          className="w-full h-14 shadow-xl shadow-primary/20 flex items-center justify-center font-bold"
           onSuccess={(data) => {
             alert('Payment Successful! Your client account has been upgraded to Pro.');
             onClose();
@@ -76,7 +96,8 @@ const UpgradeModal = ({ onClose }) => (
       </div>
     </motion.div>
   </motion.div>
-);
+  );
+};
 
 export function ClientDashboard() {
   const navigate = useNavigate();
@@ -176,7 +197,7 @@ export function ClientDashboard() {
             <div className="relative z-10">
               <h4 className="text-xl font-bold mb-2">Get Client Pro</h4>
               <p className="text-white/70 text-xs mb-4 leading-relaxed">
-                Unlock elite verified talent and get 24/7 support for only ₹49.
+                Unlock elite verified talent and get 24/7 support.
               </p>
               <Button onClick={() => setShowUpgradeModal(true)} className="w-full bg-white text-primary hover:bg-white/90 text-sm py-2">Upgrade Now</Button>
             </div>

@@ -29,7 +29,10 @@ const userSchema = new mongoose.Schema({
   
   // Client specific fields
   totalSpent: { type: Number, default: 0 },
-  activeContractsCount: { type: Number, default: 0 }
+  activeContractsCount: { type: Number, default: 0 },
+  
+  // Subscription status
+  isPro: { type: Boolean, default: false }
 }, { timestamps: true });
 
 userSchema.pre('save', async function(next) {

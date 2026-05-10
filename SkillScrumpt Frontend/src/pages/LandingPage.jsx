@@ -1,9 +1,80 @@
-import React from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import api from '../utils/api';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { Shield, CheckCircle, BadgeCheck, Globe, Zap, Users, ArrowRight, Play, Star, Monitor, Clock, Mail, Lock, Target, GraduationCap } from 'lucide-react';
 import { Button, Card, Badge, GlassContainer } from '../components/UI';
 import { Link } from 'react-router-dom';
 import { ParticleBackground } from '../components/ParticleBackground';
+import RazorpayPayment from '../components/RazorpayPayment';
+
+const UpgradeModal = ({ onClose, pricing }) => (
+  <motion.div 
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-secondary/80 backdrop-blur-md"
+  >
+    <motion.div 
+      initial={{ scale: 0.9, y: 20 }}
+      animate={{ scale: 1, y: 0 }}
+      exit={{ scale: 0.9, y: 20 }}
+      className="max-w-md w-full bg-white rounded-[2rem] p-10 shadow-2xl relative overflow-hidden"
+    >
+      <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary to-blue-400" />
+      
+      <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-6 mx-auto">
+        <Zap size={32} />
+      </div>
+      
+      <div className="text-center mb-8">
+        <h3 className="text-2xl font-black text-secondary mb-2">Upgrade to Pro</h3>
+        {pricing.isPromoActive ? (
+          <div className="inline-block px-4 py-1 bg-green-100 text-green-700 text-[10px] font-black uppercase tracking-widest rounded-full mb-4 animate-pulse">
+            Early Bird Offer: ₹1 for first 200 users! ({pricing.remainingPromoSpots} spots left)
+          </div>
+        ) : null}
+        <p className="text-gray-500 font-medium text-sm text-secondary">
+          Join the elite 1% of talent. Get verified, get noticed, and get paid.
+        </p>
+      </div>
+      
+      <div className="space-y-3 mb-8">
+        {[
+          'Priority Assessment Access',
+          'Exclusive Pro Badge',
+          'Zero Commission Projects',
+          'Premium Support'
+        ].map((feature, i) => (
+          <div key={i} className="flex items-center gap-3 text-sm font-bold text-gray-700">
+            <CheckCircle size={16} className="text-green-500" />
+            {feature}
+          </div>
+        ))}
+      </div>
+      
+      <div className="flex flex-col gap-3">
+        <RazorpayPayment 
+          amount={pricing.currentPrice} 
+          buttonText={`Pay ₹${pricing.currentPrice} & Upgrade`}
+          className="w-full h-14 shadow-xl shadow-primary/20 flex items-center justify-center font-bold"
+          onSuccess={(data) => {
+            alert('Payment Successful! Please log in to see your Pro status.');
+            onClose();
+          }}
+          onError={(error) => {
+            alert('Payment Failed: ' + error);
+          }}
+        />
+        <button 
+          onClick={onClose}
+          className="w-full h-12 text-gray-400 font-bold hover:text-secondary transition-colors"
+        >
+          Maybe Later
+        </button>
+      </div>
+    </motion.div>
+  </motion.div>
+);
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -26,6 +97,21 @@ const StatItem = ({ label, value }) => (
 );
 
 export function LandingPage() {
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [pricing, setPricing] = useState({ currentPrice: 49, isPromoActive: false, remainingPromoSpots: 0 });
+
+  useEffect(() => {
+    const fetchPricing = async () => {
+      try {
+        const { data } = await api.get('/payments/pricing-info');
+        if (data.success) setPricing(data);
+      } catch (err) {
+        console.error('Error fetching pricing:', err);
+      }
+    };
+    fetchPricing();
+  }, []);
+
   const { scrollYProgress } = useScroll();
   const rotateX = useTransform(scrollYProgress, [0, 0.2], [0, 5]);
   const scale = useTransform(scrollYProgress, [0, 0.2], [1, 0.95]);
@@ -244,7 +330,6 @@ export function LandingPage() {
 
       {/* Why SkillScrumpt - Core USPs */}
       <section className="py-32 bg-[#0a0e1a] text-white relative overflow-hidden">
-        {/* Background elements */}
         <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary rounded-full blur-[120px]" />
           <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-600 rounded-full blur-[120px]" />
@@ -264,42 +349,12 @@ export function LandingPage() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <USPCard 
-              icon={Shield} 
-              title="AI Proctoring" 
-              desc="Desktop-only assessments with webcam feed and tab-switch detection for 100% integrity."
-              badge="Security"
-            />
-            <USPCard 
-              icon={Clock} 
-              title="48h Cooling Period" 
-              desc="Forced improvement periods between test attempts to prevent brute-force retrying."
-              badge="Quality"
-            />
-            <USPCard 
-              icon={Mail} 
-              title="College Verification" 
-              desc="Mandatory .edu or college-domain email verification for all student accounts."
-              badge="Authenticity"
-            />
-            <USPCard 
-              icon={BadgeCheck} 
-              title="Verified Badges" 
-              desc="Earned only after scoring 70%+ on proctored tests. Displayed everywhere."
-              badge="Reputation"
-            />
-            <USPCard 
-              icon={Lock} 
-              title="Post-Payment Chat" 
-              desc="Chat unlocks only after payment, preventing off-platform hiring and protecting the model."
-              badge="Business"
-            />
-            <USPCard 
-              icon={Target} 
-              title="Skill-Matched Feed" 
-              desc="Students see projects matching their verified skills, improving bid quality and results."
-              badge="Efficiency"
-            />
+            <USPCard icon={Shield} title="AI Proctoring" desc="Desktop-only assessments with webcam feed and tab-switch detection for 100% integrity." badge="Security" />
+            <USPCard icon={Clock} title="48h Cooling Period" desc="Forced improvement periods between test attempts to prevent brute-force retrying." badge="Quality" />
+            <USPCard icon={Mail} title="College Verification" desc="Mandatory .edu or college-domain email verification for all student accounts." badge="Authenticity" />
+            <USPCard icon={BadgeCheck} title="Verified Badges" desc="Earned only after scoring 70%+ on proctored tests. Displayed everywhere." badge="Reputation" />
+            <USPCard icon={Lock} title="Post-Payment Chat" desc="Chat unlocks only after payment, preventing off-platform hiring and protecting the model." badge="Business" />
+            <USPCard icon={Target} title="Skill-Matched Feed" desc="Students see projects matching their verified skills, improving bid quality and results." badge="Efficiency" />
           </div>
         </div>
       </section>
@@ -311,23 +366,56 @@ export function LandingPage() {
             <h2 className="text-4xl font-bold text-secondary mb-4">What Our Users Say</h2>
             <p className="text-gray-500 max-w-2xl mx-auto">Join thousands of students and clients who have found success on SkillScrumpt.</p>
           </div>
-
           <div className="grid md:grid-cols-3 gap-8">
-            <TestimonialCard 
-              text="SkillScrumpt helped me land a high-paying freelance gig at a top tech company. The verification process is tough, but it really sets you apart."
-              author="Sarah Jenkins"
-              role="Fullstack Developer"
-            />
-            <TestimonialCard 
-              text="As a client, I love the peace of mind knowing that the talent I hire is actually as good as they say they are. The proctored test results don't lie."
-              author="Michael Chen"
-              role="Startup Founder"
-            />
-            <TestimonialCard 
-              text="The zero brokerage model is a game-changer. I get to keep 100% of what I earn, which is a huge motivator."
-              author="David Miller"
-              role="UI/UX Designer"
-            />
+            <TestimonialCard text="SkillScrumpt helped me land a high-paying freelance gig at a top tech company. The verification process is tough, but it really sets you apart." author="Sarah Jenkins" role="Fullstack Developer" />
+            <TestimonialCard text="As a client, I love the peace of mind knowing that the talent I hire is actually as good as they say they are. The proctored test results don't lie." author="Michael Chen" role="Startup Founder" />
+            <TestimonialCard text="The zero brokerage model is a game-changer. I get to keep 100% of what I earn, which is a huge motivator." author="David Miller" role="UI/UX Designer" />
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing/Upgrade Section */}
+      <section className="py-24 bg-white relative">
+        <AnimatePresence>
+          {showUpgradeModal && <UpgradeModal onClose={() => setShowUpgradeModal(false)} pricing={pricing} />}
+        </AnimatePresence>
+
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <Badge variant="primary" className="mb-4 bg-primary/10 text-primary border-none">Limited Time Offer</Badge>
+            <h2 className="text-4xl lg:text-5xl font-black text-secondary mb-4 tracking-tight">Become a Pro Member</h2>
+            <p className="text-gray-500 max-w-2xl mx-auto font-medium">Join the next generation of verified talent and unlock high-paying global opportunities.</p>
+          </div>
+
+          <div className="max-w-4xl mx-auto">
+             <Card className="p-8 lg:p-12 border-2 border-primary/20 bg-white shadow-2xl rounded-[3rem] relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-32 -mt-32 group-hover:scale-150 transition-transform duration-1000" />
+                <div className="grid lg:grid-cols-2 gap-12 items-center relative z-10">
+                   <div>
+                      <div className="flex items-center gap-3 mb-6">
+                        <div className="w-12 h-12 bg-primary/10 text-primary rounded-2xl flex items-center justify-center"><Zap size={24} /></div>
+                        <h3 className="text-2xl font-black text-secondary">SkillScrumpt Pro</h3>
+                      </div>
+                      <ul className="space-y-4 mb-8">
+                        {['Verified Elite Status', 'AI Proctoring Priority', 'Direct Client Access', 'Zero Service Fees'].map((feature, i) => (
+                          <li key={i} className="flex items-center gap-3 text-sm font-bold text-gray-600">
+                            <CheckCircle size={18} className="text-green-500" /> {feature}
+                          </li>
+                        ))}
+                      </ul>
+                   </div>
+                   <div className="bg-gray-50 p-8 rounded-[2rem] text-center border border-gray-100">
+                      <p className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-2">Lifetime Access</p>
+                      <div className="flex items-baseline justify-center gap-2 mb-2">
+                        <span className="text-5xl font-black text-secondary">₹{pricing.currentPrice}</span>
+                        {pricing.isPromoActive && <span className="text-lg text-gray-400 line-through font-bold">₹499</span>}
+                      </div>
+                      {pricing.isPromoActive && <p className="text-xs font-black text-green-600 uppercase tracking-widest mb-6">{pricing.remainingPromoSpots} Spots Left!</p>}
+                      <Button onClick={() => setShowUpgradeModal(true)} className="w-full h-14 text-lg shadow-xl shadow-primary/20 font-black">Upgrade Now</Button>
+                      <p className="mt-4 text-[10px] text-gray-400 font-medium">Secure payment via Razorpay</p>
+                   </div>
+                </div>
+             </Card>
           </div>
         </div>
       </section>

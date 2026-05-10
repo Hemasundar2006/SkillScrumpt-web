@@ -1,5 +1,6 @@
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
+const User = require('../models/User');
 
 // Initialize Razorpay
 const razorpay = new Razorpay({
@@ -14,14 +15,11 @@ const razorpay = new Razorpay({
  */
 exports.createOrder = async (req, res) => {
   try {
-    const { amount, currency = 'INR', receipt = 'receipt_' + Date.now() } = req.body;
+    const { currency = 'INR', receipt = 'receipt_' + Date.now(), userId } = req.body;
 
-    if (!amount || amount < 100) {
-      return res.status(400).json({
-        success: false,
-        message: 'Amount must be at least 100 paise (₹1)',
-      });
-    }
+    // Calculate price based on promotion: first 200 users get it for ₹1
+    const proUserCount = await User.countDocuments({ isPro: true });
+    const amount = proUserCount < 200 ? 100 : 4900; // 100 paise = ₹1, 4900 paise = ₹49
 
     const options = {
       amount: amount, // amount in the smallest currency unit (paise)
@@ -79,10 +77,16 @@ exports.verifyPayment = async (req, res) => {
 
     if (expectedSignature === razorpay_signature) {
       // Signature matches - Payment is successful
-      // Here you would typically update the user's subscription status or mark an invoice as paid
+      
+      // Update user to Pro status if userId is provided
+      const { userId } = req.body;
+      if (userId) {
+        await User.findByIdAndUpdate(userId, { isPro: true });
+      }
+
       res.status(200).json({
         success: true,
-        message: 'Payment verified successfully',
+        message: 'Payment verified successfully and account upgraded to Pro',
       });
     } else {
       // Signature mismatch
@@ -97,6 +101,33 @@ exports.verifyPayment = async (req, res) => {
       success: false,
       message: 'Internal Server Error',
       error: error.message,
+    });
+  }
+};
+
+/**
+ * @desc    Get current pricing info for Pro upgrade
+ * @route   GET /api/v1/payments/pricing-info
+ * @access  Public
+ */
+exports.getPricingInfo = async (req, res) => {
+  try {
+    const proUserCount = await User.countDocuments({ isPro: true });
+    const limit = 200;
+    const isPromoActive = proUserCount < limit;
+    
+    res.status(200).json({
+      success: true,
+      currentPrice: isPromoActive ? 1 : 49,
+      isPromoActive: isPromoActive,
+      remainingPromoSpots: Math.max(0, limit - proUserCount),
+      totalProUsers: proUserCount
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching pricing info',
+      error: error.message
     });
   }
 };
