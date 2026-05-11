@@ -15,7 +15,8 @@ import {
   Check,
   CheckCircle,
   Cpu,
-  Lock
+  Lock,
+  Zap
 } from 'lucide-react';
 import { Button, Card, Badge } from '../components/UI';
 import { Link, useLocation } from 'react-router-dom';

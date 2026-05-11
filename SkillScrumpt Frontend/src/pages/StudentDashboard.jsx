@@ -97,6 +97,7 @@ export function StudentDashboard() {
   const [user, setUser] = useState(null);
   const [projects, setProjects] = useState([]);
   const [assessments, setAssessments] = useState([]);
+  const [testHistory, setTestHistory] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -110,14 +111,16 @@ export function StudentDashboard() {
     setIsLoading(true);
     try {
       const savedUser = JSON.parse(localStorage.getItem('user'));
-      const [profileRes, projectsRes, assessmentsRes] = await Promise.all([
+      const [profileRes, projectsRes, assessmentsRes, historyRes] = await Promise.all([
         api.get(`/users/profile/${savedUser._id || savedUser.id}`),
         api.get('/projects'),
-        api.get('/assessments')
+        api.get('/assessments'),
+        api.get('/assessments/my-results')
       ]);
 
       setUser(profileRes.data);
       setProjects(projectsRes.data.slice(0, 3)); 
+      setTestHistory(historyRes.data);
       
       const challengePresets = [
         { _id: 'ai-01', title: 'Python AI Specialist', duration: 90, difficulty: 'Expert', reward: 'Neural Network Badge', icon: Code },
@@ -254,6 +257,36 @@ export function StudentDashboard() {
                 )) : (
                   <div className="py-12 text-center rounded-2xl bg-slate-50 border border-slate-100">
                     <p className="text-slate-500 text-sm font-medium">No projects available matching your skill profile.</p>
+                  </div>
+                )}
+              </div>
+            </motion.section>
+
+            {/* Assessment History - Wide Bento Card */}
+            <motion.section
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.9 }}
+              className="bg-white rounded-[2rem] p-8 shadow-sm border border-slate-100"
+            >
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                  <Clock className="text-indigo-600" /> Assessment History
+                </h3>
+              </div>
+              <div className="space-y-4">
+                {testHistory.length > 0 ? testHistory.map((history, i) => (
+                  <HistoryRow 
+                    key={history._id}
+                    title={history.assessment?.title || 'General Assessment'} 
+                    score={history.score} 
+                    status={history.status} 
+                    date={new Date(history.createdAt).toLocaleDateString()}
+                    delay={1.0 + (i * 0.1)}
+                  />
+                )) : (
+                  <div className="py-12 text-center rounded-2xl bg-slate-50 border border-slate-100">
+                    <p className="text-slate-500 text-sm font-medium">No assessment history recorded yet.</p>
                   </div>
                 )}
               </div>
@@ -400,6 +433,37 @@ function AssessmentCard({ title, duration, difficulty, reward, icon: Icon = Zap,
       >
         Initialize Test
       </button>
+    </motion.div>
+  );
+}
+
+function HistoryRow({ title, score, status, date, delay }) {
+  return (
+    <motion.div 
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay }}
+      className="p-4 bg-slate-50 border border-slate-100 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-slate-200 transition-all group"
+    >
+      <div className="flex items-center gap-4">
+        <div className="w-12 h-12 bg-white text-indigo-600 rounded-2xl flex items-center justify-center font-bold text-lg shadow-sm">
+          {title[0].toUpperCase()}
+        </div>
+        <div>
+          <h4 className="font-bold text-slate-900 mb-0.5">{title}</h4>
+          <p className="text-xs text-slate-500 font-medium">Attempted on {date}</p>
+        </div>
+      </div>
+      
+      <div className="flex items-center gap-6">
+        <div className="text-right">
+          <p className={`text-base font-bold ${status === 'passed' ? 'text-emerald-600' : 'text-red-500'}`}>
+            {score}%
+          </p>
+          <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{status}</p>
+        </div>
+        <div className={`w-2 h-2 rounded-full ${status === 'passed' ? 'bg-emerald-500' : 'bg-red-500'}`} />
+      </div>
     </motion.div>
   );
 }

@@ -145,6 +145,19 @@ exports.submitResult = async (req, res) => {
   }
 };
 
+// @desc    Get current user's assessment results
+// @route   GET /api/v1/assessments/my-results
+exports.getMyResults = async (req, res) => {
+  try {
+    const results = await AssessmentResult.find({ user: req.user._id })
+      .populate('assessment', 'title category difficulty')
+      .sort('-createdAt');
+    res.json(results);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Simple simulation of AI logic as fallback
 function calculateCheatingProbability(logs) {
   if (!logs || logs.length === 0) return 0.05;
