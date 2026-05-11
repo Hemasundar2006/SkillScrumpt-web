@@ -23,10 +23,10 @@ const SectionReveal = ({ children, className, id }) => (
   </motion.div>
 );
 
-const Marquee = ({ children, reverse = false, vertical = false, speed = 30 }) => (
-  <div className={`overflow-hidden ${vertical ? 'h-[250px] md:h-[400px] relative before:absolute before:inset-0 before:bg-gradient-to-b before:from-black before:via-transparent before:to-black before:z-10' : 'whitespace-nowrap py-10 border-y border-white/10'}`}>
+const Marquee = ({ children, reverse = false, vertical = false, verticalReverse = false, speed = 30 }) => (
+  <div className={`overflow-hidden ${vertical ? 'h-[250px] md:h-[600px] relative before:absolute before:inset-0 before:bg-gradient-to-b before:from-black before:via-transparent before:to-black before:z-10' : 'whitespace-nowrap py-10 border-y border-white/10'}`}>
     <div 
-      className={vertical ? "marquee-content-vertical" : (reverse ? "marquee-content-reverse" : "marquee-content")}
+      className={vertical ? (verticalReverse ? "marquee-content-vertical-reverse" : "marquee-content-vertical") : (reverse ? "marquee-content-reverse" : "marquee-content")}
       style={{ animationDuration: `${speed}s` }}
     >
       {children}
@@ -76,6 +76,12 @@ export function LandingPage() {
     clients: "1200+",
     hired: "45k+"
   });
+  const [feedbacks, setFeedbacks] = useState([
+    { user: { firstName: "Sarah", lastName: "Jenkins", role: "professional" }, text: "SkillScrumpt.in helped me land a high-paying freelance gig at a top tech company. The verification process is tough, but it really sets you apart.", createdAt: "2024-07-31" },
+    { user: { firstName: "Michael", lastName: "Chen", role: "client" }, text: "As a client, I love the peace of mind knowing that the talent I hire is actually as good as they say they are. The proctored test results don't lie.", createdAt: "2024-08-15" },
+    { user: { firstName: "David", lastName: "Miller", role: "professional" }, text: "The zero brokerage model is a game-changer. I get to keep 100% of what I earn, which is a huge motivator.", createdAt: "2024-09-02" },
+    { user: { firstName: "Aria", lastName: "Gupta", role: "professional" }, text: "Finally a platform that values actual skills over bidding wars. The proctoring system ensures only the best rise to the top.", createdAt: "2024-09-10" }
+  ]);
   
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -95,6 +101,21 @@ export function LandingPage() {
         }
       })
       .catch(err => console.error("Could not fetch stats", err));
+
+    // Fetch real feedbacks
+    fetch('http://localhost:5000/api/v1/users/feedbacks')
+      .then(res => res.json())
+      .then(data => {
+        if(data && Array.isArray(data) && data.length > 0) {
+          // If we have less than 4, append defaults to make it scroll nicely
+          if (data.length < 4) {
+            setFeedbacks([...data, ...feedbacks.slice(0, 4 - data.length)]);
+          } else {
+            setFeedbacks(data);
+          }
+        }
+      })
+      .catch(err => console.error("Could not fetch feedbacks", err));
 
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -447,31 +468,55 @@ export function LandingPage() {
           <h2 className="text-4xl md:text-6xl font-black">Trusted by Professionals.</h2>
         </div>
 
-        <Marquee speed={40} reverse={true}>
-          <div className="flex gap-6 px-6">
-            {[
-              { name: "Sarah Jenkins", role: "Fullstack Developer", text: "SkillScrumpt.in helped me land a high-paying freelance gig at a top tech company. The verification process is tough, but it really sets you apart." },
-              { name: "Michael Chen", role: "Startup Founder", text: "As a client, I love the peace of mind knowing that the talent I hire is actually as good as they say they are. The proctored test results don't lie." },
-              { name: "David Miller", role: "UI/UX Designer", text: "The zero brokerage model is a game-changer. I get to keep 100% of what I earn, which is a huge motivator." },
-              { name: "Aria Gupta", role: "Backend Architect", text: "Finally a platform that values actual skills over bidding wars. The proctoring system ensures only the best rise to the top." }
-            ].map((item, i) => (
-              <div key={i} className="min-w-[350px] md:min-w-[400px] p-10 border border-white/10 flex flex-col justify-between hover:border-white/40 transition-colors bg-white/5 whitespace-normal">
-                <p className="text-lg italic text-muted mb-10 leading-relaxed">
-                  "{item.text}"
-                </p>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center font-bold text-xl">
-                    {item.name[0]}
-                  </div>
-                  <div>
-                    <div className="font-bold text-sm">{item.name}</div>
-                    <div className="text-[10px] text-muted uppercase tracking-widest">{item.role}</div>
+        <div className="max-w-[1400px] mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[600px] md:h-[800px] overflow-hidden relative">
+            <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black z-10 pointer-events-none" />
+            
+            {[0, 1, 2].map((colIndex) => {
+              const displayFeedbacks = [...feedbacks, ...feedbacks, ...feedbacks, ...feedbacks];
+              const colFeedbacks = displayFeedbacks.filter((_, i) => i % 3 === colIndex);
+              
+              // Column 1 and 3 go down (vertical), Column 2 goes up (vertical-reverse)
+              const isReverse = colIndex === 1;
+              const speed = colIndex === 0 ? 50 : colIndex === 1 ? 60 : 45;
+
+              return (
+                <div key={colIndex} className={`overflow-hidden ${colIndex > 0 ? 'hidden md:block' : ''}`}>
+                  <div 
+                    className={`flex flex-col gap-6 ${isReverse ? 'marquee-content-vertical-reverse' : 'marquee-content-vertical'}`}
+                    style={{ animationDuration: `${speed}s` }}
+                  >
+                    {[...colFeedbacks, ...colFeedbacks].map((item, i) => (
+                      <div key={i} className="p-8 md:p-10 border border-white/10 flex flex-col justify-between hover:border-white/40 transition-colors bg-white/5 relative group">
+                        <div className="absolute top-6 right-6 text-white/10 group-hover:text-white/30 transition-colors">
+                          <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+                          </svg>
+                        </div>
+                        <p className="text-lg italic text-muted mb-8 leading-relaxed z-10 relative">
+                          "{item.text}"
+                        </p>
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center font-bold text-xl uppercase overflow-hidden shrink-0">
+                            {item.user?.firstName?.[0] || "U"}
+                          </div>
+                          <div>
+                            <div className="font-bold text-sm">{item.user?.firstName} {item.user?.lastName}</div>
+                            <div className="text-[10px] text-muted uppercase tracking-widest mt-1 flex gap-2">
+                              <span className="font-black text-indigo-400">{item.user?.role === 'professional' ? 'Talent' : 'Client'}</span>
+                              •
+                              <span>{new Date(item.createdAt).toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'})}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
-        </Marquee>
+        </div>
       </section>
 
       {/* PRICING SECTION */}

@@ -10,4 +10,9 @@ router.put('/profile', protect, updateUserProfile);
 router.get('/professionals', protect, getProfessionals);
 router.get('/stats', require('../controllers/userController').getStats);
 
+// Feedbacks
+const { getFeedbacks, addFeedback } = require('../controllers/userController');
+router.get('/feedbacks', getFeedbacks);
+router.post('/feedbacks', protect, addFeedback);
+
 module.exports = router;

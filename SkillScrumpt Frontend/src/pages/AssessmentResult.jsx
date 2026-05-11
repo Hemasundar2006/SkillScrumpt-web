@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Shield, 
@@ -33,6 +33,32 @@ export function AssessmentResult() {
 
   const integrityGrade = proctoringScore >= 90 ? 'OPTIMAL' : proctoringScore >= 75 ? 'NOMINAL' : 'COMPROMISED';
   const isPassed = score >= 70 && proctoringScore >= 60;
+
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [feedbackText, setFeedbackText] = useState("");
+  const [feedbackSuccess, setFeedbackSuccess] = useState(false);
+
+  const submitFeedback = async () => {
+    try {
+      const res = await fetch('http://localhost:5000/api/v1/users/feedbacks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ text: feedbackText, rating: 5 })
+      });
+      if (res.ok) {
+        setFeedbackSuccess(true);
+        setTimeout(() => setFeedbackOpen(false), 2000);
+      } else {
+        const err = await res.json();
+        alert(err.message || 'Error submitting feedback');
+      }
+    } catch (e) {
+      alert('Error submitting feedback');
+    }
+  };
 
   return (
     <div className="pt-20 bg-black text-white selection:bg-white selection:text-black pb-24 min-h-screen">
@@ -192,7 +218,49 @@ export function AssessmentResult() {
             <button className="px-12 py-6 border border-white/10 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-white hover:text-black transition-all">RETURN_TO_COMMAND</button>
           </Link>
           <button className="px-12 py-6 bg-white text-black text-[10px] font-black uppercase tracking-[0.3em] hover:bg-white/90 transition-all">GENERATE_CERTIFICATE</button>
+          <button onClick={() => setFeedbackOpen(true)} className="px-12 py-6 border border-white/10 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-white hover:text-black transition-all">PROVIDE_FEEDBACK</button>
         </div>
+
+        {/* Feedback Modal */}
+        <AnimatePresence>
+          {feedbackOpen && (
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+            >
+              <motion.div 
+                initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
+                className="bg-[#111] border border-white/10 p-8 max-w-md w-full relative"
+              >
+                <button onClick={() => setFeedbackOpen(false)} className="absolute top-4 right-4 text-white/40 hover:text-white">✕</button>
+                <h3 className="text-2xl font-black italic mb-6">MISSION FEEDBACK</h3>
+                {feedbackSuccess ? (
+                  <div className="text-center py-10">
+                    <CheckCircle className="mx-auto mb-4 text-white/40" size={40} />
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em]">Feedback securely logged.</p>
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-4">YOUR_ASSESSMENT_EXPERIENCE</p>
+                    <textarea 
+                      className="w-full bg-black border border-white/10 p-4 text-sm focus:outline-none focus:border-white/40 min-h-[120px] mb-6"
+                      placeholder="Share your thoughts on the AI Proctoring and the assessment..."
+                      value={feedbackText}
+                      onChange={(e) => setFeedbackText(e.target.value)}
+                    />
+                    <button 
+                      onClick={submitFeedback}
+                      disabled={!feedbackText.trim()}
+                      className="w-full px-6 py-4 bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] hover:bg-white/90 disabled:opacity-50"
+                    >
+                      SUBMIT_FEEDBACK
+                    </button>
+                  </>
+                )}
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
         
         <div className="mt-24 flex justify-center items-center gap-10 text-[9px] font-black uppercase tracking-[0.4em] text-white/10">
            <div className="flex items-center gap-2"><Lock size={12}/> DATA_SECURED</div>

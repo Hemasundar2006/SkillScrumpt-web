@@ -68,6 +68,17 @@
     to { transform: translateY(0); }
   }
 
+  .marquee-content-vertical-reverse {
+    display: flex;
+    flex-direction: column;
+    animation: marquee-vertical-reverse 30s linear infinite;
+  }
+
+  @keyframes marquee-vertical-reverse {
+    from { transform: translateY(0); }
+    to { transform: translateY(-50%); }
+  }
+
   .text-outline {
     -webkit-text-stroke: 1px rgba(255, 255, 255, 0.3);
     color: transparent;

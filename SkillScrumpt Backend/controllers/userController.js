@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Feedback = require('../models/Feedback');
 const jwt = require('jsonwebtoken');
 
 // @desc    Register a new user
@@ -119,6 +120,43 @@ exports.getStats = async (req, res) => {
       assessments: assessmentsCount + 850000,
       hired: hiredCount + 45000
     });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Get all feedbacks
+// @route   GET /api/v1/users/feedbacks
+// @access  Public
+exports.getFeedbacks = async (req, res) => {
+  try {
+    const feedbacks = await Feedback.find().populate('user', 'firstName lastName role').sort('-createdAt');
+    res.json(feedbacks);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Add feedback
+// @route   POST /api/v1/users/feedbacks
+// @access  Protected
+exports.addFeedback = async (req, res) => {
+  try {
+    const { text, rating } = req.body;
+    
+    // Check if user already submitted feedback
+    const existingFeedback = await Feedback.findOne({ user: req.user._id });
+    if (existingFeedback) {
+      return res.status(400).json({ message: 'You have already submitted feedback.' });
+    }
+
+    const feedback = await Feedback.create({
+      user: req.user._id,
+      text,
+      rating
+    });
+
+    res.status(201).json(feedback);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
