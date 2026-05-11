@@ -19,9 +19,9 @@ export function AboutPage() {
                <div className="w-12 h-[1px] bg-white" />
                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">The Institutional Vision</span>
             </div>
-            <h1 className="text-6xl lg:text-[8rem] font-black mb-12 leading-[0.85] tracking-tighter">
+            <h1 className="text-4xl md:text-7xl lg:text-[8rem] font-black mb-12 leading-[0.85] tracking-tighter uppercase italic">
               ELIMINATE <br />
-              <span className="text-white/30 italic">GUESSWORK.</span>
+              <span className="text-white/30">GUESSWORK.</span>
             </h1>
             <p className="text-xl text-white/40 max-w-3xl leading-relaxed font-bold uppercase tracking-widest">
               SkillScrumpt.in was founded in 2024 with a simple mission: to create a world where talent is recognized by what they can do, not where they come from or what's on their resume.
@@ -62,19 +62,19 @@ export function AboutPage() {
       <section className="py-40 border-t border-white/10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-end mb-24 gap-12">
-            <h2 className="text-5xl font-black tracking-tighter uppercase italic">CORE <br />OPERATIVES.</h2>
+            <h2 className="text-4xl md:text-5xl font-black tracking-tighter uppercase italic">CORE <br />OPERATIVES.</h2>
             <div className="h-[1px] bg-white/10 flex-1 mx-12 hidden md:block" />
             <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em]">Establishing a New Standard</p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-1">
             {[1, 2, 3, 4].map(i => (
-              <div key={i} className="group border border-white/10 p-1 bg-white/5 hover:bg-white transition-all">
-                <div className="p-10 bg-black border border-white/10 group-hover:border-black group-hover:bg-white transition-all">
-                  <div className="aspect-square bg-white/5 border border-white/10 mb-8 overflow-hidden group-hover:border-black/10 transition-all flex items-center justify-center">
-                    <User className="text-white/10 group-hover:text-black/20" size={64} />
+              <div key={i} className="group border border-white/10 p-1 bg-white/5 hover:bg-white transition-all radius-design-sm">
+                <div className="p-6 md:p-10 bg-black border border-white/10 group-hover:border-black group-hover:bg-white transition-all radius-design-sm h-full">
+                  <div className="aspect-square bg-white/5 border border-white/10 mb-8 overflow-hidden group-hover:border-black/10 transition-all flex items-center justify-center radius-design-sm">
+                    <User className="text-white/10 group-hover:text-black/20" size={48} />
                   </div>
-                  <h4 className="font-black text-xl italic group-hover:text-black transition-colors">OPERATIVE_{i}</h4>
-                  <p className="text-[10px] text-white/30 font-black uppercase tracking-widest group-hover:text-black/40 transition-colors">SYSTEMS_ARCHITECT</p>
+                  <h4 className="font-black text-lg md:text-xl italic group-hover:text-black transition-colors">OPERATIVE_{i}</h4>
+                  <p className="text-[9px] md:text-[10px] text-white/30 font-black uppercase tracking-widest group-hover:text-black/40 transition-colors">SYSTEMS_ARCHITECT</p>
                 </div>
               </div>
             ))}
@@ -97,8 +97,8 @@ export function PricingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <div className="inline-block px-8 py-2 border border-white/10 text-[10px] font-black uppercase tracking-[0.4em] text-white/40 mb-12">TRANSPARENT_PRICING_PROTOCOL</div>
-            <h2 className="text-7xl lg:text-[10rem] font-black mb-12 leading-[0.8] tracking-tighter uppercase italic">
+            <div className="inline-block px-8 py-2 border border-white/10 text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] text-white/40 mb-12">TRANSPARENT_PRICING_PROTOCOL</div>
+            <h2 className="text-4xl md:text-7xl lg:text-[10rem] font-black mb-12 leading-[0.8] tracking-tighter uppercase italic">
               FLAT FEE. <br />
               <span className="text-white/30">ZERO BROKERAGE.</span>
             </h2>
@@ -113,13 +113,13 @@ export function PricingPage() {
           <div className="p-1 border border-white/10 bg-white/5 flex">
             <button 
               onClick={() => setRole('student')}
-              className={`px-12 py-5 text-[10px] font-black uppercase tracking-widest transition-all ${role === 'student' ? 'bg-white text-black' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
+              className={`px-6 md:px-12 py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all ${role === 'student' ? 'bg-white text-black' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
             >
               PROFESSIONAL
             </button>
             <button 
               onClick={() => setRole('client')}
-              className={`px-12 py-5 text-[10px] font-black uppercase tracking-widest transition-all ${role === 'client' ? 'bg-white text-black' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
+              className={`px-6 md:px-12 py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all ${role === 'client' ? 'bg-white text-black' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
             >
               CLIENT
             </button>
@@ -137,7 +137,7 @@ export function PricingPage() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.4 }}
-                className="bg-black border border-white/10 p-12 md:p-20 relative overflow-hidden h-full"
+                className="bg-black border border-white/10 p-8 md:p-20 relative overflow-hidden h-full radius-design"
               >
                 <div className="absolute top-0 right-0 w-64 h-64 border border-white/5 -mr-32 -mt-32 rotate-45 pointer-events-none" />
                 
@@ -322,9 +322,9 @@ function ComparisonRow({ label, student, client }) {
 
   return (
     <tr className="hover:bg-white/5 transition-colors group">
-      <td className="px-12 py-8 text-[11px] font-black text-white/40 group-hover:text-white uppercase tracking-[0.3em] transition-colors italic">{label}</td>
-      <td className="px-12 py-8 text-center w-48">{renderValue(student)}</td>
-      <td className="px-12 py-8 text-center w-48">{renderValue(client)}</td>
+      <td className="px-6 md:px-12 py-6 md:py-8 text-[9px] md:text-[11px] font-black text-white/40 group-hover:text-white uppercase tracking-[0.3em] transition-colors italic">{label}</td>
+      <td className="px-6 md:px-12 py-6 md:py-8 text-center w-32 md:w-48">{renderValue(student)}</td>
+      <td className="px-6 md:px-12 py-6 md:py-8 text-center w-32 md:w-48">{renderValue(client)}</td>
     </tr>
   );
 }
@@ -350,7 +350,7 @@ export function ProctoringPage() {
             <div className="w-12 h-[1px] bg-white" />
             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">The Gold Standard</span>
           </div>
-          <h1 className="text-7xl lg:text-[10rem] font-black mb-12 leading-[0.8] tracking-tighter uppercase italic">
+          <h1 className="text-4xl md:text-7xl lg:text-[10rem] font-black mb-12 leading-[0.8] tracking-tighter uppercase italic">
             RADICAL <br />
             <span className="text-white/30">INTEGRITY.</span>
           </h1>
@@ -420,7 +420,7 @@ export function MarketplacePage() {
             <div className="w-12 h-[1px] bg-white" />
             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">Access Elite Talent</span>
           </div>
-          <h1 className="text-7xl lg:text-[10rem] font-black mb-12 leading-[0.8] tracking-tighter uppercase italic">
+          <h1 className="text-4xl md:text-7xl lg:text-[10rem] font-black mb-12 leading-[0.8] tracking-tighter uppercase italic">
             THE <br />
             <span className="text-white/30">MARKETPLACE.</span>
           </h1>
