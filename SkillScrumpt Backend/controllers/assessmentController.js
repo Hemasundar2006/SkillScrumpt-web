@@ -153,18 +153,32 @@ exports.submitResult = async (req, res) => {
 
     // Send Assessment Result Email
     try {
-      const assessmentData = await Assessment.findById(req.params.id);
+      // Find assessment - handle potential non-ObjectId errors
+      let assessmentData;
+      try {
+        assessmentData = await Assessment.findById(req.params.id);
+      } catch (err) {
+        // If not a valid ObjectId, search by _id string or use a fallback
+        assessmentData = await Assessment.findOne({ _id: req.params.id });
+      }
+
+      const finalAssessmentTitle = assessmentData?.title || 'Expert Assessment';
       const badgeName = status === 'passed' ? (assessmentData?.reward || 'Certified Professional') : null;
+      
+      console.log(`Triggering email for ${user.email} - Status: ${status}`);
+      
       const template = templates.assessmentResult(
-        user.firstName, 
-        assessmentData.title, 
+        user.firstName || 'Student', 
+        finalAssessmentTitle, 
         finalScore, 
         status, 
         badgeName
       );
+      
       await sendEmail(user.email, template.subject, template.html);
+      console.log(`Assessment result email sent successfully to ${user.email}`);
     } catch (mailErr) {
-      console.error('Failed to send assessment result email:', mailErr);
+      console.error('CRITICAL: Failed to send assessment result email:', mailErr.message);
     }
 
     res.status(201).json(result);
