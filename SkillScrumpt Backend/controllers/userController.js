@@ -115,7 +115,7 @@ exports.getStats = async (req, res) => {
   try {
     const studentCount = await User.countDocuments({ role: 'professional' });
     const clientCount = await User.countDocuments({ role: 'client' });
-    
+
     // We can count how many users have attempted exams to estimate assessments taken
     const usersWithExams = await User.find({ 'attemptedExams.0': { $exists: true } }).select('attemptedExams');
     const assessmentsCount = usersWithExams.reduce((acc, user) => acc + user.attemptedExams.length, 0);
@@ -153,7 +153,7 @@ exports.getFeedbacks = async (req, res) => {
 exports.addFeedback = async (req, res) => {
   try {
     const { text, rating } = req.body;
-    
+
     // Check if user already submitted feedback
     const existingFeedback = await Feedback.findOne({ user: req.user._id });
     if (existingFeedback) {
@@ -187,7 +187,7 @@ exports.updateUserProfile = async (req, res) => {
       user.location = req.body.location !== undefined ? req.body.location : user.location;
       user.website = req.body.website !== undefined ? req.body.website : user.website;
       user.timezone = req.body.timezone !== undefined ? req.body.timezone : user.timezone;
-      
+
       if (req.body.socialLinks) {
         user.socialLinks = {
           github: req.body.socialLinks.github !== undefined ? req.body.socialLinks.github : user.socialLinks?.github,
@@ -195,7 +195,7 @@ exports.updateUserProfile = async (req, res) => {
           twitter: req.body.socialLinks.twitter !== undefined ? req.body.socialLinks.twitter : user.socialLinks?.twitter
         };
       }
-      
+
       if (req.body.password) {
         user.password = req.body.password;
       }
@@ -243,12 +243,22 @@ exports.forgotPassword = async (req, res) => {
 
     await user.save();
 
-    const resetUrl = `${process.env.FRONTEND_URL || 'https://skillscrumpt.in'}/reset-password/${resetToken}`;
-    const template = templates.forgotPassword(user.firstName, resetUrl);
+    // Create reset URL
+    const frontendUrl = process.env.FRONTEND_URL || 'https://skillscrumpt.vercel.app/';
+    const resetUrl = `${frontendUrl}/reset-password/${resetToken}`;
 
-    await sendEmail(user.email, template.subject, template.html);
+    console.log(`GENERATED RESET LINK for ${user.email}: ${resetUrl}`);
 
-    res.json({ message: 'Password reset link sent to your email.' });
+    try {
+      const template = templates.forgotPassword(user.firstName, resetUrl);
+      await sendEmail(user.email, template.subject, template.html);
+      console.log(`Password reset email sent successfully to ${user.email}`);
+
+      res.status(200).json({ success: true, message: 'Password reset link sent to your email.' });
+    } catch (mailErr) {
+      console.error('Mail Error:', mailErr);
+      res.status(500).json({ message: 'Error sending email. Please try again later.' });
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -290,7 +300,7 @@ exports.desktopHandoff = async (req, res) => {
     const { testId } = req.body;
     const user = await User.findById(req.user._id);
 
-    const testLink = `${process.env.FRONTEND_URL || 'https://skillscrumpt.in'}/assessments/start/${testId}`;
+    const testLink = `${process.env.FRONTEND_URL || 'https://skillscrumpt.vercel.app/'}/assessments/start/${testId}`;
     const template = templates.desktopHandoff(testLink);
 
     await sendEmail(user.email, template.subject, template.html);

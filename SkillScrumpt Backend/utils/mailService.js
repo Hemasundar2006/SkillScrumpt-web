@@ -32,7 +32,7 @@ const templates = {
         <h1 style="color: #4f46e5;">Welcome, ${name}!</h1>
         <p>We're thrilled to have you join SkillScrumpt. Our AI-powered platform is designed to help you prove your expertise to top-tier clients.</p>
         <p>Start by taking an assessment to earn your first <b>Verified Badge</b>.</p>
-        <a href="https://skillscrumpt.in/dashboard/student" style="display: inline-block; padding: 12px 24px; background-color: #4f46e5; color: white; text-decoration: none; border-radius: 8px; margin-top: 20px;">Go to Dashboard</a>
+        <a href="https://skillscrumpt.vercel.app/dashboard/student" style="display: inline-block; padding: 12px 24px; background-color: #4f46e5; color: white; text-decoration: none; border-radius: 8px; margin-top: 20px;">Go to Dashboard</a>
       </div>
     `
   }),
@@ -43,7 +43,7 @@ const templates = {
         <h1 style="color: #4f46e5;">Hello, ${name}!</h1>
         <p>Welcome to SkillScrumpt for Business. You now have access to a pool of talent whose skills are verified through rigorous AI proctoring.</p>
         <p>Post your first project and find the perfect match today.</p>
-        <a href="https://skillscrumpt.in/dashboard/client" style="display: inline-block; padding: 12px 24px; background-color: #4f46e5; color: white; text-decoration: none; border-radius: 8px; margin-top: 20px;">Post a Project</a>
+        <a href="https://skillscrumpt.vercel.app/dashboard/client" style="display: inline-block; padding: 12px 24px; background-color: #4f46e5; color: white; text-decoration: none; border-radius: 8px; margin-top: 20px;">Post a Project</a>
       </div>
     `
   }),
@@ -101,7 +101,7 @@ const templates = {
           </ul>
         </div>
         <p>Your professional identity is now backed by our AI-Verification protocol.</p>
-        <a href="https://skillscrumpt.in/dashboard/student" style="display: inline-block; padding: 12px 24px; background-color: #4f46e5; color: white; text-decoration: none; border-radius: 8px; margin-top: 20px;">Explore Pro Features</a>
+        <a href="https://skillscrumpt.vercel.app/dashboard/student" style="display: inline-block; padding: 12px 24px; background-color: #4f46e5; color: white; text-decoration: none; border-radius: 8px; margin-top: 20px;">Explore Pro Features</a>
       </div>
     `
   })
