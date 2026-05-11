@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Star, Plus, Shield, ShieldCheck, Zap, Monitor, Lock, Target, ExternalLink, Mail, Instagram, Linkedin, Twitter, Menu, X, ChevronRight, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -51,8 +52,10 @@ const Loader = ({ onFinish }) => {
     return () => clearInterval(timer);
   }, [onFinish]);
 
-  return (
+  const loaderContent = (
     <motion.div 
+      initial={{ opacity: 1 }}
+      animate={{ opacity: 1 }}
       exit={{ opacity: 0, y: -100 }}
       transition={{ duration: 0.8, ease: "easeInOut" }}
       className="loader-container"
@@ -60,6 +63,8 @@ const Loader = ({ onFinish }) => {
       <div className="loader-counter">{count}%</div>
     </motion.div>
   );
+
+  return createPortal(loaderContent, document.body);
 };
 
 export function LandingPage() {
@@ -323,10 +328,11 @@ export function LandingPage() {
       {/* APPROACH SECTION (BENTO) */}
       <section className="py-40">
         <div className="max-w-[1400px] mx-auto px-6">
-          <div className="text-[11px] font-black uppercase tracking-[0.3em] text-muted mb-4">Why SkillScrumpt</div>
-          <h2 className="text-5xl md:text-7xl font-black tracking-tighter mb-20 leading-[0.9]">
-            Where integrity <br />meets velocity.
-          </h2>
+          <div className="text-center mb-20">
+            <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9]">
+              Why SkillScrumpt
+            </h2>
+          </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
