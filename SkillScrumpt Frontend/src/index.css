@@ -57,6 +57,17 @@
     to { transform: translateX(0); }
   }
 
+  .marquee-content-vertical {
+    display: flex;
+    flex-direction: column;
+    animation: marquee-vertical 30s linear infinite;
+  }
+
+  @keyframes marquee-vertical {
+    from { transform: translateY(-50%); }
+    to { transform: translateY(0); }
+  }
+
   .text-outline {
     -webkit-text-stroke: 1px rgba(255, 255, 255, 0.3);
     color: transparent;

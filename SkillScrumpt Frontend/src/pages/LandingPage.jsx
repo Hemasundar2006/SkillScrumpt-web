@@ -23,10 +23,10 @@ const SectionReveal = ({ children, className, id }) => (
   </motion.div>
 );
 
-const Marquee = ({ children, reverse = false, speed = 30 }) => (
-  <div className="overflow-hidden whitespace-nowrap py-10 border-y border-white/10">
+const Marquee = ({ children, reverse = false, vertical = false, speed = 30 }) => (
+  <div className={`overflow-hidden ${vertical ? 'h-[250px] md:h-[400px] relative before:absolute before:inset-0 before:bg-gradient-to-b before:from-black before:via-transparent before:to-black before:z-10' : 'whitespace-nowrap py-10 border-y border-white/10'}`}>
     <div 
-      className={reverse ? "marquee-content-reverse" : "marquee-content"}
+      className={vertical ? "marquee-content-vertical" : (reverse ? "marquee-content-reverse" : "marquee-content")}
       style={{ animationDuration: `${speed}s` }}
     >
       {children}
@@ -232,18 +232,19 @@ export function LandingPage() {
       </SectionReveal>
 
       {/* STATS MARQUEE */}
-      <section className="py-20">
-        <Marquee speed={20}>
+      <section className="py-20 border-y border-white/10">
+        <Marquee speed={15} vertical={true}>
           {[
             `${stats.students} TRUSTED STUDENTS`, 
             `${stats.assessments} ASSESSMENTS TAKEN`, 
             `${stats.clients} TRUSTED CLIENTS`, 
             `${stats.hired} PROFESSIONALS HIRED`, 
+            "120+ COUNTRIES",
             "ZERO BROKERAGE"
           ].map((stat, i) => (
-            <div key={i} className="mx-20 flex items-center gap-10 text-5xl font-black italic text-outline hover:text-white transition-all cursor-default">
+            <div key={i} className="my-8 flex flex-col md:flex-row items-center justify-center gap-4 md:gap-10 text-4xl md:text-7xl font-black italic text-outline hover:text-white transition-all cursor-default text-center px-4">
               <span>{stat}</span>
-              <span className="text-white/20">✳</span>
+              <span className="text-white/20 text-2xl md:text-5xl">✳</span>
             </div>
           ))}
         </Marquee>
@@ -446,29 +447,31 @@ export function LandingPage() {
           <h2 className="text-4xl md:text-6xl font-black">Trusted by Professionals.</h2>
         </div>
 
-        <div className="flex gap-6 overflow-x-auto px-6 pb-20 no-scrollbar">
-          {[
-            { name: "Sarah Jenkins", role: "Fullstack Developer", text: "SkillScrumpt.in helped me land a high-paying freelance gig at a top tech company. The verification process is tough, but it really sets you apart." },
-            { name: "Michael Chen", role: "Startup Founder", text: "As a client, I love the peace of mind knowing that the talent I hire is actually as good as they say they are. The proctored test results don't lie." },
-            { name: "David Miller", role: "UI/UX Designer", text: "The zero brokerage model is a game-changer. I get to keep 100% of what I earn, which is a huge motivator." },
-            { name: "Aria Gupta", role: "Backend Architect", text: "Finally a platform that values actual skills over bidding wars. The proctoring system ensures only the best rise to the top." }
-          ].map((item, i) => (
-            <div key={i} className="min-w-[400px] p-10 border border-white/10 flex flex-col justify-between hover:border-white/40 transition-colors bg-white/5">
-              <p className="text-lg italic text-muted mb-10 leading-relaxed">
-                "{item.text}"
-              </p>
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center font-bold text-xl">
-                  {item.name[0]}
-                </div>
-                <div>
-                  <div className="font-bold text-sm">{item.name}</div>
-                  <div className="text-[10px] text-muted uppercase tracking-widest">{item.role}</div>
+        <Marquee speed={40} reverse={true}>
+          <div className="flex gap-6 px-6">
+            {[
+              { name: "Sarah Jenkins", role: "Fullstack Developer", text: "SkillScrumpt.in helped me land a high-paying freelance gig at a top tech company. The verification process is tough, but it really sets you apart." },
+              { name: "Michael Chen", role: "Startup Founder", text: "As a client, I love the peace of mind knowing that the talent I hire is actually as good as they say they are. The proctored test results don't lie." },
+              { name: "David Miller", role: "UI/UX Designer", text: "The zero brokerage model is a game-changer. I get to keep 100% of what I earn, which is a huge motivator." },
+              { name: "Aria Gupta", role: "Backend Architect", text: "Finally a platform that values actual skills over bidding wars. The proctoring system ensures only the best rise to the top." }
+            ].map((item, i) => (
+              <div key={i} className="min-w-[350px] md:min-w-[400px] p-10 border border-white/10 flex flex-col justify-between hover:border-white/40 transition-colors bg-white/5 whitespace-normal">
+                <p className="text-lg italic text-muted mb-10 leading-relaxed">
+                  "{item.text}"
+                </p>
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center font-bold text-xl">
+                    {item.name[0]}
+                  </div>
+                  <div>
+                    <div className="font-bold text-sm">{item.name}</div>
+                    <div className="text-[10px] text-muted uppercase tracking-widest">{item.role}</div>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </Marquee>
       </section>
 
       {/* PRICING SECTION */}
