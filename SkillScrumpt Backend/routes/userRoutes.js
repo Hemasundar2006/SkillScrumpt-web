@@ -8,5 +8,6 @@ router.post('/login', loginUser);
 router.get('/profile/:id', protect, getUserProfile);
 router.put('/profile', protect, updateUserProfile);
 router.get('/professionals', protect, getProfessionals);
+router.get('/stats', require('../controllers/userController').getStats);
 
 module.exports = router;

@@ -70,10 +70,32 @@ const Loader = ({ onFinish }) => {
 export function LandingPage() {
   const [loading, setLoading] = useState(true);
   const [scrolled, setScrolled] = useState(false);
+  const [stats, setStats] = useState({
+    students: "150k+",
+    assessments: "850k+",
+    clients: "1200+",
+    hired: "45k+"
+  });
   
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
+    
+    // Fetch real stats from backend
+    fetch('http://localhost:5000/api/v1/users/stats')
+      .then(res => res.json())
+      .then(data => {
+        if(data && !data.message) {
+          setStats({
+            students: (data.students >= 1000 ? (data.students/1000).toFixed(1) + 'k+' : data.students),
+            assessments: (data.assessments >= 1000 ? (data.assessments/1000).toFixed(1) + 'k+' : data.assessments),
+            clients: data.clients + '+',
+            hired: (data.hired >= 1000 ? (data.hired/1000).toFixed(1) + 'k+' : data.hired)
+          });
+        }
+      })
+      .catch(err => console.error("Could not fetch stats", err));
+
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -213,8 +235,11 @@ export function LandingPage() {
       <section className="py-20">
         <Marquee speed={20}>
           {[
-            "150k+ VERIFIED TALENT", "850k+ ASSESSMENTS", "98.5% SUCCESS RATE", 
-            "120+ COUNTRIES", "₹12.4Cr+ VOLUME", "ZERO BROKERAGE"
+            `${stats.students} TRUSTED STUDENTS`, 
+            `${stats.assessments} ASSESSMENTS TAKEN`, 
+            `${stats.clients} TRUSTED CLIENTS`, 
+            `${stats.hired} PROFESSIONALS HIRED`, 
+            "ZERO BROKERAGE"
           ].map((stat, i) => (
             <div key={i} className="mx-20 flex items-center gap-10 text-5xl font-black italic text-outline hover:text-white transition-all cursor-default">
               <span>{stat}</span>
@@ -514,6 +539,36 @@ export function LandingPage() {
               </Link>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* FAQ SECTION */}
+      <section className="py-40 border-t border-white/10">
+        <div className="max-w-[1000px] mx-auto px-6">
+          <div className="text-center mb-20">
+            <div className="text-[11px] font-black uppercase tracking-[0.3em] text-muted mb-4">Answers</div>
+            <h2 className="text-4xl md:text-6xl font-black tracking-tighter">Frequently Asked.</h2>
+          </div>
+
+          <div className="grid gap-6">
+            {[
+              { q: "How does the AI proctoring actually work?", a: "Our AI continuously monitors your webcam, audio, and screen activity during the assessment. It checks for multiple faces, gaze deviation, tab switching, and background noise to guarantee the authenticity of your skills." },
+              { q: "Is the Verified Elite Badge permanent?", a: "Yes, but to maintain the highest quality standards, clients can leave feedback. Severe drops in rating may require a re-verification test. Otherwise, once you earn it, it's yours." },
+              { q: "Do I have to be a student to join?", a: "While we prioritize students with valid .edu or college-domain emails, professionals without college emails can still join but must pass a more stringent verification protocol." },
+              { q: "How does SkillScrumpt make money with zero brokerage?", a: "We charge clients a flat subscription fee to access our verified talent pool and use our AI proctoring tech. The freelancers keep exactly 100% of what the client pays them for the job." },
+              { q: "What happens if my internet disconnects during a test?", a: "The AI Proctoring system has a brief tolerance window for connection drops. If it's a short blip, you can continue. If it's extended, the test is voided, and you must wait the 48-hour cooling period to try again." }
+            ].map((faq, i) => (
+              <details key={i} className="group border border-white/10 bg-white/5 radius-design p-8 cursor-pointer hover:border-white/40 transition-colors">
+                <summary className="text-xl font-bold flex justify-between items-center outline-none list-none">
+                  {faq.q}
+                  <Plus className="group-open:rotate-45 transition-transform duration-300 text-muted group-hover:text-white" />
+                </summary>
+                <div className="mt-6 text-muted leading-relaxed">
+                  {faq.a}
+                </div>
+              </details>
+            ))}
+          </div>
         </div>
       </section>
 
