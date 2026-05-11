@@ -225,7 +225,7 @@ exports.updateUserProfile = async (req, res) => {
 };
 
 // @desc    Forgot Password
-// @route   POST /api/v1/users/forgot-password
+// @route   POST /users/forgot-password
 // @access  Public
 exports.forgotPassword = async (req, res) => {
   try {
@@ -237,30 +237,43 @@ exports.forgotPassword = async (req, res) => {
     }
 
     // Generate reset token
+    console.log('STEP: Generating reset token...');
     const resetToken = crypto.randomBytes(20).toString('hex');
     user.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
     user.resetPasswordExpire = Date.now() + 3600000; // 1 hour
 
+    console.log('STEP: Saving user with reset token...');
     await user.save();
 
     // Create reset URL
-    const frontendUrl = process.env.FRONTEND_URL || 'https://skillscrumpt.vercel.app/';
-    const resetUrl = `${frontendUrl}/reset-password/${resetToken}`;
-
-    console.log(`GENERATED RESET LINK for ${user.email}: ${resetUrl}`);
+    const frontendUrl = process.env.FRONTEND_URL || 'https://skillscrumpt.vercel.app';
+    const resetUrl = `${frontendUrl.replace(/\/$/, '')}/reset-password/${resetToken}`;
+    
+    console.log(`STEP: Generated Link: ${resetUrl}`);
 
     try {
+      console.log('STEP: Fetching template...');
       const template = templates.forgotPassword(user.firstName, resetUrl);
+      
+      console.log('STEP: Dispatching email...');
       await sendEmail(user.email, template.subject, template.html);
-      console.log(`Password reset email sent successfully to ${user.email}`);
-
+      
+      console.log('STEP: Email dispatch confirmed.');
       res.status(200).json({ success: true, message: 'Password reset link sent to your email.' });
     } catch (mailErr) {
-      console.error('Mail Error:', mailErr);
-      res.status(500).json({ message: 'Error sending email. Please try again later.' });
+      console.error('STEP_FAILED: Mail Dispatch Error:', mailErr);
+      res.status(500).json({ 
+        message: 'Mail server rejected the request.',
+        error: mailErr.message,
+        code: mailErr.code
+      });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('CRITICAL_CONTROLLER_ERROR:', error);
+    res.status(500).json({ 
+      message: 'Internal server logic error.',
+      error: error.message 
+    });
   }
 };
 

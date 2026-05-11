@@ -10,16 +10,20 @@ const transporter = nodemailer.createTransport({
 
 const sendEmail = async (to, subject, html) => {
   try {
+    console.log(`ATTEMPTING_EMAIL_DISPATCH to: ${to} | Subject: ${subject}`);
     const info = await transporter.sendMail({
       from: `"SkillScrumpt" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       html,
     });
-    console.log('Message sent: %s', info.messageId);
+    console.log('EMAIL_SENT_SUCCESS: %s', info.messageId);
     return info;
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error('CRITICAL_MAIL_ERROR:', error);
+    if (error.code === 'EAUTH') {
+      console.error('AUTH_FAILURE: Check EMAIL_USER and EMAIL_PASS (App Password).');
+    }
     throw error;
   }
 };

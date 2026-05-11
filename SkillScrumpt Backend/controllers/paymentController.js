@@ -3,11 +3,17 @@ const crypto = require('crypto');
 const User = require('../models/User');
 const { sendEmail, templates } = require('../utils/mailService');
 
-// Initialize Razorpay
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
+// Initialize Razorpay lazily to ensure env vars are loaded
+let razorpay;
+const getRazorpay = () => {
+  if (!razorpay) {
+    razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET,
+    });
+  }
+  return razorpay;
+};
 
 /**
  * @desc    Create a new Razorpay order
@@ -38,7 +44,7 @@ exports.createOrder = async (req, res) => {
       receipt: receipt,
     };
 
-    const order = await razorpay.orders.create(options);
+    const order = await getRazorpay().orders.create(options);
 
     if (!order) {
       return res.status(500).json({

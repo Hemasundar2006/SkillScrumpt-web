@@ -10,7 +10,9 @@ import {
   CheckCircle,
   ArrowRight,
   Briefcase,
-  Users
+  Users,
+  TrendingUp,
+  DollarSign
 } from 'lucide-react';
 import { Card, Badge, Button } from '../components/UI';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
