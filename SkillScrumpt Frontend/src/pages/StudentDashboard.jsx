@@ -155,13 +155,13 @@ export function StudentDashboard() {
         >
           <div className="flex items-center gap-3 mb-4">
             <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-            <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em]">Sector: Professional Dashboard</span>
+            <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em]">Professional Dashboard</span>
           </div>
           <h1 className="text-6xl font-black tracking-tighter mb-4 italic uppercase">
             {getGreeting()}, <span className="text-white/40">{user?.firstName}.</span>
           </h1>
           <p className="text-white/40 font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-3">
-             <Clock size={14} /> System reports 2 scheduled assessments for this cycle // SkillScrumpt.in
+             <Clock size={14} /> You have 2 scheduled tests for this month // SkillScrumpt.in
           </p>
         </motion.div>
       </header>
@@ -183,7 +183,7 @@ export function StudentDashboard() {
                 <h3 className="text-3xl font-black tracking-tighter uppercase italic">AVAILABLE PROJECTS.</h3>
               </div>
               <Link to="/projects" className="text-[10px] font-black text-white/40 hover:text-white uppercase tracking-widest flex items-center gap-2 transition-colors">
-                Bypass Filters <ArrowRight size={14} />
+                See All Projects <ArrowRight size={14} />
               </Link>
             </div>
             <div className="space-y-4">
@@ -209,7 +209,7 @@ export function StudentDashboard() {
             <div className="flex justify-between items-end mb-10 pb-4 border-b border-white/10">
               <div>
                 <div className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-2">Skill Verification</div>
-                <h3 className="text-3xl font-black tracking-tighter uppercase italic">RECOMMENDED CHALLENGES.</h3>
+                <h3 className="text-3xl font-black tracking-tighter uppercase italic">RECOMMENDED TESTS.</h3>
               </div>
             </div>
             <div className="grid sm:grid-cols-2 gap-6">
@@ -237,34 +237,34 @@ export function StudentDashboard() {
                 <div className="flex items-center gap-3 mb-6">
                   <div className={`w-2 h-2 rounded-full animate-pulse ${user?.isVerified ? 'bg-black' : 'bg-white'}`} />
                   <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-60">
-                    {user?.isVerified ? 'PROTOCOL: VERIFIED' : 'PROTOCOL: PENDING'}
+                    {user?.isVerified ? 'ACCOUNT: VERIFIED' : 'ACCOUNT: PENDING'}
                   </span>
                 </div>
                 <h4 className="text-3xl font-black tracking-tighter mb-6 uppercase italic">
-                  {user?.isVerified ? 'ELITE STATUS.' : 'GET VERIFIED.'}
+                  {user?.isVerified ? 'VERIFIED PRO.' : 'GET VERIFIED.'}
                 </h4>
                 <p className={`text-[11px] font-bold uppercase tracking-widest leading-relaxed mb-8 ${user?.isVerified ? 'text-black/60' : 'text-white/60'}`}>
-                  {user?.isVerified 
-                    ? 'Your identity is recognized globally. Your skills are validated by AI proctoring engines.' 
-                    : 'Establish your expertise and unlock the premium marketplace by completing AI assessments.'}
+                    {user?.isVerified 
+                    ? 'Your identity is verified. Your skills are validated by our AI proctoring system.' 
+                    : 'Showcase your skills and unlock high-paying jobs by completing AI tests.'}
                 </p>
                 <button 
                   onClick={() => navigate(user?.isVerified ? '/pricing' : '/assessments')}
                   className={`w-full py-5 text-[10px] font-black uppercase tracking-widest transition-all ${user?.isVerified ? 'bg-black text-white hover:bg-black/80' : 'bg-white text-black hover:bg-white/80'}`}
                 >
-                  {user?.isVerified ? 'Upgrade to Pro' : 'Start Verification'}
+                  {user?.isVerified ? 'Upgrade to Pro' : 'Get started'}
                 </button>
               </div>
             </div>
           </section>
 
           <section>
-            <div className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em] mb-8">Rapid Operations</div>
+            <div className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em] mb-8">Quick Actions</div>
             <div className="space-y-3">
               <QuickActionButton onClick={() => setShowUpgradeModal(true)} icon={Zap} label="Upgrade Access" />
               <QuickActionButton onClick={() => navigate('/assessments')} icon={Shield} label="AI Assessment" />
-              <QuickActionButton onClick={() => navigate('/projects')} icon={Briefcase} label="Source Contracts" />
-              <QuickActionButton icon={Users} label="Recruit Operatives" />
+              <QuickActionButton onClick={() => navigate('/projects')} icon={Briefcase} label="Find Projects" />
+              <QuickActionButton icon={Users} label="Hire Partners" />
             </div>
           </section>
         </div>

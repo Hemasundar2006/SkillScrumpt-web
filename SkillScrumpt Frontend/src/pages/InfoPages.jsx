@@ -17,7 +17,7 @@ export function AboutPage() {
           >
             <div className="flex items-center gap-4 mb-8">
                <div className="w-12 h-[1px] bg-white" />
-               <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">The Institutional Vision</span>
+               <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">Our Mission</span>
             </div>
             <motion.h1 
               initial={{ opacity: 0, x: -50 }}
@@ -73,9 +73,9 @@ export function AboutPage() {
       <section className="py-40 border-t border-white/10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-end mb-24 gap-12">
-            <h2 className="text-4xl md:text-5xl font-black tracking-tighter uppercase italic">CORE <br />OPERATIVES.</h2>
+            <h2 className="text-4xl md:text-5xl font-black tracking-tighter uppercase italic">MEET THE <br />TEAM.</h2>
             <div className="h-[1px] bg-white/10 flex-1 mx-12 hidden md:block" />
-            <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em]">Establishing a New Standard</p>
+            <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em]">Setting the Standard</p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-1">
             {[1, 2, 3, 4].map(i => (
@@ -84,8 +84,8 @@ export function AboutPage() {
                   <div className="aspect-square bg-white/5 border border-white/10 mb-8 overflow-hidden group-hover:border-black/10 transition-all flex items-center justify-center radius-design-sm">
                     <User className="text-white/10 group-hover:text-black/20" size={48} />
                   </div>
-                  <h4 className="font-black text-lg md:text-xl italic group-hover:text-black transition-colors">OPERATIVE_{i}</h4>
-                  <p className="text-[9px] md:text-[10px] text-white/30 font-black uppercase tracking-widest group-hover:text-black/40 transition-colors">SYSTEMS_ARCHITECT</p>
+                  <h4 className="font-black text-lg md:text-xl italic group-hover:text-black transition-colors">TEAM MEMBER</h4>
+                  <p className="text-[9px] md:text-[10px] text-white/30 font-black uppercase tracking-widest group-hover:text-black/40 transition-colors">Lead Developer</p>
                 </div>
               </div>
             ))}
@@ -108,7 +108,7 @@ export function PricingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <div className="inline-block px-8 py-2 border border-white/10 text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] text-white/40 mb-12">TRANSPARENT_PRICING_PROTOCOL</div>
+            <div className="inline-block px-8 py-2 border border-white/10 text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] text-white/40 mb-12">PRICING PLANS</div>
             <motion.h2 
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
@@ -169,7 +169,7 @@ export function PricingPage() {
                       <h3 className="text-4xl font-black text-white mb-4 italic tracking-tight uppercase">
                         {role === 'student' ? 'STUDENT PRO.' : 'CLIENT PRO.'}
                       </h3>
-                      <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em]">ALL_CORE_FEATURES_UNLOCKED</p>
+                      <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em]">ALL CORE FEATURES INCLUDED</p>
                     </div>
                     <div className="text-right">
                       <div className="flex items-baseline gap-2">
@@ -211,7 +211,7 @@ export function PricingPage() {
                       if (isAlreadyPro) {
                         return (
                           <button disabled className="px-12 py-6 border border-white/20 text-white/20 text-[10px] font-black uppercase tracking-[0.4em] w-full sm:w-auto italic">
-                            IDENTITY_PRO_ESTABLISHED
+                            PRO ACCOUNT ACTIVE
                           </button>
                         );
                       }
@@ -224,7 +224,7 @@ export function PricingPage() {
                         </Link>
                       );
                     })()}
-                    <p className="text-[8px] text-white/20 font-black uppercase tracking-[0.4em] mt-4">ZERO_BROKERAGE_PROTOCOL_ACTIVE // SKILLSCRUMPT.IN</p>
+                    <p className="text-[8px] text-white/20 font-black uppercase tracking-[0.4em] mt-4">SECURE PAYMENT SYSTEM // SKILLSCRUMPT.IN</p>
                   </div>
                 </div>
               </motion.div>
@@ -236,7 +236,7 @@ export function PricingPage() {
             <div className="p-1 border border-white/10 bg-white/5 flex-1">
               <div className="bg-black border border-white/10 p-10 h-full relative overflow-hidden group">
                  <div className="relative z-10">
-                   <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20 mb-6 italic">YIELD_MAXIMIZATION</h4>
+                   <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20 mb-6 italic">MAXIMUM SAVINGS</h4>
                    <p className="text-3xl font-black italic tracking-tighter leading-tight mb-8">SAVE UP TO 20% VS TRADITIONAL PLATFORMS.</p>
                    <div className="h-[1px] w-full bg-white/10">
                      <div className="bg-white h-full w-[80%] animate-pulse" />
@@ -249,9 +249,9 @@ export function PricingPage() {
               <div className="bg-black border border-white/10 p-10 h-full">
                  <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20 mb-8 italic">BUILT_IN_TRUST</h4>
                  <div className="space-y-6">
-                    <TrustItem icon={Shield} label="AI_VERIFIED_IDENTITY" />
-                    <TrustItem icon={Award} label="PROCTORED_BADGES" />
-                    <TrustItem icon={CheckCircle} label="INSTANT_RELAYS" />
+                    <TrustItem icon={Shield} label="VERIFIED IDENTITY" />
+                    <TrustItem icon={Award} label="CERTIFIED BADGES" />
+                    <TrustItem icon={CheckCircle} label="INSTANT ACCESS" />
                  </div>
               </div>
             </div>
@@ -274,7 +274,7 @@ export function PricingPage() {
         <section className="p-1 border border-white/10 bg-white/5">
           <div className="bg-black border border-white/10 overflow-hidden">
             <div className="p-12 border-b border-white/10 flex flex-col md:flex-row justify-between items-center gap-8">
-              <h3 className="text-3xl font-black tracking-tighter uppercase italic">FULL_PROTOCOL_BREAKDOWN.</h3>
+              <h3 className="text-3xl font-black tracking-tighter uppercase italic">FEATURE BREAKDOWN.</h3>
               <div className="flex gap-10">
                  <div className="flex items-center gap-3">
                    <div className="w-2 h-2 bg-white" />
@@ -290,15 +290,15 @@ export function PricingPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <tbody className="divide-y divide-white/10">
-                  <ComparisonRow label="AI_ADAPTIVE_SKILL_SEQUENCES" student={true} client={false} />
-                  <ComparisonRow label="VERIFIED_OPERATIVE_PROFILE" student={true} client={false} />
-                  <ComparisonRow label="DIRECT_PROJECT_BIDS" student={true} client={false} />
-                  <ComparisonRow label="POST_UNLIMITED_DIRECTIVES" student={false} client={true} />
-                  <ComparisonRow label="ACCESS_PROCTORED_DATA" student={false} client={true} />
-                  <ComparisonRow label="P2P_DIRECT_FINANCIAL_RELAY" student={true} client={true} />
-                  <ComparisonRow label="ZERO_PLATFORM_COMMISSION" student="0%" client="0%" />
-                  <ComparisonRow label="ENCRYPTED_COLLABORATION" student={true} client={true} />
-                  <ComparisonRow label="ESCROW_LOCKED_PAYOUTS" student={true} client={true} />
+                  <ComparisonRow label="ADAPTIVE SKILL TESTS" student={true} client={false} />
+                  <ComparisonRow label="VERIFIED MEMBER PROFILE" student={true} client={false} />
+                  <ComparisonRow label="DIRECT PROJECT BIDS" student={true} client={false} />
+                  <ComparisonRow label="POST UNLIMITED JOBS" student={false} client={true} />
+                  <ComparisonRow label="ACCESS CERTIFIED DATA" student={false} client={true} />
+                  <ComparisonRow label="DIRECT SECURE PAYMENTS" student={true} client={true} />
+                  <ComparisonRow label="ZERO PLATFORM FEES" student="0%" client="0%" />
+                  <ComparisonRow label="SECURE COLLABORATION" student={true} client={true} />
+                  <ComparisonRow label="PROTECTED PAYOUTS" student={true} client={true} />
                 </tbody>
               </table>
             </div>
@@ -370,7 +370,7 @@ export function ProctoringPage() {
         <header className="mb-32">
           <div className="flex items-center gap-4 mb-8">
             <div className="w-12 h-[1px] bg-white" />
-            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">The Gold Standard</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">Secure Testing</span>
           </div>
           <motion.h1 
             initial={{ opacity: 0, x: -50 }}
@@ -414,7 +414,7 @@ export function ProctoringPage() {
             
             <Link to="/register?role=professional">
               <button className="px-12 py-6 bg-white text-black font-black uppercase tracking-[0.4em] text-xs hover:bg-white/90 transition-all flex items-center gap-4">
-                INITIATE VERIFICATION <ArrowRight size={16} />
+                GET VERIFIED <ArrowRight size={16} />
               </button>
             </Link>
           </div>
@@ -424,14 +424,14 @@ export function ProctoringPage() {
                <Shield size={200} className="text-white relative z-10 opacity-20 group-hover:scale-110 transition-transform duration-1000" />
                <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-60" />
                <div className="absolute bottom-10 left-10 text-[10px] font-black uppercase tracking-[0.5em] text-white/20 italic z-20">
-                 SECURE_RELAY_ACTIVE // SS.PROCTOR.V4
+                 SYSTEM ACTIVE // SKILLSCRUMPT
                </div>
             </div>
           </div>
         </div>
 
         <section className="py-40 border-t border-white/10">
-           <h2 className="text-3xl font-black mb-16 tracking-tighter uppercase italic">TRUST_PROTOCOL_DYNAMICS</h2>
+           <h2 className="text-3xl font-black mb-16 tracking-tighter uppercase italic">SYSTEM RELIABILITY</h2>
            <div className="grid md:grid-cols-3 gap-12">
               <TrustStat label="ACCURACY" value="99.9%" />
               <TrustStat label="LATENCY" value="<200MS" />
@@ -494,10 +494,10 @@ export function MarketplacePage() {
         <section className="p-1 border border-white/10 bg-white/5 mb-40 radius-design">
           <div className="bg-black border border-white/10 p-12 md:p-20 text-center radius-design">
              <h2 className="text-4xl md:text-6xl font-black mb-10 tracking-tighter uppercase italic">READY TO DEPLOY?</h2>
-             <p className="text-white/40 font-black text-[11px] uppercase tracking-[0.4em] mb-12 italic">JOIN 1200+ ENTERPRISE OPERATIVES USING SkillScrumpt.in</p>
+             <p className="text-white/40 font-black text-[11px] uppercase tracking-[0.4em] mb-12 italic">JOIN 1200+ BUSINESSES USING SkillScrumpt.in</p>
              <div className="flex flex-col sm:flex-row justify-center gap-8">
-               <button onClick={() => navigate('/register?role=client')} className="px-16 py-6 bg-white text-black font-black uppercase tracking-[0.4em] text-xs hover:bg-white/90 transition-all">POST_DIRECTIVE</button>
-               <button onClick={() => navigate('/register?role=professional')} className="px-16 py-6 border border-white text-white font-black uppercase tracking-[0.4em] text-xs hover:bg-white/10 transition-all">BECOME_OPERATIVE</button>
+               <button onClick={() => navigate('/register?role=client')} className="px-16 py-6 bg-white text-black font-black uppercase tracking-[0.4em] text-xs hover:bg-white/90 transition-all rounded-full">POST JOB</button>
+               <button onClick={() => navigate('/register?role=professional')} className="px-16 py-6 border border-white text-white font-black uppercase tracking-[0.4em] text-xs hover:bg-white/10 transition-all rounded-full">BECOME A PARTNER</button>
              </div>
           </div>
         </section>

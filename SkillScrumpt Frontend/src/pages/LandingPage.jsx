@@ -135,8 +135,8 @@ export function LandingPage() {
               className="flex flex-col sm:flex-row items-center gap-6"
             >
               <Link to="/register?role=professional" className="w-full sm:w-auto">
-                <button className="w-full px-10 py-5 bg-white text-black font-black uppercase tracking-widest text-xs hover:bg-muted transition-all rounded-full">
-                  Get Verified
+                <button className="px-12 py-6 border border-white text-white font-black uppercase tracking-[0.4em] text-xs hover:bg-white/10 transition-all rounded-full">
+                  Get started
                 </button>
               </Link>
               <Link to="/register?role=client" className="w-full sm:w-auto">
@@ -198,7 +198,7 @@ export function LandingPage() {
               trust is the primary currency.
             </h2>
             <Link to="/about" className="inline-flex items-center gap-4 text-[11px] font-black uppercase tracking-[0.4em] text-white/40 hover:text-white transition-colors group">
-              Exploration Directive <ArrowRight size={14} className="group-hover:translate-x-2 transition-transform" />
+              Learn More <ArrowRight size={14} className="group-hover:translate-x-2 transition-transform" />
             </Link>
           </div>
         </div>
@@ -356,7 +356,7 @@ export function LandingPage() {
           <div className="grid lg:grid-cols-2 gap-20 items-center">
             <div>
               <div className="text-[11px] font-black uppercase tracking-[0.3em] text-muted mb-4">How it works</div>
-              <h2 className="text-5xl font-black mb-10 leading-tight">Your journey to <br />Verified Elite.</h2>
+              <h2 className="text-5xl font-black mb-10 leading-tight">Your path to <br />Verified Pro.</h2>
               
               <div className="space-y-16">
                 {[
@@ -378,8 +378,8 @@ export function LandingPage() {
               </div>
 
               <Link to="/register">
-                <button className="mt-16 px-10 py-5 bg-white text-black font-black uppercase tracking-widest text-xs hover:bg-muted transition-all">
-                  Start Verification
+                <button className="mt-16 px-10 py-5 bg-white text-black font-black uppercase tracking-widest text-xs hover:bg-muted transition-all rounded-full">
+                  Get started
                 </button>
               </Link>
             </div>
@@ -517,8 +517,8 @@ export function LandingPage() {
         <div className="max-w-4xl mx-auto px-6 relative z-10">
           <h2 className="text-6xl md:text-9xl font-black tracking-tighter mb-10 leading-[0.8]">READY TO <br />JOIN THE <br />ELITE?</h2>
           <Link to="/register">
-            <button className="px-16 py-8 bg-white text-black font-black uppercase tracking-[0.3em] text-sm hover:scale-105 transition-transform flex items-center gap-4 mx-auto group">
-              Start Verification <ArrowRight className="group-hover:translate-x-2 transition-transform" />
+            <button className="px-16 py-8 bg-white text-black font-black uppercase tracking-[0.3em] text-sm hover:scale-105 transition-transform flex items-center gap-4 mx-auto group rounded-full">
+              Get started <ArrowRight className="group-hover:translate-x-2 transition-transform" />
             </button>
           </Link>
         </div>

@@ -62,10 +62,10 @@ const UpgradeModal = ({ onClose }) => {
       <div className="flex flex-col gap-4">
         <RazorpayPayment 
           amount={pricing.currentPrice} 
-          buttonText={`Authorize Upgrade (₹${pricing.currentPrice})`}
+          buttonText={`Upgrade Now (₹${pricing.currentPrice})`}
           className="w-full py-5 bg-white text-black font-black uppercase tracking-widest text-[11px] hover:bg-white/90 transition-all"
           onSuccess={async (data) => {
-            alert('Identity Upgraded to Pro Status.');
+            alert('Account Upgraded to Pro Status.');
             onClose();
           }}
           onError={(error) => {
@@ -76,7 +76,7 @@ const UpgradeModal = ({ onClose }) => {
           onClick={onClose}
           className="w-full py-4 text-white/30 font-black uppercase tracking-widest text-[10px] hover:text-white transition-colors"
         >
-          Maintain Standard Status
+          Keep Current Plan
         </button>
       </div>
     </motion.div>
@@ -145,12 +145,12 @@ export function ClientDashboard() {
         >
           <div className="flex items-center gap-3 mb-4">
             <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-            <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em]">Sector: Employer Hub</span>
+            <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em]">Employer Dashboard</span>
           </div>
           <h1 className="text-6xl font-black tracking-tighter italic uppercase">
             {getGreeting()}, <span className="text-white/40">{user?.firstName}.</span>
           </h1>
-          <p className="text-white/40 font-black text-[10px] uppercase tracking-[0.2em] mt-2">Discover elite verified talent for dominant projects on SkillScrumpt.in.</p>
+          <p className="text-white/40 font-black text-[10px] uppercase tracking-[0.2em] mt-2">Find verified talent for your projects on SkillScrumpt.in.</p>
         </motion.div>
         
         <Link to="/post-project">
@@ -169,7 +169,7 @@ export function ClientDashboard() {
                 <h3 className="text-3xl font-black tracking-tighter uppercase italic">YOUR PROJECTS.</h3>
               </div>
               <Link to="/my-projects" className="text-[10px] font-black text-white/40 hover:text-white uppercase tracking-widest flex items-center gap-2 transition-colors">
-                All Directives <ArrowRight size={14} />
+                All Projects <ArrowRight size={14} />
               </Link>
             </div>
             <div className="space-y-4">
@@ -184,7 +184,7 @@ export function ClientDashboard() {
                 />
               )) : (
                 <div className="py-20 text-center border border-dashed border-white/10">
-                  <p className="text-white/20 font-black uppercase tracking-widest text-xs">No project signals detected.</p>
+                  <p className="text-white/20 font-black uppercase tracking-widest text-xs">No projects found.</p>
                 </div>
               )}
             </div>
@@ -197,7 +197,7 @@ export function ClientDashboard() {
              <Card className="p-8 space-y-8 bg-white/5 border border-white/10">
                 <StatItem label="TOTAL EXPENDITURE" value={`$${user?.totalSpent?.toLocaleString() || 0}`} />
                 <StatItem label="ACTIVE CONTRACTS" value={user?.activeContractsCount || 0} />
-                <StatItem label="OPEN DIRECTIVES" value={projects.length} />
+                <StatItem label="OPEN PROJECTS" value={projects.length} />
              </Card>
           </section>
 
@@ -206,13 +206,13 @@ export function ClientDashboard() {
               <div className="p-8 bg-black text-white border border-white/10">
                 <h4 className="text-2xl font-black tracking-tighter mb-4 uppercase italic italic">CLIENT PRO.</h4>
                 <p className="text-[11px] font-bold uppercase tracking-widest leading-relaxed mb-8 text-white/60">
-                  Unlock the top 1% of AI-verified operatives and receive dedicated support.
+                  Unlock verified talent and receive dedicated support.
                 </p>
                 <button 
                   onClick={() => setShowUpgradeModal(true)} 
                   className="w-full py-4 bg-white text-black font-black uppercase tracking-widest text-[10px] hover:bg-white/90 transition-all"
                 >
-                  Authorize Upgrade
+                  Upgrade Now
                 </button>
               </div>
             </div>
@@ -224,7 +224,7 @@ export function ClientDashboard() {
         <div className="flex justify-between items-end mb-10 pb-4 border-b border-white/10">
           <div>
             <div className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-2">Talent Pool</div>
-            <h3 className="text-3xl font-black tracking-tighter uppercase italic">VERIFIED OPERATIVES.</h3>
+            <h3 className="text-3xl font-black tracking-tighter uppercase italic">VERIFIED TALENT.</h3>
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -323,7 +323,7 @@ function TalentCard({ id, name, role, rating, skills, score, avatar }) {
           onClick={() => navigate(`/profile/${id}`)} 
           className="w-full py-4 border border-white/20 text-[10px] font-black uppercase tracking-widest hover:border-white hover:bg-white hover:text-black transition-all"
         >
-          View Full Dossier
+          View Profile
         </button>
       </div>
     </div>

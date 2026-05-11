@@ -60,7 +60,7 @@ export function Login() {
             SkillScrumpt.in
           </Link>
           <h2 className="text-5xl font-black tracking-tighter mb-4">WELCOME <br />BACK.</h2>
-          <p className="text-muted text-[10px] font-black uppercase tracking-[0.4em]">Authorized Personnel Only</p>
+          <p className="text-muted text-[10px] font-black uppercase tracking-[0.4em]">Secure Login Portal</p>
         </div>
 
         <div className="p-1 border border-white/10 bg-white/5">
@@ -78,21 +78,21 @@ export function Login() {
             
             <form className="space-y-8" onSubmit={handleLogin}>
               <div className="space-y-4">
-                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted ml-1">Email Identification</label>
+                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted ml-1">Email Address</label>
                 <input 
                   type="email" 
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="w-full px-6 py-4 bg-transparent border border-white/20 focus:border-white outline-none transition-all font-bold placeholder:text-white/20 uppercase"
-                  placeholder="IDENTITY@SKILLSCRUMPT.IN"
+                  placeholder="YOUR@EMAIL.COM"
                 />
               </div>
 
               <div className="space-y-4">
                 <div className="flex justify-between items-center px-1">
-                  <label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted">Secure Access Key</label>
-                  <Link to="/forgot-password" size="sm" className="text-[10px] font-black text-muted hover:text-white transition-colors underline">RESET KEY</Link>
+                  <label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted">Password</label>
+                  <Link to="/forgot-password" size="sm" className="text-[10px] font-black text-muted hover:text-white transition-colors underline">FORGOT PASSWORD?</Link>
                 </div>
                 <input 
                   type="password" 
@@ -106,7 +106,7 @@ export function Login() {
 
               <div className="flex items-center gap-3 px-1">
                 <input type="checkbox" id="remember" className="w-4 h-4 rounded-none bg-transparent border-white/20 text-white focus:ring-0 cursor-pointer" />
-                <label htmlFor="remember" className="text-[10px] font-black uppercase tracking-widest text-muted cursor-pointer hover:text-white transition-colors">Maintain Session</label>
+                <label htmlFor="remember" className="text-[10px] font-black uppercase tracking-widest text-muted cursor-pointer hover:text-white transition-colors">Remember me</label>
               </div>
 
               <button 
@@ -116,7 +116,7 @@ export function Login() {
               >
                 {isLoading ? <Loader2 className="animate-spin" size={20} /> : (
                   <>
-                    Authorize <ArrowRight className="group-hover:translate-x-2 transition-transform" size={16} />
+                    Login <ArrowRight className="group-hover:translate-x-2 transition-transform" size={16} />
                   </>
                 )}
               </button>
@@ -126,7 +126,7 @@ export function Login() {
                   <div className="w-full border-t border-white/10" />
                 </div>
                 <div className="relative flex justify-center">
-                  <span className="bg-black px-6 text-[9px] font-black uppercase tracking-[0.5em] text-white/30 italic">Secondary Bypass</span>
+                  <span className="bg-black px-6 text-[9px] font-black uppercase tracking-[0.5em] text-white/30 italic">Alternative Login</span>
                 </div>
               </div>
 
@@ -145,7 +145,7 @@ export function Login() {
         </div>
 
         <p className="text-center mt-12 text-[10px] font-black uppercase tracking-[0.2em] text-muted">
-          New operative? <Link to="/register" className="text-white hover:underline ml-2">Establish Identity</Link>
+          New user? <Link to="/register" className="text-white hover:underline ml-2">Sign Up</Link>
         </p>
       </motion.div>
     </div>
@@ -215,8 +215,8 @@ export function Register() {
           <Link to="/" className="inline-block text-3xl font-black tracking-tighter uppercase italic mb-8 hover:scale-105 transition-transform">
             SkillScrumpt.in
           </Link>
-          <h2 className="text-6xl font-black tracking-tighter mb-4">ESTABLISH <br />IDENTITY.</h2>
-          <p className="text-muted text-[10px] font-black uppercase tracking-[0.4em]">Join the Verified Elite Operatives</p>
+          <h2 className="text-6xl font-black tracking-tighter mb-4">JOIN US.</h2>
+          <p className="text-muted text-[10px] font-black uppercase tracking-[0.4em]">Create your account to start</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
@@ -261,7 +261,7 @@ export function Register() {
 
             <form className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8" onSubmit={handleRegister}>
               <div className="space-y-4">
-                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted ml-1">Given Name</label>
+                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted ml-1">First Name</label>
                 <input 
                   type="text" required
                   value={formData.firstName}
@@ -271,7 +271,7 @@ export function Register() {
                 />
               </div>
               <div className="space-y-4">
-                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted ml-1">Surname</label>
+                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted ml-1">Last Name</label>
                 <input 
                   type="text" required
                   value={formData.lastName}
@@ -308,7 +308,7 @@ export function Register() {
                     <select 
                       value={formData.graduationYear}
                       onChange={(e) => setFormData({ ...formData, graduationYear: e.target.value })}
-                      className="w-full px-6 py-4 bg-black border border-white/20 focus:border-white outline-none transition-all font-bold uppercase tracking-widest cursor-pointer"
+                      className="w-full px-6 py-4 bg-black border border-white/20 focus:border-white outline-none transition-all font-bold uppercase tracking-widest cursor-pointer rounded-full"
                     >
                       <option>2024</option>
                       <option>2025</option>
@@ -320,7 +320,7 @@ export function Register() {
               )}
 
               <div className="space-y-4 md:col-span-2">
-                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted ml-1">Access Passphrase</label>
+                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted ml-1">Password</label>
                 <input 
                   type="password" required
                   value={formData.password}
@@ -334,7 +334,7 @@ export function Register() {
                 <div className="flex items-center gap-3 px-1">
                   <input type="checkbox" required id="terms" className="w-4 h-4 rounded-none bg-transparent border-white/20 text-white focus:ring-0 cursor-pointer" />
                   <label htmlFor="terms" className="text-[9px] font-black uppercase tracking-widest text-muted cursor-pointer hover:text-white transition-colors leading-relaxed">
-                    I acknowledge the <Link to="/terms" className="text-white underline">Protocols</Link> and <Link to="/privacy" className="text-white underline">Security Policies</Link>
+                    I agree to the <Link to="/terms" className="text-white underline">Terms</Link> and <Link to="/privacy" className="text-white underline">Privacy Policy</Link>
                   </label>
                 </div>
                 <button 
@@ -344,7 +344,7 @@ export function Register() {
                 >
                   {isLoading ? <Loader2 className="animate-spin" size={20} /> : (
                     <>
-                      Initialize Account <ChevronRight className="group-hover:translate-x-2 transition-transform" size={16} />
+                      Create Account <ChevronRight className="group-hover:translate-x-2 transition-transform" size={16} />
                     </>
                   )}
                 </button>
@@ -354,7 +354,7 @@ export function Register() {
         </div>
 
         <p className="text-center mt-12 text-[10px] font-black uppercase tracking-[0.2em] text-muted">
-          Already established? <Link to="/login" className="text-white hover:underline ml-2">Resume Session</Link>
+          Already have an account? <Link to="/login" className="text-white hover:underline ml-2">Login</Link>
         </p>
 
         <div className="mt-16 flex justify-center items-center gap-8 text-[9px] font-black uppercase tracking-[0.3em] text-white/20">
