@@ -47,7 +47,17 @@ export function StudentProjects() {
     }
   };
 
-  if (isLoading && !user) return <div className="flex justify-center py-40 bg-slate-50 min-h-screen"><Loader2 className="animate-spin text-slate-400" size={48} /></div>;
+  if (isLoading && !user) {
+    const cachedUserStr = localStorage.getItem('user');
+    const cachedUser = cachedUserStr ? JSON.parse(cachedUserStr) : null;
+    return (
+      <DashboardLayout user={cachedUser}>
+        <div className="min-h-[60vh] flex items-center justify-center">
+          <Loader2 className="animate-spin text-slate-400" size={48} />
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout user={user}>
@@ -118,7 +128,17 @@ export function StudentSkills() {
     }
   };
 
-  if (isLoading && !user) return <div className="flex justify-center py-40 bg-slate-50 min-h-screen"><Loader2 className="animate-spin text-slate-400" size={48} /></div>;
+  if (isLoading && !user) {
+    const cachedUserStr = localStorage.getItem('user');
+    const cachedUser = cachedUserStr ? JSON.parse(cachedUserStr) : null;
+    return (
+      <DashboardLayout user={cachedUser}>
+        <div className="min-h-[60vh] flex items-center justify-center">
+          <Loader2 className="animate-spin text-slate-400" size={48} />
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout user={user}>
@@ -221,126 +241,7 @@ export function StudentSkills() {
   );
 }
 
-// --- Student Settings ---
-export function StudentSettings() {
-  const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    bio: ''
-  });
-
-  useEffect(() => {
-    fetchProfile();
-  }, []);
-
-  const fetchProfile = async () => {
-    try {
-      const savedUser = JSON.parse(localStorage.getItem('user'));
-      const response = await api.get(`/users/profile/${savedUser._id || savedUser.id}`);
-      setUser(response.data);
-      setFormData({
-        firstName: response.data.firstName,
-        lastName: response.data.lastName,
-        email: response.data.email,
-        bio: response.data.bio || ''
-      });
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleUpdate = async () => {
-    try {
-      await api.put('/users/profile', formData);
-      alert('Profile updated successfully!');
-    } catch (err) {
-      alert('Error updating profile');
-    }
-  };
-
-  if (isLoading && !user) return <div className="flex justify-center py-40 bg-slate-50 min-h-screen"><Loader2 className="animate-spin text-slate-400" size={48} /></div>;
-
-  return (
-    <DashboardLayout user={user}>
-      <div className="bg-slate-50 min-h-screen pb-24 font-sans px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto pt-8">
-          <header className="mb-12">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse shadow-sm" />
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Account Management</span>
-            </div>
-            <h1 className="text-4xl font-bold tracking-tight text-slate-900">Settings</h1>
-          </header>
-
-          <div className="grid lg:grid-cols-4 gap-8">
-            <div className="lg:col-span-1 space-y-2">
-               <SettingsLink icon={User} label="Profile Info" active />
-               <SettingsLink icon={Lock} label="Security" />
-               <SettingsLink icon={Bell} label="Notifications" />
-               <SettingsLink icon={CreditCard} label="Billing" />
-               <SettingsLink icon={Shield} label="Privacy" />
-            </div>
-
-            <div className="lg:col-span-3">
-              <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-8 md:p-12">
-                <div className="grid md:grid-cols-2 gap-8 mb-8">
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">First Name</label>
-                    <input 
-                      type="text" 
-                      value={formData.firstName} 
-                      onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-                      className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all font-medium text-slate-900" 
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Last Name</label>
-                    <input 
-                      type="text" 
-                      value={formData.lastName} 
-                      onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-                      className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all font-medium text-slate-900" 
-                    />
-                  </div>
-                  <div className="space-y-2 md:col-span-2">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Email Address</label>
-                    <input 
-                      type="email" 
-                      value={formData.email} 
-                      disabled
-                      className="w-full px-5 py-3.5 bg-slate-100 border border-slate-200 rounded-xl text-slate-500 outline-none font-medium cursor-not-allowed" 
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2 mb-10">
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Professional Bio</label>
-                  <textarea 
-                    rows={5} 
-                    value={formData.bio}
-                    onChange={(e) => setFormData({...formData, bio: e.target.value})}
-                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all font-medium text-slate-900 resize-none"
-                    placeholder="Tell clients about your expertise..."
-                  ></textarea>
-                </div>
-
-                <div className="pt-8 border-t border-slate-100 flex justify-end gap-4">
-                   <button className="px-6 py-3 border border-slate-200 rounded-xl text-slate-600 font-bold text-sm hover:bg-slate-50 transition-all shadow-sm">Cancel</button>
-                   <button onClick={handleUpdate} className="px-8 py-3 bg-indigo-600 text-white font-bold rounded-xl text-sm hover:bg-indigo-700 transition-all shadow-md">Save Changes</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </DashboardLayout>
-  );
-}
+// StudentSettings has been migrated to SharedSettingsPage
 
 // --- Helper Components ---
 

@@ -14,7 +14,8 @@ import {
   DollarSign,
   Plus,
   ArrowRight,
-  Zap
+  Zap,
+  User
 } from 'lucide-react';
 import { Badge } from '../components/UI';
 
@@ -35,6 +36,7 @@ export function DashboardLayout({ children, user }) {
         { icon: Users, label: 'User Management', path: '/dashboard/admin/users' },
         { icon: Award, label: 'Proctoring Tests', path: '/dashboard/admin/create-test' },
         { icon: DollarSign, label: 'Financial Tracking', path: '/dashboard/admin/transactions' },
+        { icon: User, label: 'My Profile', path: `/profile/${user?._id || user?.id}` },
         { icon: Settings, label: 'Settings', path: '/settings' },
       ];
     }
@@ -45,6 +47,7 @@ export function DashboardLayout({ children, user }) {
         { icon: Briefcase, label: 'My Projects', path: '/my-projects' },
         { icon: Users, label: 'Verified Talent', path: '/talent' },
         { icon: Plus, label: 'Post Project', path: '/post-project' },
+        { icon: User, label: 'My Profile', path: `/profile/${user?._id || user?.id}` },
         { icon: Settings, label: 'Settings', path: '/settings' },
       ];
     }
@@ -52,11 +55,12 @@ export function DashboardLayout({ children, user }) {
     // Default: Professional/Student
     return [
       { icon: LayoutDashboard, label: 'Overview', path: '/dashboard/student' },
-      { icon: Briefcase, label: 'Browse Projects', path: '/projects' },
+      { icon: Briefcase, label: 'Browse Projects', path: '/marketplace' },
       { icon: Briefcase, label: 'My Contracts', path: '/dashboard/student/projects' },
       { icon: Award, label: 'Skill Badges', path: '/dashboard/student/skills' },
       { icon: Shield, label: 'Skill Assessments', path: '/dashboard/student/assessments' },
       { icon: TrendingUp, label: 'Earnings', path: '/dashboard/student/earnings' },
+      { icon: User, label: 'My Profile', path: `/profile/${user?._id || user?.id}` },
       { icon: Settings, label: 'Settings', path: '/dashboard/student/settings' },
     ];
   };

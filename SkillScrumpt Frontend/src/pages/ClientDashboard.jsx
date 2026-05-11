@@ -127,10 +127,14 @@ export function ClientDashboard() {
   };
 
   if (isLoading && !user) {
+    const cachedUserStr = localStorage.getItem('user');
+    const cachedUser = cachedUserStr ? JSON.parse(cachedUserStr) : null;
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <Loader2 className="animate-spin text-indigo-600" size={48} />
-      </div>
+      <DashboardLayout user={cachedUser}>
+        <div className="min-h-[60vh] flex items-center justify-center">
+          <Loader2 className="animate-spin text-indigo-600" size={48} />
+        </div>
+      </DashboardLayout>
     );
   }
 
@@ -237,12 +241,21 @@ export function ClientDashboard() {
               <p className="text-sm leading-relaxed mb-8 text-indigo-100">
                 Unlock verified talent profiles, secure priority listings, and receive dedicated support.
               </p>
-              <button 
-                onClick={() => setShowUpgradeModal(true)} 
-                className="w-full py-4 bg-white text-indigo-900 rounded-2xl text-sm font-bold hover:bg-slate-50 transition-all shadow-sm"
-              >
-                Upgrade Account
-              </button>
+              {user?.isPro ? (
+                <button 
+                  disabled
+                  className="w-full py-4 bg-indigo-500 text-indigo-100 rounded-2xl text-sm font-bold shadow-sm cursor-default flex items-center justify-center gap-2"
+                >
+                  <CheckCircle size={18} /> Already Upgraded to Pro
+                </button>
+              ) : (
+                <button 
+                  onClick={() => setShowUpgradeModal(true)} 
+                  className="w-full py-4 bg-white text-indigo-900 rounded-2xl text-sm font-bold hover:bg-slate-50 transition-all shadow-sm"
+                >
+                  Upgrade Account
+                </button>
+              )}
             </motion.section>
           </div>
         </div>

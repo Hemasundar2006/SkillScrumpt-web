@@ -38,7 +38,17 @@ export function StudentEarnings() {
     }
   };
 
-  if (isLoading && !user) return <div className="flex justify-center py-40 bg-slate-50 min-h-screen"><Loader2 className="animate-spin text-slate-400" size={48} /></div>;
+  if (isLoading && !user) {
+    const cachedUserStr = localStorage.getItem('user');
+    const cachedUser = cachedUserStr ? JSON.parse(cachedUserStr) : null;
+    return (
+      <DashboardLayout user={cachedUser}>
+        <div className="min-h-[60vh] flex items-center justify-center">
+          <Loader2 className="animate-spin text-slate-400" size={48} />
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout user={user}>

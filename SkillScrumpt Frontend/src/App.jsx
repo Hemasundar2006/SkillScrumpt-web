@@ -36,10 +36,13 @@ import { MouseTrail } from './components/MouseTrail';
 
 import { Navigate } from 'react-router-dom';
 
-// Layout wrapper to handle Navbar/Footer visibility
 function AppLayout({ children }) {
   const location = useLocation();
-  const isDashboard = location.pathname.includes('/dashboard') || location.pathname.includes('/workspace');
+  const isDashboardRoute = location.pathname.includes('/dashboard') || location.pathname.includes('/workspace');
+  // If user is logged in and visits profile or marketplace, treat it like dashboard
+  const userStr = localStorage.getItem('user');
+  const isLoggedIn = !!userStr;
+  const isDashboard = isDashboardRoute || (isLoggedIn && (location.pathname.includes('/profile/') || location.pathname.includes('/marketplace') || location.pathname.includes('/projects')));
   const isAuth = location.pathname === '/login' || location.pathname === '/register';
   const isHome = location.pathname === '/';
 

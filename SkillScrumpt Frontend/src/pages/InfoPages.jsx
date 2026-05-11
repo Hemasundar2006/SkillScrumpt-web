@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Shield, Globe, Award, Zap, Users, MessageSquare, DollarSign, CheckCircle, MinusCircle, Star, Cpu, Lock, Monitor, Target, ArrowRight, User } from 'lucide-react';
 import { Button, Card, Badge } from '../components/UI';
 import { Link, useNavigate } from 'react-router-dom';
+import { DashboardLayout } from '../layout/DashboardLayout';
 
 export function AboutPage() {
   return (
@@ -445,7 +446,7 @@ export function ProctoringPage() {
 
 export function MarketplacePage() {
   const navigate = useNavigate();
-  return (
+  const content = (
     <div className="pt-24 pb-20 bg-black text-white selection:bg-white selection:text-black min-h-screen">
       <div className="max-w-7xl mx-auto px-6">
         <header className="mb-32">
@@ -504,6 +505,14 @@ export function MarketplacePage() {
       </div>
     </div>
   );
+
+  const userStr = localStorage.getItem('user');
+  const user = userStr ? JSON.parse(userStr) : null;
+  if (user) {
+    return <DashboardLayout user={user}>{content}</DashboardLayout>;
+  }
+
+  return content;
 }
 
 function ProctoringFeature({ icon: Icon, title, desc }) {

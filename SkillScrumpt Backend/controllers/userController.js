@@ -107,7 +107,19 @@ exports.updateUserProfile = async (req, res) => {
     if (user) {
       user.firstName = req.body.firstName || user.firstName;
       user.lastName = req.body.lastName || user.lastName;
-      user.bio = req.body.bio || user.bio;
+      user.bio = req.body.bio !== undefined ? req.body.bio : user.bio;
+      user.phone = req.body.phone !== undefined ? req.body.phone : user.phone;
+      user.location = req.body.location !== undefined ? req.body.location : user.location;
+      user.website = req.body.website !== undefined ? req.body.website : user.website;
+      user.timezone = req.body.timezone !== undefined ? req.body.timezone : user.timezone;
+      
+      if (req.body.socialLinks) {
+        user.socialLinks = {
+          github: req.body.socialLinks.github !== undefined ? req.body.socialLinks.github : user.socialLinks?.github,
+          linkedin: req.body.socialLinks.linkedin !== undefined ? req.body.socialLinks.linkedin : user.socialLinks?.linkedin,
+          twitter: req.body.socialLinks.twitter !== undefined ? req.body.socialLinks.twitter : user.socialLinks?.twitter
+        };
+      }
       
       if (req.body.password) {
         user.password = req.body.password;
@@ -122,6 +134,11 @@ exports.updateUserProfile = async (req, res) => {
         email: updatedUser.email,
         role: updatedUser.role,
         bio: updatedUser.bio,
+        phone: updatedUser.phone,
+        location: updatedUser.location,
+        website: updatedUser.website,
+        timezone: updatedUser.timezone,
+        socialLinks: updatedUser.socialLinks,
         token: generateToken(updatedUser._id),
       });
     } else {

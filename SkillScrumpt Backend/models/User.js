@@ -9,6 +9,15 @@ const userSchema = new mongoose.Schema({
   role: { type: String, enum: ['professional', 'client', 'admin'], required: true },
   avatar: { type: String }, // URL or initials
   bio: { type: String },
+  phone: { type: String },
+  location: { type: String },
+  website: { type: String },
+  socialLinks: {
+    github: { type: String },
+    linkedin: { type: String },
+    twitter: { type: String }
+  },
+  timezone: { type: String },
   isVerified: { type: Boolean, default: false },
   
   // Professional specific fields

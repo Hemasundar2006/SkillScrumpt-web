@@ -7,7 +7,9 @@ import {
   Shield, 
   Loader2,
   ChevronRight,
-  Settings
+  Settings,
+  BadgeCheck,
+  Zap
 } from 'lucide-react';
 import { Card, Button } from '../components/UI';
 import { DashboardLayout } from '../layout/DashboardLayout';
@@ -23,6 +25,11 @@ export function SharedSettingsPage() {
     lastName: '',
     email: '',
     bio: '',
+    phone: '',
+    location: '',
+    website: '',
+    timezone: '',
+    socialLinks: { github: '', linkedin: '', twitter: '' },
     password: '',
     confirmPassword: ''
   });
@@ -37,10 +44,15 @@ export function SharedSettingsPage() {
       const response = await api.get(`/users/profile/${savedUser._id || savedUser.id}`);
       setUser(response.data);
       setFormData({
-        firstName: response.data.firstName,
-        lastName: response.data.lastName,
-        email: response.data.email,
+        firstName: response.data.firstName || '',
+        lastName: response.data.lastName || '',
+        email: response.data.email || '',
         bio: response.data.bio || '',
+        phone: response.data.phone || '',
+        location: response.data.location || '',
+        website: response.data.website || '',
+        timezone: response.data.timezone || '',
+        socialLinks: response.data.socialLinks || { github: '', linkedin: '', twitter: '' },
         password: '',
         confirmPassword: ''
       });
@@ -76,12 +88,32 @@ export function SharedSettingsPage() {
     }
   };
 
-  if (isLoading && !user) return <div className="flex justify-center py-40 bg-slate-50 min-h-screen"><Loader2 className="animate-spin text-indigo-600" size={48} /></div>;
+  if (isLoading && !user) {
+    const cachedUserStr = localStorage.getItem('user');
+    const cachedUser = cachedUserStr ? JSON.parse(cachedUserStr) : null;
+    return (
+      <DashboardLayout user={cachedUser}>
+        <div className="min-h-[60vh] flex items-center justify-center">
+          <Loader2 className="animate-spin text-indigo-600" size={48} />
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout user={user}>
         <header className="mb-12">
-          <h1 className="text-4xl font-bold tracking-tight text-slate-900 mb-2">Account Settings</h1>
+          <div className="flex items-center gap-4 mb-2">
+            <h1 className="text-4xl font-bold tracking-tight text-slate-900">
+              {user?.firstName} {user?.lastName}
+            </h1>
+            {user?.isVerified && <BadgeCheck size={32} className="text-indigo-500" />}
+            {user?.isPro && (
+              <span className="flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-amber-400 to-amber-600 text-white text-xs font-black rounded-full shadow-md">
+                <Zap size={14} fill="currentColor" /> PRO
+              </span>
+            )}
+          </div>
           <p className="text-slate-500 text-sm font-medium">Manage your profile, security, and preferences.</p>
         </header>
 
@@ -147,6 +179,74 @@ export function SharedSettingsPage() {
                     className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 outline-none transition-all font-medium text-sm resize-none"
                     placeholder="Tell us about yourself..."
                   ></textarea>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Phone Number</label>
+                    <input 
+                      type="tel"
+                      value={formData.phone} 
+                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 outline-none transition-all font-medium text-sm" 
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Location</label>
+                    <input 
+                      type="text"
+                      value={formData.location} 
+                      onChange={(e) => setFormData({...formData, location: e.target.value})}
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 outline-none transition-all font-medium text-sm" 
+                      placeholder="City, Country"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Website / Portfolio</label>
+                    <input 
+                      type="url"
+                      value={formData.website} 
+                      onChange={(e) => setFormData({...formData, website: e.target.value})}
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 outline-none transition-all font-medium text-sm" 
+                      placeholder="https://"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Timezone</label>
+                    <input 
+                      type="text"
+                      value={formData.timezone} 
+                      onChange={(e) => setFormData({...formData, timezone: e.target.value})}
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 outline-none transition-all font-medium text-sm" 
+                      placeholder="e.g., UTC-5"
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-8 border-t border-slate-100">
+                  <h4 className="text-lg font-bold text-slate-900 mb-8">Social Profiles</h4>
+                  <div className="grid md:grid-cols-2 gap-8">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">LinkedIn URL</label>
+                      <input 
+                        type="url"
+                        value={formData.socialLinks.linkedin} 
+                        onChange={(e) => setFormData({...formData, socialLinks: {...formData.socialLinks, linkedin: e.target.value}})}
+                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 outline-none transition-all font-medium text-sm" 
+                        placeholder="https://linkedin.com/in/..."
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">GitHub URL</label>
+                      <input 
+                        type="url"
+                        value={formData.socialLinks.github} 
+                        onChange={(e) => setFormData({...formData, socialLinks: {...formData.socialLinks, github: e.target.value}})}
+                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 outline-none transition-all font-medium text-sm" 
+                        placeholder="https://github.com/..."
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 <div className="pt-8 border-t border-slate-100">

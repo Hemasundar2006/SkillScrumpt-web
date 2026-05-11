@@ -139,10 +139,14 @@ export function StudentDashboard() {
   };
 
   if (isLoading && !user) {
+    const cachedUserStr = localStorage.getItem('user');
+    const cachedUser = cachedUserStr ? JSON.parse(cachedUserStr) : null;
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <Loader2 className="animate-spin text-indigo-600" size={48} />
-      </div>
+      <DashboardLayout user={cachedUser}>
+        <div className="min-h-[60vh] flex items-center justify-center">
+          <Loader2 className="animate-spin text-indigo-600" size={48} />
+        </div>
+      </DashboardLayout>
     );
   }
 
@@ -297,7 +301,11 @@ export function StudentDashboard() {
             >
               <h3 className="text-base font-bold text-slate-900 mb-4 px-2">Command Center</h3>
               <div className="space-y-2">
-                <QuickActionButton onClick={() => setShowUpgradeModal(true)} icon={Zap} label="Upgrade Access Level" />
+                {user?.isPro ? (
+                  <QuickActionButton onClick={() => {}} icon={CheckCircle} label="Already Upgraded to Pro" disabled />
+                ) : (
+                  <QuickActionButton onClick={() => setShowUpgradeModal(true)} icon={Zap} label="Upgrade Access Level" />
+                )}
                 <QuickActionButton onClick={() => navigate('/assessments')} icon={Shield} label="Launch AI Proctoring" />
                 <QuickActionButton onClick={() => navigate('/projects')} icon={Briefcase} label="Browse Project Market" />
                 <QuickActionButton icon={Users} label="Collaborator Network" />
@@ -396,16 +404,16 @@ function AssessmentCard({ title, duration, difficulty, reward, icon: Icon = Zap,
   );
 }
 
-function QuickActionButton({ icon: Icon, label, onClick }) {
+function QuickActionButton({ icon: Icon, label, onClick, disabled }) {
   return (
-    <button onClick={onClick} className="flex items-center justify-between w-full p-4 bg-white rounded-2xl hover:bg-slate-50 transition-all group">
+    <button onClick={onClick} disabled={disabled} className={`flex items-center justify-between w-full p-4 rounded-2xl transition-all group ${disabled ? 'bg-slate-50 opacity-80 cursor-default' : 'bg-white hover:bg-slate-50'}`}>
       <div className="flex items-center gap-4">
-        <div className="p-2.5 bg-slate-50 text-indigo-600 rounded-xl group-hover:bg-indigo-100 transition-colors">
+        <div className={`p-2.5 rounded-xl transition-colors ${disabled ? 'bg-indigo-50 text-indigo-400' : 'bg-slate-50 text-indigo-600 group-hover:bg-indigo-100'}`}>
           <Icon size={20} />
         </div>
-        <span className="text-sm font-bold text-slate-700">{label}</span>
+        <span className={`text-sm font-bold ${disabled ? 'text-slate-500' : 'text-slate-700'}`}>{label}</span>
       </div>
-      <ChevronRight size={18} className="text-slate-300 group-hover:text-indigo-600 transition-colors transform group-hover:translate-x-1" />
+      {!disabled && <ChevronRight size={18} className="text-slate-300 group-hover:text-indigo-600 transition-colors transform group-hover:translate-x-1" />}
     </button>
   );
 }

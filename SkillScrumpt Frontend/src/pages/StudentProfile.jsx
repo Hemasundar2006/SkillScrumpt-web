@@ -18,8 +18,43 @@ import {
 } from 'lucide-react';
 import { Card, Badge, Button, GlassContainer } from '../components/UI';
 
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import api from '../utils/api';
+import { DashboardLayout } from '../layout/DashboardLayout';
+
 export function StudentProfile() {
-  return (
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [profile, setProfile] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const currentUserStr = localStorage.getItem('user');
+  const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await api.get(`/users/profile/${id}`);
+        setProfile(res.data);
+      } catch (err) {
+        console.error('Error fetching profile:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchProfile();
+  }, [id]);
+
+  if (isLoading) {
+    return <div className="pt-32 pb-24 text-center font-bold text-gray-500">Loading profile...</div>;
+  }
+
+  if (!profile) {
+    return <div className="pt-32 pb-24 text-center font-bold text-gray-500">Profile not found.</div>;
+  }
+
+  const isOwnProfile = currentUser && (currentUser._id === id || currentUser.id === id);
+
+  const content = (
     <div className="pt-20 bg-[#f8f9fb] pb-24">
       {/* Profile Header */}
       <div className="bg-secondary text-white py-20 relative overflow-hidden">
@@ -27,36 +62,47 @@ export function StudentProfile() {
         <div className="max-w-7xl mx-auto px-4 relative z-10">
           <div className="flex flex-col md:flex-row gap-10 items-center md:items-start">
             <div className="relative">
-              <div className="w-40 h-40 bg-gray-200 rounded-custom border-4 border-white/10 overflow-hidden grayscale hover:grayscale-0 transition-all duration-700 shadow-2xl">
-                {/* Profile image placeholder */}
+              <div className="w-40 h-40 bg-gray-200 rounded-custom border-4 border-white/10 overflow-hidden shadow-2xl flex items-center justify-center text-4xl font-bold text-gray-400 bg-white">
+                {profile.avatar ? <img src={profile.avatar} alt="avatar" className="w-full h-full object-cover" /> : profile.firstName?.[0]}
               </div>
-              <div className="absolute -bottom-4 -right-4 bg-primary text-white p-2 rounded-custom shadow-lg border-4 border-secondary">
-                <Shield size={24} />
-              </div>
+              {profile.isVerified && (
+                <div className="absolute -bottom-4 -right-4 bg-primary text-white p-2 rounded-custom shadow-lg border-4 border-secondary">
+                  <Shield size={24} />
+                </div>
+              )}
             </div>
             
             <div className="flex-1 text-center md:text-left">
               <div className="flex flex-col md:flex-row md:items-center gap-4 mb-4">
-                <h1 className="text-4xl lg:text-5xl font-bold tracking-tight flex items-center gap-2">
-                  Alex Rivera <BadgeCheck size={32} className="text-primary fill-primary/10" />
-                  <span className="flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-amber-400 to-amber-600 text-white text-[12px] font-black rounded-full shadow-md ml-4">
-                    <Zap size={14} fill="currentColor" /> PRO MEMBER
-                  </span>
+                <h1 className="text-4xl lg:text-5xl font-bold tracking-tight flex items-center justify-center md:justify-start gap-2">
+                  {profile.firstName} {profile.lastName} {profile.isVerified && <BadgeCheck size={32} className="text-primary fill-primary/10" />}
+                  {profile.isPro && (
+                    <span className="flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-amber-400 to-amber-600 text-white text-[12px] font-black rounded-full shadow-md ml-4">
+                      <Zap size={14} fill="currentColor" /> PRO
+                    </span>
+                  )}
                 </h1>
-                <Badge variant="primary" className="bg-primary/20 text-blue-300 border-none px-4 py-1.5 uppercase tracking-widest font-bold">Verified Expert</Badge>
+                {profile.role === 'professional' && <Badge variant="primary" className="bg-primary/20 text-blue-300 border-none px-4 py-1.5 uppercase tracking-widest font-bold">Professional</Badge>}
+                {profile.role === 'client' && <Badge variant="primary" className="bg-primary/20 text-emerald-300 border-none px-4 py-1.5 uppercase tracking-widest font-bold">Client</Badge>}
               </div>
-              <p className="text-xl text-gray-400 mb-6 font-medium">Senior Fullstack Engineer & Distributed Systems Architect</p>
+              <p className="text-xl text-gray-400 mb-6 font-medium">{profile.role === 'professional' ? (profile.skills?.[0] || 'Professional Talent') : 'Client Account'}</p>
               
               <div className="flex flex-wrap justify-center md:justify-start gap-6 text-sm font-bold text-gray-400 uppercase tracking-widest">
-                <span className="flex items-center gap-2"><MapPin size={16} /> San Francisco, CA</span>
-                <span className="flex items-center gap-2"><Globe size={16} /> remote-first</span>
-                <span className="flex items-center gap-2 text-primary"><Star size={16} className="fill-primary" /> 4.9 (124 reviews)</span>
+                {profile.location && <span className="flex items-center gap-2"><MapPin size={16} /> {profile.location}</span>}
+                {profile.timezone && <span className="flex items-center gap-2"><Globe size={16} /> {profile.timezone}</span>}
+                {profile.rating && <span className="flex items-center gap-2 text-primary"><Star size={16} className="fill-primary" /> {profile.rating}</span>}
               </div>
             </div>
 
-            <div className="flex flex-col gap-3 w-full md:w-auto">
-              <Button className="h-12 px-8 shadow-primary/20">Hire for Project</Button>
-              <Button variant="outline" className="h-12 px-8 border-white/10 text-white hover:bg-white/5">Send Message</Button>
+            <div className="flex flex-col gap-3 w-full md:w-auto mt-6 md:mt-0">
+              {isOwnProfile ? (
+                <Button onClick={() => navigate(currentUser.role === 'professional' ? '/dashboard/student/settings' : '/settings')} className="h-12 px-8 shadow-primary/20">Edit Profile</Button>
+              ) : (
+                <>
+                  <Button className="h-12 px-8 shadow-primary/20">Hire for Project</Button>
+                  <Button variant="outline" className="h-12 px-8 border-white/10 text-white hover:bg-white/5">Send Message</Button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -94,9 +140,13 @@ export function StudentProfile() {
             <Card className="p-8 border-none shadow-xl">
               <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-6">Connect</h3>
               <div className="space-y-4">
-                <SocialLink icon={Code} label="GitHub" handle="@arivera" />
-                <SocialLink icon={Linkedin} label="LinkedIn" handle="/in/alex-rivera" />
-                <SocialLink icon={Twitter} label="Twitter" handle="@alex_dev" />
+                {profile.website && <SocialLink icon={Code} label="Portfolio / Website" handle={new URL(profile.website).hostname.replace('www.', '')} href={profile.website} />}
+                {profile.socialLinks?.linkedin && <SocialLink icon={Linkedin} label="LinkedIn" handle="View Profile" href={profile.socialLinks.linkedin} />}
+                {profile.socialLinks?.github && <SocialLink icon={Code} label="GitHub" handle="View Profile" href={profile.socialLinks.github} />}
+                {profile.socialLinks?.twitter && <SocialLink icon={Twitter} label="Twitter" handle="View Profile" href={profile.socialLinks.twitter} />}
+                {(!profile.website && !profile.socialLinks?.linkedin && !profile.socialLinks?.github && !profile.socialLinks?.twitter) && (
+                  <p className="text-sm font-bold text-gray-400">No external links provided.</p>
+                )}
               </div>
             </Card>
           </div>
@@ -105,11 +155,8 @@ export function StudentProfile() {
           <div className="lg:col-span-2 space-y-8">
             <Card className="p-8 border-none shadow-xl">
               <h3 className="text-xl font-bold text-secondary mb-6">Professional Bio</h3>
-              <p className="text-gray-600 leading-relaxed mb-6">
-                With over 12 years of experience building scalable web applications, I specialize in architecting high-performance systems using modern tech stacks. I have a deep passion for clean code, performance optimization, and mentoring next-gen developers.
-              </p>
-              <p className="text-gray-600 leading-relaxed">
-                My work at Stripe and Coinbase involved scaling checkout systems to handle millions of transactions per second, ensuring 99.99% uptime and radical security on SkillScrumpt.in.
+              <p className="text-gray-600 leading-relaxed mb-6 whitespace-pre-wrap">
+                {profile.bio || "No professional bio provided yet."}
               </p>
             </Card>
 
@@ -144,6 +191,12 @@ export function StudentProfile() {
       </div>
     </div>
   );
+
+  if (currentUser) {
+    return <DashboardLayout user={currentUser}>{content}</DashboardLayout>;
+  }
+  
+  return content;
 }
 
 function SkillProgress({ label, value }) {
@@ -160,9 +213,9 @@ function SkillProgress({ label, value }) {
   );
 }
 
-function SocialLink({ icon: Icon, label, handle }) {
+function SocialLink({ icon: Icon, label, handle, href }) {
   return (
-    <a href="#" className="flex items-center justify-between p-3 border border-border rounded-custom hover:border-primary group transition-all">
+    <a href={href || "#"} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-3 border border-border rounded-custom hover:border-primary group transition-all">
       <div className="flex items-center gap-3">
         <div className="text-gray-400 group-hover:text-primary transition-colors">
           <Icon size={18} />
