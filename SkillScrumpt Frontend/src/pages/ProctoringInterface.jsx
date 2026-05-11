@@ -144,36 +144,36 @@ export function AIProctoringInterface() {
 
   if (isLocked) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-8 selection:bg-white selection:text-black">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-8">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="max-w-md w-full bg-black border border-white/20 p-12 text-center relative overflow-hidden"
+          className="max-w-md w-full bg-white rounded-[2rem] p-12 text-center relative overflow-hidden shadow-xl border border-slate-100"
         >
-          <div className="absolute top-0 left-0 w-full h-1 bg-white" />
-          <div className="w-24 h-24 border border-white/10 flex items-center justify-center mx-auto mb-10">
-            <Lock size={40} className="text-white/40" />
+          <div className="absolute top-0 left-0 w-full h-1.5 bg-rose-500" />
+          <div className="w-20 h-20 bg-rose-50 rounded-2xl flex items-center justify-center mx-auto mb-8 text-rose-500 shadow-sm">
+            <Lock size={32} />
           </div>
-          <h2 className="text-4xl font-black mb-6 tracking-tighter uppercase italic">SESSION DENIED.</h2>
-          <p className="text-white/40 text-[11px] font-bold uppercase tracking-widest leading-relaxed mb-10">
+          <h2 className="text-3xl font-bold mb-4 text-slate-900 tracking-tight">Access Denied</h2>
+          <p className="text-slate-500 text-sm font-medium leading-relaxed mb-8">
             {lockMessage || "Security systems detect multiple attempt signatures for this identity."}
           </p>
 
           {remainingHours && (
-            <div className="border border-white/10 p-8 mb-12 bg-white/5">
-               <p className="text-[9px] font-black text-white/30 uppercase tracking-widest mb-3">Protocol Timeout Remaining</p>
-               <div className="flex items-center justify-center gap-3">
-                  <Clock size={20} className="text-white/50" />
-                  <span className="text-3xl font-black italic">{remainingHours} HOURS</span>
+            <div className="p-6 mb-10 bg-slate-50 rounded-2xl border border-slate-100">
+               <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Timeout Remaining</p>
+               <div className="flex items-center justify-center gap-3 text-slate-900">
+                  <Clock size={20} className="text-indigo-600" />
+                  <span className="text-2xl font-bold">{remainingHours} Hours</span>
                </div>
             </div>
           )}
 
           <button 
-            className="w-full py-5 bg-white text-black font-black uppercase tracking-widest text-[11px] hover:bg-white/90 transition-all"
+            className="w-full py-4 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-all shadow-md"
             onClick={() => navigate('/dashboard/student')}
           >
-            Return to Control Center
+            Return to Dashboard
           </button>
         </motion.div>
       </div>
@@ -185,7 +185,7 @@ export function AIProctoringInterface() {
   const currentQuestion = questions[currentQuestionIdx];
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col selection:bg-white selection:text-black">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
       <canvas ref={canvasRef} style={{ display: "none" }} />
       <div className="hidden">
          <ProctoringOverlay 
@@ -195,34 +195,33 @@ export function AIProctoringInterface() {
          />
       </div>
 
-      {/* High-Tech Header */}
-      <header className="h-24 border-b border-white/10 flex items-center justify-between px-10 bg-black sticky top-0 z-50">
-        <div className="flex items-center gap-8">
-          <div className="relative group">
-            <Shield className="text-white relative z-10" size={32} />
+      {/* Header */}
+      <header className="h-20 border-b border-slate-200 bg-white flex items-center justify-between px-8 sticky top-0 z-50 shadow-sm">
+        <div className="flex items-center gap-6">
+          <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center shadow-sm">
+            <Shield size={20} />
           </div>
-          <div className="h-10 w-[1px] bg-white/10" />
           <div>
-            <h1 className="text-xl font-black tracking-tighter italic uppercase">SS.PROCTOR.IN.V4</h1>
-            <div className="flex items-center gap-3 mt-1">
-              <div className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-white animate-pulse' : 'bg-white/10'}`} />
-              <p className="text-[9px] font-black text-white/30 uppercase tracking-[0.3em]">
-                 {isActive ? 'Live Security Relay Active' : 'Relay Terminated'}
+            <h1 className="text-lg font-bold text-slate-900 tracking-tight">SkillScrumpt Assessment</h1>
+            <div className="flex items-center gap-2 mt-0.5">
+              <div className={`w-2 h-2 rounded-full ${isActive ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300'}`} />
+              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                 {isActive ? 'Proctoring Active' : 'Proctoring Inactive'}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-16">
-          <div className="hidden xl:flex items-center gap-12">
-             <ProctorIndicator icon={Camera} label="BIOMETRICS" active={isActive && cameraReady} />
-             <ProctorIndicator icon={Mic} label="AUDIO" active={isActive} />
-             <ProctorIndicator icon={Monitor} label="ENCRYPTED" active={isActive} />
+        <div className="flex items-center gap-10">
+          <div className="hidden xl:flex items-center gap-8">
+             <ProctorIndicator icon={Camera} label="Camera" active={isActive && cameraReady} />
+             <ProctorIndicator icon={Mic} label="Audio" active={isActive} />
+             <ProctorIndicator icon={Monitor} label="Screen" active={isActive} />
           </div>
           
-          <div className="flex items-center gap-5 px-8 py-3 border border-white/10 bg-white/5">
-            <Clock size={16} className="text-white/40" />
-            <span className={`text-2xl font-black italic tracking-tighter ${timeLeft < 300 ? 'animate-pulse' : ''}`}>
+          <div className="flex items-center gap-3 px-5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+            <Clock size={16} className="text-indigo-600" />
+            <span className={`text-lg font-bold tracking-tight ${timeLeft < 300 ? 'text-rose-600 animate-pulse' : 'text-slate-700'}`}>
               {formatTime(timeLeft)}
             </span>
           </div>
@@ -230,9 +229,9 @@ export function AIProctoringInterface() {
           <button 
             onClick={handleFinish}
             disabled={isSubmitting}
-            className="h-12 px-10 border border-white text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all"
+            className="px-6 py-2.5 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition-all shadow-sm"
           >
-            {isSubmitting ? 'TERMINATING...' : 'FINALIZE SESSION'}
+            {isSubmitting ? 'Submitting...' : 'Finish Test'}
           </button>
         </div>
       </header>
@@ -240,17 +239,17 @@ export function AIProctoringInterface() {
       {/* Workspace */}
       <div className="flex-1 flex overflow-hidden">
         {/* Navigation Sidebar */}
-        <aside className="w-24 border-r border-white/10 bg-black flex flex-col items-center py-10 gap-5 overflow-y-auto">
+        <aside className="w-24 border-r border-slate-200 bg-white flex flex-col items-center py-8 gap-3 overflow-y-auto shadow-sm z-10">
           {questions.map((_, i) => (
             <button 
               key={i}
               onClick={() => setCurrentQuestionIdx(i)}
-              className={`w-12 h-12 border flex items-center justify-center text-[10px] font-black transition-all flex-shrink-0 ${
+              className={`w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold transition-all flex-shrink-0 ${
                 i === currentQuestionIdx 
-                  ? 'bg-white border-white text-black italic scale-110' 
+                  ? 'bg-indigo-600 text-white shadow-md' 
                   : answers[i] !== undefined
-                  ? 'bg-white/20 border-white/20 text-white'
-                  : 'bg-black border-white/10 text-white/30 hover:border-white/50 hover:text-white'
+                  ? 'bg-indigo-50 text-indigo-700 border border-indigo-100'
+                  : 'bg-slate-50 text-slate-500 border border-slate-200 hover:border-slate-300 hover:bg-slate-100'
               }`}
             >
               {i + 1}
@@ -259,28 +258,28 @@ export function AIProctoringInterface() {
         </aside>
 
         {/* Assessment Engine */}
-        <main className="flex-1 p-16 overflow-y-auto relative">
-          <div className="max-w-5xl mx-auto h-full flex flex-col">
+        <main className="flex-1 p-10 overflow-y-auto relative bg-slate-50/50">
+          <div className="max-w-4xl mx-auto h-full flex flex-col">
             <motion.div
               key={currentQuestionIdx}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="space-y-12 h-full flex flex-col"
+              className="space-y-8 h-full flex flex-col"
             >
-              <div className="space-y-8">
-                <div className="flex items-center gap-6 pb-6 border-b border-white/10">
-                  <div className="px-4 py-1 border border-white text-[9px] font-black uppercase tracking-widest">
-                    {currentQuestion.type === 'mcq' ? 'STANDARDIZED MCQ' : 'CODING DIRECTIVE'}
+              <div className="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="px-3 py-1 bg-indigo-50 text-indigo-700 text-[10px] font-bold uppercase tracking-widest rounded-lg">
+                    {currentQuestion.type === 'mcq' ? 'Multiple Choice' : 'Coding Challenge'}
                   </div>
-                  <span className="text-white/20 font-black text-[9px] uppercase tracking-widest">UID: SS_REF_{currentQuestion.id}</span>
+                  <span className="text-slate-400 font-bold text-[10px] uppercase tracking-widest">Question {currentQuestion.id} of {questions.length}</span>
                 </div>
-                <h2 className="text-4xl font-black leading-tight tracking-tight uppercase italic">
+                <h2 className="text-2xl font-bold text-slate-900 leading-relaxed">
                   {currentQuestion.question}
                 </h2>
               </div>
 
               {currentQuestion.type === 'mcq' ? (
-                <div className="grid gap-4">
+                <div className="grid gap-4 flex-1">
                   {currentQuestion.options.map((opt, i) => (
                     <OptionCard 
                       key={i}
@@ -293,38 +292,38 @@ export function AIProctoringInterface() {
                 </div>
               ) : (
                 <div className="flex-1 flex flex-col min-h-[500px] gap-6">
-                   <div className="border border-white/10 flex flex-col overflow-hidden flex-[3] bg-white/[0.02]">
-                      <div className="bg-white/5 px-8 py-4 border-b border-white/10 flex items-center justify-between">
-                         <div className="flex items-center gap-4">
-                            <div className="w-1.5 h-1.5 bg-white rounded-full" />
-                            <span className="text-[10px] font-black text-white/50 uppercase tracking-widest">solution_relay.js</span>
+                   <div className="flex flex-col overflow-hidden flex-[3] bg-white rounded-[2rem] border border-slate-200 shadow-sm">
+                      <div className="bg-slate-50 px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+                         <div className="flex items-center gap-3">
+                            <div className="w-2 h-2 bg-indigo-500 rounded-full" />
+                            <span className="text-xs font-bold text-slate-600">index.js</span>
                          </div>
                          <button 
                             onClick={async () => {
                               setIsRunning(true);
-                              setConsoleOutput("INITIATING COMPILER...");
+                              setConsoleOutput("Compiling...");
                               try {
                                 const response = await api.post('/compiler/run', {
                                   compiler: 'nodejs20',
                                   code: answers[currentQuestionIdx] || currentQuestion.initialCode,
                                   input: ''
                                 });
-                                setConsoleOutput(response.data.output || response.data.error || "RELAY SUCCESSFUL: NO OUTPUT.");
+                                setConsoleOutput(response.data.output || response.data.error || "Execution completed with no output.");
                               } catch (err) {
-                                setConsoleOutput("COMPILER ERROR: " + err.message);
+                                setConsoleOutput("Error: " + err.message);
                               } finally {
                                 setIsRunning(false);
                               }
                             }}
                             disabled={isRunning}
-                            className="px-6 py-2 bg-white text-black text-[9px] font-black uppercase tracking-widest hover:bg-white/90 transition-all"
+                            className="px-4 py-2 bg-indigo-600 text-white text-[10px] font-bold uppercase tracking-wider rounded-lg hover:bg-indigo-700 transition-all shadow-sm"
                           >
-                            {isRunning ? 'EXECUTING...' : 'RUN MODULE'}
+                            {isRunning ? 'Running...' : 'Run Code'}
                           </button>
                       </div>
                       
                       <textarea
-                        className="flex-1 bg-transparent p-10 font-mono text-sm leading-relaxed text-white/70 outline-none resize-none"
+                        className="flex-1 bg-transparent p-6 font-mono text-sm leading-relaxed text-slate-700 outline-none resize-none"
                         spellCheck="false"
                         value={answers[currentQuestionIdx] || currentQuestion.initialCode}
                         onChange={(e) => setAnswers({...answers, [currentQuestionIdx]: e.target.value})}
@@ -332,34 +331,32 @@ export function AIProctoringInterface() {
                    </div>
 
                    {/* Terminal */}
-                   <div className="border border-white/10 flex flex-col overflow-hidden h-40 bg-black">
-                      <div className="bg-white/5 px-6 py-2 border-b border-white/10 flex items-center justify-between">
-                         <span className="text-[9px] font-black text-white/30 uppercase tracking-widest">SECURITY CONSOLE // SKILLSCRUMPT.IN</span>
-                         <button onClick={() => setConsoleOutput("")} className="text-[9px] text-white/20 hover:text-white uppercase font-black transition-colors">CLEAR</button>
+                   <div className="flex flex-col overflow-hidden h-48 bg-slate-900 rounded-[2rem] shadow-sm">
+                      <div className="bg-slate-800 px-6 py-3 flex items-center justify-between border-b border-slate-700">
+                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Console Output</span>
+                         <button onClick={() => setConsoleOutput("")} className="text-[10px] text-slate-500 hover:text-white uppercase font-bold transition-colors">Clear</button>
                       </div>
-                      <div className="flex-1 p-6 font-mono text-[11px] leading-relaxed overflow-y-auto whitespace-pre-wrap uppercase tracking-tighter">
+                      <div className="flex-1 p-6 font-mono text-xs leading-relaxed overflow-y-auto whitespace-pre-wrap text-slate-300">
                         {consoleOutput ? (
-                          <div className="text-white/80">
-                             {consoleOutput}
-                          </div>
+                          <div>{consoleOutput}</div>
                         ) : (
-                          <span className="text-white/10 italic">WAITING FOR OPERATIVE DATA...</span>
+                          <span className="text-slate-600 italic">No output yet. Run your code to see results.</span>
                         )}
                       </div>
                    </div>
                 </div>
               )}
 
-              <div className="flex justify-between items-center pt-12 border-t border-white/10 mt-auto">
+              <div className="flex justify-between items-center pt-6 mt-auto">
                 <button 
                   onClick={() => setCurrentQuestionIdx(prev => Math.max(0, prev - 1))}
-                  className="px-10 py-5 border border-white/10 text-[10px] font-black uppercase tracking-widest hover:border-white transition-all disabled:opacity-20"
+                  className="px-8 py-4 bg-white border border-slate-200 text-slate-700 text-xs font-bold rounded-2xl hover:bg-slate-50 transition-all disabled:opacity-50 shadow-sm"
                   disabled={currentQuestionIdx === 0}
                 >
-                  PREVIOUS
+                  Previous
                 </button>
                 <button 
-                  className="px-16 py-5 bg-white text-black font-black uppercase tracking-widest text-[10px] hover:bg-white/90 transition-all flex items-center gap-4"
+                  className="px-8 py-4 bg-indigo-600 text-white font-bold text-xs rounded-2xl hover:bg-indigo-700 transition-all flex items-center gap-3 shadow-md shadow-indigo-200"
                   onClick={() => {
                     if (currentQuestionIdx < questions.length - 1) {
                       setCurrentQuestionIdx(prev => prev + 1);
@@ -368,8 +365,8 @@ export function AIProctoringInterface() {
                     }
                   }}
                 >
-                  {currentQuestionIdx === questions.length - 1 ? 'FINALIZE ASSESSMENT' : 'NEXT DIRECTIVE'} 
-                  <ArrowRight size={14} />
+                  {currentQuestionIdx === questions.length - 1 ? 'Review & Submit' : 'Next Question'} 
+                  <ArrowRight size={16} />
                 </button>
               </div>
             </motion.div>
@@ -377,24 +374,24 @@ export function AIProctoringInterface() {
         </main>
 
         {/* AI HUD Sidebar */}
-        <aside className="w-[400px] border-l border-white/10 bg-black p-10 flex flex-col gap-12">
+        <aside className="w-[360px] border-l border-slate-200 bg-white p-8 flex flex-col gap-8 overflow-y-auto z-10 shadow-sm">
           <section>
-             <div className="flex items-center justify-between mb-6">
-               <h4 className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em] flex items-center gap-3">
-                 <Activity size={12} className="text-white" /> LIVE TELEMETRY
+             <div className="flex items-center justify-between mb-4">
+               <h4 className="text-xs font-bold text-slate-900 flex items-center gap-2">
+                 <Activity size={16} className="text-indigo-600" /> Proctoring Status
                </h4>
-               <div className={`px-3 py-1 border border-white/10 text-[9px] font-black uppercase tracking-widest ${isActive ? 'animate-pulse text-white' : 'text-white/20'}`}>
-                  {isActive ? 'RECORDING' : 'IDLE'}
+               <div className={`px-2 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest ${isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+                  {isActive ? 'Live' : 'Idle'}
                </div>
              </div>
              
-             <div className="relative aspect-video border border-white/20 bg-white/5 overflow-hidden group">
+             <div className="relative aspect-video rounded-2xl bg-slate-100 overflow-hidden group shadow-sm border border-slate-200">
                <video 
                  ref={videoRef} 
                  autoPlay 
                  muted 
                  playsInline 
-                 className={`w-full h-full object-cover scale-x-[-1] grayscale transition-opacity duration-1000 ${cameraReady ? 'opacity-100' : 'opacity-10'}`} 
+                 className={`w-full h-full object-cover scale-x-[-1] transition-opacity duration-1000 ${cameraReady ? 'opacity-100' : 'opacity-0'}`} 
                />
                
                <div className="absolute inset-0 z-10 pointer-events-none">
@@ -403,49 +400,40 @@ export function AIProctoringInterface() {
                      <motion.div 
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-48 border border-white/30 flex flex-col items-center justify-center"
+                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-40 border-2 border-emerald-400/50 rounded-xl flex flex-col items-center justify-center"
                      >
-                        <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-white" />
-                        <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-white" />
-                        <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-white" />
-                        <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-white" />
                      </motion.div>
                    )}
                  </AnimatePresence>
                  
-                 <div className="absolute bottom-4 left-4 text-[8px] font-mono text-white/40 tracking-widest uppercase">
-                    SIM_ID: {user?._id?.substring(0,8) || 'OPERATIVE'}<br/>
-                    LAT: 12.02<br/>
-                    TRUST: {realScore}%
+                 <div className="absolute bottom-3 left-3 text-[9px] font-bold text-white bg-black/50 px-2 py-1 rounded-md backdrop-blur-sm">
+                    Match: {realScore}%
                  </div>
                </div>
-
-               <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%)] bg-[length:100%_4px] opacity-20" />
              </div>
           </section>
 
-          <section className="space-y-8">
-            <h4 className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em]">SENSOR ANALYSIS</h4>
-            <div className="grid grid-cols-2 gap-4">
-              <TelemetryCard icon={Eye} label="GAZE" value={realScore > 80 ? "ALIGNED" : "DEVIATED"} active={realScore > 80} />
-              <TelemetryCard icon={Activity} label="SCORE" value={`${realScore}%`} active={realScore > 80} />
-              <TelemetryCard icon={Cpu} label="PROCESS" value={isActive ? "ACTIVE" : "IDLE"} active={isActive} />
-              <TelemetryCard icon={Lock} label="IDENTITY" value="SECURE" active={true} />
+          <section className="space-y-4">
+            <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Telemetry</h4>
+            <div className="grid grid-cols-2 gap-3">
+              <TelemetryCard icon={Eye} label="Gaze" value={realScore > 80 ? "Focused" : "Deviated"} active={realScore > 80} />
+              <TelemetryCard icon={Activity} label="Score" value={`${realScore}%`} active={realScore > 80} />
+              <TelemetryCard icon={Cpu} label="Status" value={isActive ? "Active" : "Idle"} active={isActive} />
+              <TelemetryCard icon={Lock} label="Identity" value="Secure" active={true} />
             </div>
           </section>
 
           <section className="flex-1 flex flex-col min-h-0">
-            <h4 className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em] mb-6">PROTOCOL LOGS</h4>
-            <div className="flex-1 bg-white/5 border border-white/10 p-6 space-y-4 font-mono text-[9px] overflow-y-auto tracking-tighter uppercase">
+            <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Activity Log</h4>
+            <div className="flex-1 bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3 font-mono text-[10px] overflow-y-auto">
                {violations.length > 0 ? violations.map((v, i) => (
-                 <div key={i} className={`flex gap-3 ${v.severity === 'high' || v.severity === 'critical' ? 'text-white' : 'text-white/40'}`}>
-                    <span className="opacity-30">[{new Date().toLocaleTimeString()}]</span>
-                    <span className={v.severity === 'critical' ? 'font-black italic' : ''}>{v.message}</span>
+                 <div key={i} className={`flex gap-2 ${v.severity === 'high' || v.severity === 'critical' ? 'text-rose-600 font-bold' : 'text-slate-600'}`}>
+                    <span className="text-slate-400">[{new Date().toLocaleTimeString().slice(0,5)}]</span>
+                    <span>{v.message}</span>
                  </div>
                )) : (
-                 <div className="flex gap-3 text-white/10 italic">
-                    <span>[{new Date().toLocaleTimeString()}]</span>
-                    <span>STANDBY: SCANNING FOR VIOLATIONS...</span>
+                 <div className="flex gap-2 text-slate-400">
+                    <span>Session secure. No violations detected.</span>
                  </div>
                )}
             </div>
@@ -457,31 +445,30 @@ export function AIProctoringInterface() {
       <AnimatePresence>
         {!isActive && (
           <motion.div 
-            className="fixed inset-0 z-[200] flex items-center justify-center p-8 bg-black/95 backdrop-blur-2xl"
+            className="fixed inset-0 z-[200] flex items-center justify-center p-8 bg-slate-900/60 backdrop-blur-md"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <div className="w-full max-w-xl bg-black border border-white/20 p-16 text-center relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-1 bg-white" />
-              <div className="w-24 h-24 border border-white/10 flex items-center justify-center mx-auto mb-10">
-                <Shield size={48} className="text-white/20 animate-pulse" />
+            <div className="w-full max-w-lg bg-white rounded-[2rem] p-12 text-center relative overflow-hidden shadow-2xl">
+              <div className="w-20 h-20 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-sm">
+                <Shield size={40} className="animate-pulse" />
               </div>
-              <h3 className="text-4xl font-black mb-6 tracking-tighter uppercase italic">PROTOCOL INITIATION.</h3>
-              <p className="text-white/40 text-[11px] font-bold uppercase tracking-[0.25em] leading-loose mb-16">
-                The AI proctoring engine is awaiting synchronization. Establish biometric lock by positioning your face within the capture frame.
+              <h3 className="text-3xl font-bold mb-4 text-slate-900 tracking-tight">Proctoring Ready</h3>
+              <p className="text-slate-500 text-sm font-medium leading-relaxed mb-10">
+                Ensure you are in a quiet, well-lit environment. Your camera, microphone, and screen will be monitored during the assessment.
               </p>
-              <div className="space-y-8">
+              <div className="space-y-6">
                 <button 
                    onClick={startProctoring}
-                   className="w-full py-6 bg-white text-black text-xs font-black uppercase tracking-[0.5em] hover:bg-white/90 transition-all"
+                   className="w-full py-5 bg-indigo-600 text-white rounded-2xl text-sm font-bold hover:bg-indigo-700 transition-all shadow-md shadow-indigo-200"
                 >
-                  ESTABLISH RELAY
+                  Start Assessment
                 </button>
-                <div className="flex items-center justify-center gap-8 text-[9px] font-black text-white/20 uppercase tracking-[0.3em]">
-                   <span>AES-256 ENCRYPTED</span>
-                   <span>|</span>
-                   <span>AI-VERIFIED SESSION</span>
+                <div className="flex items-center justify-center gap-6 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                   <span className="flex items-center gap-1"><Lock size={12}/> Secure</span>
+                   <span className="w-1 h-1 bg-slate-300 rounded-full" />
+                   <span className="flex items-center gap-1"><Shield size={12}/> AI Verified</span>
                 </div>
               </div>
             </div>
@@ -494,9 +481,12 @@ export function AIProctoringInterface() {
 
 function ProctorIndicator({ icon: Icon, label, active = false }) {
   return (
-    <div className="flex items-center gap-4">
-      <div className={`w-1.5 h-1.5 rounded-full ${active ? 'bg-white' : 'bg-white/10'}`} />
-      <span className="text-[10px] font-black text-white/30 uppercase tracking-widest">{label}</span>
+    <div className="flex items-center gap-3">
+      <div className={`w-2 h-2 rounded-full ${active ? 'bg-emerald-500' : 'bg-slate-300'}`} />
+      <div className="flex items-center gap-1.5 text-xs font-bold text-slate-600">
+        <Icon size={14} className={active ? 'text-emerald-600' : 'text-slate-400'} />
+        {label}
+      </div>
     </div>
   );
 }
@@ -505,18 +495,18 @@ function OptionCard({ label, text, selected = false, onClick }) {
   return (
     <button 
       onClick={onClick}
-      className={`w-full text-left p-8 border transition-all flex gap-8 group relative overflow-hidden ${
+      className={`w-full text-left p-6 rounded-2xl border transition-all flex items-center gap-6 group shadow-sm ${
         selected 
-          ? 'bg-white text-black italic font-black' 
-          : 'bg-black border-white/10 text-white/40 hover:border-white/50 hover:bg-white/5'
+          ? 'bg-indigo-50 border-indigo-200' 
+          : 'bg-white border-slate-200 hover:border-indigo-300 hover:shadow-md'
       }`}
     >
-      <div className={`flex-shrink-0 w-12 h-12 border flex items-center justify-center text-[10px] font-black transition-all ${
-        selected ? 'bg-black border-black text-white' : 'border-white/10 text-white/20 group-hover:border-white/40'
+      <div className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold transition-all ${
+        selected ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-50 text-slate-500 group-hover:bg-indigo-50 group-hover:text-indigo-600'
       }`}>
         {label}
       </div>
-      <p className="text-xl leading-relaxed uppercase tracking-tight">
+      <p className={`text-base font-medium ${selected ? 'text-indigo-900' : 'text-slate-700'}`}>
         {text}
       </p>
     </button>
@@ -525,32 +515,27 @@ function OptionCard({ label, text, selected = false, onClick }) {
 
 function TelemetryCard({ icon: Icon, label, value, active }) {
   return (
-    <div className="border border-white/10 p-5 bg-white/5">
-       <div className="flex items-center gap-3 mb-3 text-white/20">
-          <Icon size={14} />
-          <span className="text-[9px] font-black uppercase tracking-widest">{label}</span>
-       </div>
-       <p className={`text-sm font-black italic ${active ? 'text-white' : 'text-white/30'}`}>{value}</p>
-       <div className="mt-4 pt-4 border-t border-white/5 text-[7px] font-black uppercase tracking-[0.3em] text-white/10">SS.CORE.RELAY</div>
+    <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 flex flex-col items-center text-center justify-center">
+       <Icon size={20} className={`mb-2 ${active ? 'text-indigo-500' : 'text-slate-400'}`} />
+       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{label}</p>
+       <p className={`text-sm font-bold ${active ? 'text-slate-900' : 'text-slate-500'}`}>{value}</p>
     </div>
   );
 }
 
 function DesktopRequiredView() {
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center p-12 text-center relative overflow-hidden">
-      <div className="max-w-md space-y-12 relative z-10">
-        <div className="w-24 h-24 border border-white/10 flex items-center justify-center mx-auto">
-          <Monitor size={48} className="text-white/20" />
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-8">
+      <div className="max-w-md w-full bg-white rounded-[2rem] p-12 text-center shadow-xl border border-slate-100">
+        <div className="w-20 h-20 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-sm">
+          <Monitor size={40} />
         </div>
-        <div className="space-y-6">
-          <h2 className="text-4xl font-black tracking-tighter uppercase italic">ACCESS DENIED.</h2>
-          <p className="text-white/40 text-[11px] font-bold uppercase tracking-[0.25em] leading-loose">
-            AI Proctoring requires an established desktop environment for biometric synchronization.
-          </p>
-        </div>
+        <h2 className="text-3xl font-bold mb-4 text-slate-900 tracking-tight">Desktop Required</h2>
+        <p className="text-slate-500 text-sm font-medium leading-relaxed mb-10">
+          AI Proctoring requires an established desktop environment for biometric synchronization and screen monitoring.
+        </p>
         <Link to="/dashboard/student" className="block">
-          <button className="w-full py-6 border border-white text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all">
+          <button className="w-full py-4 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-all shadow-md">
             Return to Dashboard
           </button>
         </Link>
