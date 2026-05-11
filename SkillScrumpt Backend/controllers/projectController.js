@@ -26,7 +26,13 @@ exports.createProject = async (req, res) => {
 // @route   GET /api/v1/projects
 exports.getProjects = async (req, res) => {
   try {
-    const projects = await Project.find({ status: 'open' }).populate('client', 'firstName lastName');
+    let query = { status: 'open' };
+    
+    if (req.user && req.user.role === 'client') {
+      query = { client: req.user._id };
+    }
+    
+    const projects = await Project.find(query).populate('client', 'firstName lastName');
     res.json(projects);
   } catch (error) {
     res.status(500).json({ message: error.message });
