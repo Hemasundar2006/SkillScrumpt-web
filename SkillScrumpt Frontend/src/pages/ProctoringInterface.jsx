@@ -478,10 +478,52 @@ export function AIProctoringInterface() {
         </aside>
       </div>
 
-      {/* Initiation Overlay */}
-      <AnimatePresence>
-        {!isActive && (
+      {/* Overlays: Initiation and Submission */}
+      <AnimatePresence mode="wait">
+        {isSubmitting ? (
           <motion.div 
+            key="generating"
+            className="fixed inset-0 z-[300] flex items-center justify-center p-8 bg-slate-900/80 backdrop-blur-xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <div className="w-full max-w-lg bg-white rounded-[3rem] p-16 text-center relative overflow-hidden shadow-2xl">
+               <div className="absolute top-0 left-0 w-full h-2 bg-indigo-600 animate-pulse" />
+               
+               {/* Animated AI Scanning Effect */}
+               <div className="relative w-24 h-24 mx-auto mb-10">
+                  <div className="absolute inset-0 border-4 border-indigo-600/20 rounded-2xl" />
+                  <motion.div 
+                    className="absolute inset-x-0 h-1 bg-indigo-600 shadow-[0_0_15px_rgba(79,70,229,0.5)] z-10"
+                    animate={{ top: ["0%", "100%", "0%"] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                  />
+                  <div className="w-full h-full flex items-center justify-center text-indigo-600">
+                     <Cpu size={48} className="animate-pulse" />
+                  </div>
+               </div>
+
+               <h3 className="text-3xl font-black mb-4 text-slate-900 tracking-tight italic uppercase">Result Generating.</h3>
+               <p className="text-slate-500 text-sm font-bold uppercase tracking-[0.2em] mb-12">AI Engine is processing your telemetry & performance</p>
+               
+               <div className="space-y-4">
+                  <div className="flex items-center justify-between px-6 py-4 bg-slate-50 rounded-2xl border border-slate-100">
+                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Protocol Audit</span>
+                     <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" /> Verified
+                     </span>
+                  </div>
+                  <div className="flex items-center justify-between px-6 py-4 bg-slate-50 rounded-2xl border border-slate-100">
+                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Score Synthesis</span>
+                     <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest animate-pulse">Processing...</span>
+                  </div>
+               </div>
+            </div>
+          </motion.div>
+        ) : !isActive ? (
+          <motion.div 
+            key="initiation"
             className="fixed inset-0 z-[200] flex items-center justify-center p-8 bg-slate-900/60 backdrop-blur-md"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -510,7 +552,7 @@ export function AIProctoringInterface() {
               </div>
             </div>
           </motion.div>
-        )}
+        ) : null}
       </AnimatePresence>
     </div>
   );
