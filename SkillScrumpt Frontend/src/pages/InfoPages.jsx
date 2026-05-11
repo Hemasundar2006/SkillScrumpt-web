@@ -57,12 +57,12 @@ export function AboutPage() {
             />
             <ValueCard 
               icon={Zap} 
-              title="AI_PRECISION" 
+              title="AI PRECISION" 
               desc="Our adaptive testing algorithms ensure that candidates are challenged at exactly the right level, revealing true expert potential."
             />
             <ValueCard 
               icon={Globe} 
-              title="GLOBAL_EQUITY" 
+              title="GLOBAL OPPORTUNITY" 
               desc="We believe in a borderless talent economy. Verified skills speak a universal language that transcends geography."
             />
           </div>
@@ -218,8 +218,8 @@ export function PricingPage() {
 
                       return (
                         <Link to="/checkout" className="w-full sm:w-auto">
-                          <button className="px-16 py-6 bg-white text-black font-black uppercase tracking-[0.4em] text-xs hover:bg-white/90 transition-all w-full">
-                            AUTHORIZE_UPGRADE
+                          <button className="px-16 py-6 bg-white text-black font-black uppercase tracking-[0.4em] text-xs hover:bg-white/90 transition-all w-full rounded-full">
+                            Upgrade Now
                           </button>
                         </Link>
                       );
@@ -263,7 +263,7 @@ export function PricingPage() {
                  </p>
                  <div className="flex items-center justify-center gap-4">
                    <div className="w-8 h-8 border border-white/10 bg-white text-black flex items-center justify-center font-black italic">M</div>
-                   <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40">OPERATIVE_MARCUS</span>
+                   <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40">Marcus</span>
                  </div>
               </div>
             </div>
@@ -306,8 +306,8 @@ export function PricingPage() {
         </section>
 
         <div className="mt-32 flex justify-center items-center gap-10 text-[9px] font-black uppercase tracking-[0.4em] text-white/10">
-           <div className="flex items-center gap-2"><Lock size={12}/> DATA_SECURED</div>
-           <div className="flex items-center gap-2"><Cpu size={12}/> CORE_VERIFIED</div>
+           <div className="flex items-center gap-2"><Lock size={12}/> SECURE DATA</div>
+           <div className="flex items-center gap-2"><Cpu size={12}/> VERIFIED</div>
            <div className="flex items-center gap-2"><Zap size={12}/> SkillScrumpt.in</div>
         </div>
       </div>

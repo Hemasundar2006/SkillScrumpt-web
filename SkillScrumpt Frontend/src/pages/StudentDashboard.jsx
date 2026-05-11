@@ -136,8 +136,8 @@ export function StudentDashboard() {
 
   if (isLoading && !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
-        <Loader2 className="animate-spin text-white" size={48} />
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <Loader2 className="animate-spin text-indigo-600" size={48} />
       </div>
     );
   }
@@ -148,42 +148,40 @@ export function StudentDashboard() {
         {showUpgradeModal && <UpgradeModal onClose={() => setShowUpgradeModal(false)} />}
       </AnimatePresence>
 
-      <header className="mb-16">
+      <header className="mb-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-            <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em]">Professional Dashboard</span>
-          </div>
-          <h1 className="text-6xl font-black tracking-tighter mb-4 italic uppercase">
-            {getGreeting()}, <span className="text-white/40">{user?.firstName}.</span>
+          <h1 className="text-4xl font-bold tracking-tight text-slate-900 mb-2 flex items-center gap-3">
+            {getGreeting().toLowerCase().replace(/^\w/, c => c.toUpperCase())}, <span className="text-slate-400">{user?.firstName}</span>
+            {user?.isPro && (
+              <span className="flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-amber-400 to-amber-600 text-white text-[10px] font-black rounded-full shadow-md">
+                <Zap size={12} fill="currentColor" /> PRO MEMBER
+              </span>
+            )}
           </h1>
-          <p className="text-white/40 font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-3">
-             <Clock size={14} /> You have 2 scheduled tests for this month // SkillScrumpt.in
+          <p className="text-slate-500 text-sm font-medium flex items-center gap-2">
+             <Clock size={14} /> You have 2 scheduled tests for this month
           </p>
         </motion.div>
       </header>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-16">
-        <StatCard icon={Briefcase} label="Active Contracts" value={user?.activeContractsCount || 0} />
-        <StatCard icon={Award} label="Skill Badges" value={user?.badges?.length || 0} />
-        <StatCard icon={Star} label="AI Rating" value={user?.rating || '0.0'} />
-        <StatCard icon={DollarSign} label="Available Credit" value={`$${user?.earnings?.toLocaleString() || 0}`} />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <StatCard icon={Briefcase} label="Active Contracts" value={user?.activeContractsCount || 0} color="indigo" />
+        <StatCard icon={Award} label="Skill Badges" value={user?.badges?.length || 0} color="emerald" />
+        <StatCard icon={Star} label="AI Rating" value={user?.rating || '0.0'} color="amber" />
+        <StatCard icon={DollarSign} label="Available Credit" value={`$${user?.earnings?.toLocaleString() || 0}`} color="blue" />
       </div>
 
       <div className="grid lg:grid-cols-3 gap-12">
         <div className="lg:col-span-2 space-y-16">
           <section>
-            <div className="flex justify-between items-end mb-10 pb-4 border-b border-white/10">
-              <div>
-                <div className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-2">Marketplace</div>
-                <h3 className="text-3xl font-black tracking-tighter uppercase italic">AVAILABLE PROJECTS.</h3>
-              </div>
-              <Link to="/projects" className="text-[10px] font-black text-white/40 hover:text-white uppercase tracking-widest flex items-center gap-2 transition-colors">
-                See All Projects <ArrowRight size={14} />
+            <div className="flex justify-between items-center mb-6 pb-2">
+              <h3 className="text-lg font-bold text-slate-900">Available Projects</h3>
+              <Link to="/projects" className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 transition-colors">
+                See All <ArrowRight size={14} />
               </Link>
             </div>
             <div className="space-y-4">
@@ -198,19 +196,16 @@ export function StudentDashboard() {
                   amount={`$${proj.budget?.toLocaleString()}`}
                 />
               )) : (
-                <div className="py-20 text-center border border-dashed border-white/10">
-                  <p className="text-white/20 font-black uppercase tracking-widest text-xs">No project signals detected.</p>
+                <div className="py-12 text-center bg-white border border-slate-200 rounded-xl">
+                  <p className="text-slate-400 text-sm font-medium">No projects available right now.</p>
                 </div>
               )}
             </div>
           </section>
 
           <section>
-            <div className="flex justify-between items-end mb-10 pb-4 border-b border-white/10">
-              <div>
-                <div className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-2">Skill Verification</div>
-                <h3 className="text-3xl font-black tracking-tighter uppercase italic">RECOMMENDED TESTS.</h3>
-              </div>
+            <div className="flex justify-between items-center mb-6 pb-2">
+              <h3 className="text-lg font-bold text-slate-900">Recommended Tests</h3>
             </div>
             <div className="grid sm:grid-cols-2 gap-6">
               {assessments.length > 0 ? assessments.map(assessment => (
@@ -232,34 +227,32 @@ export function StudentDashboard() {
 
         <div className="space-y-12">
           <section>
-            <div className="p-1 bg-white/10 border border-white/20">
-              <div className={`p-8 border border-white/10 ${user?.isVerified ? 'bg-white text-black' : 'bg-black text-white'}`}>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className={`w-2 h-2 rounded-full animate-pulse ${user?.isVerified ? 'bg-black' : 'bg-white'}`} />
-                  <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-60">
-                    {user?.isVerified ? 'ACCOUNT: VERIFIED' : 'ACCOUNT: PENDING'}
-                  </span>
-                </div>
-                <h4 className="text-3xl font-black tracking-tighter mb-6 uppercase italic">
-                  {user?.isVerified ? 'VERIFIED PRO.' : 'GET VERIFIED.'}
-                </h4>
-                <p className={`text-[11px] font-bold uppercase tracking-widest leading-relaxed mb-8 ${user?.isVerified ? 'text-black/60' : 'text-white/60'}`}>
-                    {user?.isVerified 
-                    ? 'Your identity is verified. Your skills are validated by our AI proctoring system.' 
-                    : 'Showcase your skills and unlock high-paying jobs by completing AI tests.'}
-                </p>
-                <button 
-                  onClick={() => navigate(user?.isVerified ? '/pricing' : '/assessments')}
-                  className={`w-full py-5 text-[10px] font-black uppercase tracking-widest transition-all ${user?.isVerified ? 'bg-black text-white hover:bg-black/80' : 'bg-white text-black hover:bg-white/80'}`}
-                >
-                  {user?.isVerified ? 'Upgrade to Pro' : 'Get started'}
-                </button>
+            <div className={`p-6 rounded-2xl ${user?.isVerified ? 'bg-indigo-600 text-white' : 'bg-white border border-slate-200 text-slate-900'}`}>
+              <div className="flex items-center gap-2 mb-4">
+                <div className={`w-2 h-2 rounded-full ${user?.isVerified ? 'bg-white' : 'bg-indigo-500'}`} />
+                <span className="text-[10px] font-bold uppercase tracking-wider opacity-80">
+                  {user?.isVerified ? 'VERIFIED ACCOUNT' : 'VERIFICATION PENDING'}
+                </span>
               </div>
+              <h4 className="text-xl font-bold mb-4">
+                {user?.isVerified ? 'Verified Pro' : 'Get Verified'}
+              </h4>
+              <p className={`text-xs font-medium leading-relaxed mb-6 ${user?.isVerified ? 'text-indigo-100' : 'text-slate-500'}`}>
+                  {user?.isVerified 
+                  ? 'Your identity is verified. Your skills are validated by our AI system.' 
+                  : 'Showcase your skills and unlock high-paying jobs by completing AI tests.'}
+              </p>
+              <button 
+                onClick={() => navigate(user?.isVerified ? '/pricing' : '/assessments')}
+                className={`w-full py-3 rounded-xl text-xs font-bold transition-all ${user?.isVerified ? 'bg-white text-indigo-600 hover:bg-slate-50' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}
+              >
+                {user?.isVerified ? 'Upgrade Plan' : 'Get started'}
+              </button>
             </div>
           </section>
 
           <section>
-            <div className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em] mb-8">Quick Actions</div>
+            <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-6">Quick Actions</div>
             <div className="space-y-3">
               <QuickActionButton onClick={() => setShowUpgradeModal(true)} icon={Zap} label="Upgrade Access" />
               <QuickActionButton onClick={() => navigate('/assessments')} icon={Shield} label="AI Assessment" />
@@ -273,14 +266,19 @@ export function StudentDashboard() {
   );
 }
 
-function StatCard({ icon: Icon, label, value }) {
+function StatCard({ icon: Icon, label, value, color }) {
   return (
-    <div className="p-8 border border-white/10 hover:border-white/30 transition-all bg-white/5 group">
-      <div className="text-white/30 group-hover:text-white transition-colors mb-6">
+    <div className={`p-6 bg-white border border-slate-200 rounded-2xl shadow-sm transition-all hover:shadow-md`}>
+      <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-6 ${
+        color === 'indigo' ? 'bg-indigo-50 text-indigo-600' :
+        color === 'emerald' ? 'bg-emerald-50 text-emerald-600' :
+        color === 'amber' ? 'bg-amber-50 text-amber-600' :
+        'bg-blue-50 text-blue-600'
+      }`}>
         <Icon size={24} />
       </div>
-      <p className="text-[9px] text-white/30 font-black uppercase tracking-[0.3em] mb-2">{label}</p>
-      <p className="text-3xl font-black italic">{value}</p>
+      <p className="text-xs font-semibold text-slate-400 mb-1">{label}</p>
+      <p className="text-2xl font-bold text-slate-900">{value}</p>
     </div>
   );
 }
@@ -288,26 +286,26 @@ function StatCard({ icon: Icon, label, value }) {
 function ProjectRow({ id, title, client, status, deadline, amount }) {
   const navigate = useNavigate();
   return (
-    <div onClick={() => navigate(`/projects/${id}`)} className="p-6 border border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:bg-white/5 transition-all cursor-pointer group">
-      <div className="flex items-center gap-6">
-        <div className="w-12 h-12 border border-white/10 flex items-center justify-center font-black text-xl italic group-hover:bg-white group-hover:text-black transition-all">
-          {title[0]}
+    <div onClick={() => navigate(`/projects/${id}`)} className="p-4 bg-white border border-slate-200 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-indigo-300 transition-all cursor-pointer shadow-sm">
+      <div className="flex items-center gap-4">
+        <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center font-bold text-slate-400">
+          {title[0].toUpperCase()}
         </div>
         <div>
-          <h4 className="text-lg font-black tracking-tight uppercase group-hover:italic">{title}</h4>
-          <p className="text-[9px] text-white/30 font-black uppercase tracking-widest mt-1">{client}</p>
+          <h4 className="font-semibold text-slate-900">{title}</h4>
+          <p className="text-xs text-slate-400 font-medium">{client}</p>
         </div>
       </div>
       
-      <div className="flex items-center gap-12">
+      <div className="flex items-center gap-8">
         <div className="text-right hidden sm:block">
-          <p className="text-sm font-black italic">{amount}</p>
-          <p className="text-[9px] text-white/20 font-black uppercase tracking-widest mt-1">DEADLINE: {deadline}</p>
+          <p className="text-sm font-bold text-slate-900">{amount}</p>
+          <p className="text-[10px] text-slate-400 font-medium">Deadline: {deadline}</p>
         </div>
-        <div className="px-4 py-1 border border-white/20 text-[9px] font-black uppercase tracking-widest group-hover:border-white">
+        <div className="px-3 py-1 bg-slate-50 border border-slate-100 text-[10px] font-bold text-slate-600 rounded-lg">
           {status}
         </div>
-        <ChevronRight size={18} className="text-white/20 group-hover:text-white group-hover:translate-x-2 transition-all" />
+        <ChevronRight size={18} className="text-slate-300" />
       </div>
     </div>
   );
@@ -316,25 +314,25 @@ function ProjectRow({ id, title, client, status, deadline, amount }) {
 function AssessmentCard({ title, duration, difficulty, reward }) {
   const navigate = useNavigate();
   return (
-    <div className="p-8 border border-white/10 hover:border-white transition-all group relative overflow-hidden bg-white/5">
-      <div className="flex justify-between items-start mb-8">
-        <div className="w-10 h-10 border border-white/10 flex items-center justify-center text-white/40 group-hover:bg-white group-hover:text-black transition-all">
+    <div className="p-6 bg-white border border-slate-200 rounded-2xl hover:border-indigo-300 transition-all shadow-sm">
+      <div className="flex justify-between items-start mb-6">
+        <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center">
           <Zap size={18} />
         </div>
-        <div className="text-[9px] font-black uppercase tracking-widest px-3 py-1 border border-white/10 group-hover:border-white">
+        <div className="text-[10px] font-bold text-indigo-600 px-2 py-1 bg-indigo-50 rounded-lg">
           {difficulty}
         </div>
       </div>
-      <h4 className="text-2xl font-black tracking-tighter uppercase italic mb-4">{title}</h4>
-      <div className="flex flex-col gap-2 text-[9px] text-white/30 font-black uppercase tracking-widest mb-10">
-        <span className="flex items-center gap-2"><Clock size={14} /> DURATION: {duration}</span>
-        <span className="flex items-center gap-2 text-white/50"><Award size={14} /> REWARD: {reward}</span>
+      <h4 className="text-lg font-bold text-slate-900 mb-2">{title}</h4>
+      <div className="flex flex-col gap-1 text-xs text-slate-400 font-medium mb-8">
+        <span className="flex items-center gap-2"><Clock size={14} /> Duration: {duration}</span>
+        <span className="flex items-center gap-2 text-slate-500"><Award size={14} /> Reward: {reward}</span>
       </div>
       <button 
         onClick={() => navigate('/assessments')} 
-        className="w-full py-4 border border-white text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all"
+        className="w-full py-3 bg-indigo-600 text-white rounded-xl text-xs font-bold hover:bg-indigo-700 transition-all shadow-md shadow-indigo-100"
       >
-        INITIATE TASK
+        Start Assessment
       </button>
     </div>
   );
@@ -342,14 +340,14 @@ function AssessmentCard({ title, duration, difficulty, reward }) {
 
 function QuickActionButton({ icon: Icon, label, onClick }) {
   return (
-    <button onClick={onClick} className="flex items-center justify-between w-full p-6 border border-white/10 hover:border-white transition-all group text-left">
-      <div className="flex items-center gap-5">
-        <div className="text-white/20 group-hover:text-white transition-colors">
+    <button onClick={onClick} className="flex items-center justify-between w-full p-4 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all group shadow-sm">
+      <div className="flex items-center gap-3">
+        <div className="p-2 bg-slate-50 text-slate-400 group-hover:text-indigo-600 transition-colors rounded-lg">
           <Icon size={18} />
         </div>
-        <span className="text-[10px] font-black uppercase tracking-[0.2em]">{label}</span>
+        <span className="text-sm font-semibold text-slate-600">{label}</span>
       </div>
-      <ChevronRight size={16} className="text-white/10 group-hover:text-white group-hover:translate-x-2 transition-all" />
+      <ChevronRight size={16} className="text-slate-300" />
     </button>
   );
 }

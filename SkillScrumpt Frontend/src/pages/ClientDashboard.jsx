@@ -126,8 +126,8 @@ export function ClientDashboard() {
 
   if (isLoading && !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
-        <Loader2 className="animate-spin text-white" size={48} />
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <Loader2 className="animate-spin text-indigo-600" size={48} />
       </div>
     );
   }
@@ -143,18 +143,19 @@ export function ClientDashboard() {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
         >
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-            <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em]">Employer Dashboard</span>
-          </div>
-          <h1 className="text-6xl font-black tracking-tighter italic uppercase">
-            {getGreeting()}, <span className="text-white/40">{user?.firstName}.</span>
+          <h1 className="text-4xl font-bold tracking-tight text-slate-900 mb-2 flex items-center gap-3">
+            {getGreeting().toLowerCase().replace(/^\w/, c => c.toUpperCase())}, <span className="text-slate-400">{user?.firstName}</span>
+            {user?.isPro && (
+              <span className="flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-amber-400 to-amber-600 text-white text-[10px] font-black rounded-full shadow-md">
+                <Zap size={12} fill="currentColor" /> PRO EMPLOYER
+              </span>
+            )}
           </h1>
-          <p className="text-white/40 font-black text-[10px] uppercase tracking-[0.2em] mt-2">Find verified talent for your projects on SkillScrumpt.in.</p>
+          <p className="text-slate-500 text-sm font-medium">Find verified talent for your projects on SkillScrumpt.in</p>
         </motion.div>
         
         <Link to="/post-project">
-          <button className="flex items-center gap-4 bg-white text-black py-5 px-10 font-black uppercase tracking-widest text-xs hover:bg-white/90 transition-all group">
+          <button className="flex items-center gap-2 bg-indigo-600 text-white py-3 px-6 rounded-xl font-bold text-sm hover:bg-indigo-700 transition-all shadow-md shadow-indigo-100 group">
             <Plus size={18} /> Post New Project
           </button>
         </Link>
@@ -163,12 +164,9 @@ export function ClientDashboard() {
       <div className="grid lg:grid-cols-3 gap-12 mb-16">
         <div className="lg:col-span-2 space-y-12">
           <section>
-            <div className="flex justify-between items-end mb-10 pb-4 border-b border-white/10">
-              <div>
-                <div className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-2">Operations</div>
-                <h3 className="text-3xl font-black tracking-tighter uppercase italic">YOUR PROJECTS.</h3>
-              </div>
-              <Link to="/my-projects" className="text-[10px] font-black text-white/40 hover:text-white uppercase tracking-widest flex items-center gap-2 transition-colors">
+            <div className="flex justify-between items-center mb-6 pb-2">
+              <h3 className="text-lg font-bold text-slate-900">Your Projects</h3>
+              <Link to="/my-projects" className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 transition-colors">
                 All Projects <ArrowRight size={14} />
               </Link>
             </div>
@@ -183,8 +181,8 @@ export function ClientDashboard() {
                   budget={`$${proj.budget?.toLocaleString()}`}
                 />
               )) : (
-                <div className="py-20 text-center border border-dashed border-white/10">
-                  <p className="text-white/20 font-black uppercase tracking-widest text-xs">No projects found.</p>
+                <div className="py-12 text-center bg-white border border-slate-200 rounded-xl">
+                  <p className="text-slate-400 text-sm font-medium">No projects found.</p>
                 </div>
               )}
             </div>
@@ -193,8 +191,8 @@ export function ClientDashboard() {
 
         <div className="space-y-12">
           <section>
-             <div className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em] mb-8">Performance Metrics</div>
-             <Card className="p-8 space-y-8 bg-white/5 border border-white/10">
+             <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-6">Performance Metrics</div>
+             <Card className="p-6 space-y-6 bg-white border border-slate-200 rounded-2xl shadow-sm">
                 <StatItem label="TOTAL EXPENDITURE" value={`$${user?.totalSpent?.toLocaleString() || 0}`} />
                 <StatItem label="ACTIVE CONTRACTS" value={user?.activeContractsCount || 0} />
                 <StatItem label="OPEN PROJECTS" value={projects.length} />
@@ -202,19 +200,17 @@ export function ClientDashboard() {
           </section>
 
           <section>
-            <div className="p-1 bg-white/10 border border-white/20">
-              <div className="p-8 bg-black text-white border border-white/10">
-                <h4 className="text-2xl font-black tracking-tighter mb-4 uppercase italic italic">CLIENT PRO.</h4>
-                <p className="text-[11px] font-bold uppercase tracking-widest leading-relaxed mb-8 text-white/60">
-                  Unlock verified talent and receive dedicated support.
-                </p>
-                <button 
-                  onClick={() => setShowUpgradeModal(true)} 
-                  className="w-full py-4 bg-white text-black font-black uppercase tracking-widest text-[10px] hover:bg-white/90 transition-all"
-                >
-                  Upgrade Now
-                </button>
-              </div>
+            <div className="p-6 bg-indigo-600 text-white rounded-2xl shadow-lg shadow-indigo-100">
+              <h4 className="text-xl font-bold mb-4">Employer Pro</h4>
+              <p className="text-xs font-medium leading-relaxed mb-8 opacity-90">
+                Unlock verified talent and receive dedicated support.
+              </p>
+              <button 
+                onClick={() => setShowUpgradeModal(true)} 
+                className="w-full py-3 bg-white text-indigo-600 rounded-xl text-xs font-bold hover:bg-slate-50 transition-all"
+              >
+                Upgrade Now
+              </button>
             </div>
           </section>
         </div>
@@ -223,8 +219,8 @@ export function ClientDashboard() {
       <section>
         <div className="flex justify-between items-end mb-10 pb-4 border-b border-white/10">
           <div>
-            <div className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-2">Talent Pool</div>
-            <h3 className="text-3xl font-black tracking-tighter uppercase italic">VERIFIED TALENT.</h3>
+            <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-6">Talent Pool</div>
+            <h3 className="text-lg font-bold text-slate-900 mb-8">Verified Talent</h3>
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -237,6 +233,7 @@ export function ClientDashboard() {
               rating={pro.rating || '0.0'} 
               skills={pro.skills || []}
               score={pro.aiScore || 0}
+              isPro={pro.isPro}
               avatar={`${pro.firstName?.[0]}${pro.lastName?.[0]}`}
             />
           )) : (
@@ -253,19 +250,19 @@ export function ClientDashboard() {
 function ActiveProjectCard({ id, title, bids, status, budget }) {
   const navigate = useNavigate();
   return (
-    <div onClick={() => navigate(`/projects/${id}`)} className="p-6 border border-white/10 hover:bg-white/5 transition-all group flex flex-col sm:flex-row sm:items-center justify-between gap-6 cursor-pointer">
+    <div onClick={() => navigate(`/projects/${id}`)} className="p-4 bg-white border border-slate-200 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-indigo-300 transition-all cursor-pointer shadow-sm">
       <div>
-        <h4 className="text-lg font-black tracking-tight uppercase group-hover:italic">{title}</h4>
-        <div className="flex items-center gap-6 text-[9px] font-black uppercase tracking-widest text-white/30 mt-2">
+        <h4 className="font-semibold text-slate-900">{title}</h4>
+        <div className="flex items-center gap-4 text-[10px] font-bold text-slate-400 mt-1">
           <span>{bids} APPLICATIONS</span>
-          <span className="text-white font-black">{budget}</span>
+          <span className="text-indigo-600 font-bold">{budget}</span>
         </div>
       </div>
-      <div className="flex items-center gap-6">
-        <div className="px-4 py-1 border border-white/10 text-[9px] font-black uppercase tracking-widest group-hover:border-white">
+      <div className="flex items-center gap-4">
+        <div className="px-3 py-1 bg-slate-50 border border-slate-100 text-[10px] font-bold text-slate-600 rounded-lg">
           {status}
         </div>
-        <MoreVertical size={20} className="text-white/20 group-hover:text-white transition-colors" />
+        <MoreVertical size={20} className="text-slate-300" />
       </div>
     </div>
   );
@@ -273,55 +270,60 @@ function ActiveProjectCard({ id, title, bids, status, budget }) {
 
 function StatItem({ label, value }) {
   return (
-    <div className="flex justify-between items-end border-b border-white/5 pb-4">
-      <span className="text-[10px] font-black text-white/30 uppercase tracking-widest">{label}</span>
-      <span className="text-xl font-black italic">{value}</span>
+    <div className="flex justify-between items-center py-4 border-b border-slate-50">
+      <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{label}</span>
+      <span className="text-lg font-bold text-slate-900">{value}</span>
     </div>
   );
 }
 
-function TalentCard({ id, name, role, rating, skills, score, avatar }) {
+function TalentCard({ id, name, role, rating, skills, score, avatar, isPro }) {
   const navigate = useNavigate();
   return (
-    <div className="p-8 border border-white/10 hover:border-white transition-all group relative bg-white/5">
-      <div className="flex items-center gap-6 mb-10">
-        <div className="w-16 h-16 border border-white/10 flex items-center justify-center font-black text-2xl italic group-hover:bg-white group-hover:text-black transition-all">
+    <div className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-indigo-300 transition-all group relative">
+      {isPro && (
+        <div className="absolute top-4 right-4 flex items-center gap-1 px-2 py-0.5 bg-gradient-to-r from-amber-400 to-amber-600 text-white text-[9px] font-black rounded-full shadow-sm">
+          <Zap size={10} fill="currentColor" /> PRO
+        </div>
+      )}
+      <div className="flex items-center gap-4 mb-8">
+        <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center font-bold text-slate-400 text-lg">
           {avatar}
         </div>
         <div>
-          <h4 className="text-xl font-black tracking-tight uppercase flex items-center gap-3">
-            {name} <BadgeCheck size={18} className="text-white" />
+          <h4 className="font-bold text-slate-900 flex items-center gap-2">
+            {name} {isPro && <BadgeCheck size={18} className="text-indigo-500" />}
           </h4>
-          <p className="text-[10px] text-white/30 font-black uppercase tracking-widest mt-1">{role}</p>
+          <p className="text-xs text-slate-400 font-medium">{role}</p>
         </div>
       </div>
-
-      <div className="space-y-8">
+ 
+      <div className="space-y-6">
         <div className="grid grid-cols-2 gap-4">
-           <div className="p-5 border border-white/10 bg-white/5">
-             <p className="text-[9px] text-white/20 font-black uppercase tracking-widest mb-2">AI Score</p>
-             <p className="text-2xl font-black italic">{score}</p>
+           <div className="p-4 bg-slate-50 rounded-xl">
+             <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">AI Score</p>
+             <p className="text-xl font-bold text-slate-900">{score}</p>
            </div>
-           <div className="p-5 border border-white/10 bg-white/5">
-             <p className="text-[9px] text-white/20 font-black uppercase tracking-widest mb-2">Rating</p>
-             <div className="flex items-center gap-2">
-               <Star size={16} className="text-white" />
-               <span className="text-2xl font-black italic">{rating}</span>
+           <div className="p-4 bg-slate-50 rounded-xl">
+             <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">Rating</p>
+             <div className="flex items-center gap-1">
+               <Star size={14} className="text-amber-400 fill-amber-400" />
+               <span className="text-xl font-bold text-slate-900">{rating}</span>
              </div>
            </div>
         </div>
-
+ 
         <div className="flex flex-wrap gap-2">
           {skills.slice(0, 3).map((skill, i) => (
-            <div key={i} className="px-3 py-1 border border-white/5 text-[9px] font-black uppercase tracking-widest text-white/40">
+            <div key={i} className="px-2 py-1 bg-slate-100 text-[10px] font-bold text-slate-500 rounded-lg">
               {skill}
             </div>
           ))}
         </div>
-
+ 
         <button 
           onClick={() => navigate(`/profile/${id}`)} 
-          className="w-full py-4 border border-white/20 text-[10px] font-black uppercase tracking-widest hover:border-white hover:bg-white hover:text-black transition-all"
+          className="w-full py-3 bg-white border border-slate-200 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-50 transition-all"
         >
           View Profile
         </button>

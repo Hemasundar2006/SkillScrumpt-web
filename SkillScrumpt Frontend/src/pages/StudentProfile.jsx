@@ -39,6 +39,9 @@ export function StudentProfile() {
               <div className="flex flex-col md:flex-row md:items-center gap-4 mb-4">
                 <h1 className="text-4xl lg:text-5xl font-bold tracking-tight flex items-center gap-2">
                   Alex Rivera <BadgeCheck size={32} className="text-primary fill-primary/10" />
+                  <span className="flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-amber-400 to-amber-600 text-white text-[12px] font-black rounded-full shadow-md ml-4">
+                    <Zap size={14} fill="currentColor" /> PRO MEMBER
+                  </span>
                 </h1>
                 <Badge variant="primary" className="bg-primary/20 text-blue-300 border-none px-4 py-1.5 uppercase tracking-widest font-bold">Verified Expert</Badge>
               </div>

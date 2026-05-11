@@ -50,19 +50,19 @@ export function ViewBids() {
   if (isLoading) return <div className="flex justify-center py-40 bg-black min-h-screen"><Loader2 className="animate-spin text-white" size={48} /></div>;
 
   return (
-    <div className="pt-24 pb-20 bg-black text-white selection:bg-white selection:text-black min-h-screen">
+    <div className="pt-24 pb-20 bg-slate-50 text-slate-900 selection:bg-indigo-100 min-h-screen">
       <div className="max-w-7xl mx-auto px-6">
         <header className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8">
           <div>
-            <Link to="/dashboard/client" className="flex items-center gap-3 text-white/30 hover:text-white mb-6 transition-all group">
+            <Link to="/dashboard/client" className="flex items-center gap-3 text-slate-400 hover:text-indigo-600 mb-6 transition-all group font-bold text-xs">
                <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> 
-               <span className="text-[10px] font-black uppercase tracking-[0.3em]">Sector: Employer Hub</span>
+               Back to Hub
             </Link>
-            <h1 className="text-5xl font-black tracking-tighter uppercase italic">PROPOSALS <br />MANIFEST.</h1>
-            <p className="text-white/40 font-black text-[10px] uppercase tracking-[0.2em] mt-4">DIRECTIVE: {project?.title}</p>
+            <h1 className="text-4xl font-bold tracking-tight text-slate-900">Project Proposals</h1>
+            <p className="text-slate-500 font-medium text-sm mt-2">{project?.title}</p>
           </div>
-          <div className="px-6 py-2 border border-white/10 text-[10px] font-black uppercase tracking-widest text-white/30">
-            {project?.bids?.length || 0} ACTIVE_SIGNALS
+          <div className="px-6 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-500">
+            {project?.bids?.length || 0} Proposals Received
           </div>
         </header>
 
@@ -71,37 +71,36 @@ export function ViewBids() {
             {project?.bids?.length > 0 ? project.bids.map((bid, i) => (
               <BidRow 
                 key={bid._id || i}
-                name={`${bid.professional?.firstName || 'OPERATIVE'} ${bid.professional?.lastName || ''}`} 
+                name={`${bid.professional?.firstName || 'Professional'} ${bid.professional?.lastName || ''}`} 
                 score={bid.professional?.aiScore || 0} 
-                rate={`$${bid.amount}`} 
+                isPro={bid.professional?.isPro}
+                rate={`₹${bid.amount?.toLocaleString()}`} 
                 date={new Date(bid.createdAt).toLocaleDateString()} 
                 active={i === 0} 
               />
             )) : (
-              <div className="py-32 text-center border border-dashed border-white/10">
-                <p className="text-white/20 font-black uppercase tracking-widest text-xs">No project signals detected.</p>
+              <div className="py-32 text-center bg-white border border-slate-200 rounded-2xl">
+                <p className="text-slate-400 font-bold text-sm">No proposals received yet.</p>
               </div>
             )}
           </div>
 
           <aside>
-            <div className="border border-white/10 p-1 bg-white/5 sticky top-24">
-              <div className="bg-black border border-white/10 p-10">
-                <h3 className="text-xl font-black tracking-tight uppercase italic mb-8 flex items-center gap-3">
-                  <Cpu size={20} className="text-white/40" /> AI_AUDIT
+            <div className="bg-white border border-slate-200 p-8 rounded-2xl shadow-sm sticky top-24">
+                <h3 className="text-lg font-bold text-slate-900 mb-8 flex items-center gap-3">
+                  <Cpu size={20} className="text-indigo-600" /> AI Insights
                 </h3>
-                <div className="bg-white/5 border border-white/10 p-6 mb-10">
-                  <p className="text-[11px] font-bold text-white/40 leading-relaxed uppercase tracking-widest italic">
+                <div className="bg-slate-50 border border-slate-100 p-6 rounded-xl mb-10">
+                  <p className="text-xs font-medium text-slate-600 leading-relaxed italic">
                     {project?.bids?.length > 0 
-                      ? `"BASED ON REQUIREMENT_SYNC, OPERATIVE_ALPHA SHOWS THE STRONGEST CORRELATION TO CORE OBJECTIVES."`
-                      : '"WAITING FOR SIGNALS TO ANALYZE OPTIMAL CORRELATION."'}
+                      ? "Based on skill matching, this professional shows the strongest correlation to your project requirements."
+                      : "Waiting for more proposals to analyze optimal candidates."}
                   </p>
                 </div>
                 <div className="space-y-4">
-                  <button className="w-full py-5 bg-white text-black font-black uppercase tracking-widest text-[10px] hover:bg-white/90 transition-all" disabled={!project?.bids?.length}>AUTHORIZE HIRE</button>
-                  <button className="w-full py-5 border border-white/10 text-white font-black uppercase tracking-widest text-[10px] hover:bg-white/5 transition-all" disabled={!project?.bids?.length}>COMPARE OPERATIVES</button>
+                  <button className="w-full py-4 bg-indigo-600 text-white font-bold rounded-xl text-sm hover:bg-indigo-700 transition-all shadow-md shadow-indigo-100" disabled={!project?.bids?.length}>Hire Candidate</button>
+                  <button className="w-full py-4 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl text-sm hover:bg-slate-50 transition-all" disabled={!project?.bids?.length}>Compare All</button>
                 </div>
-              </div>
             </div>
           </aside>
         </div>
@@ -484,30 +483,36 @@ export function SubmitBid() {
 
 // --- Helper Components ---
 
-function BidRow({ name, score, rate, date, active = false }) {
+function BidRow({ name, score, rate, date, isPro, active = false }) {
   return (
-    <div className={`border border-white/10 p-1 ${active ? 'bg-white' : 'bg-white/5'}`}>
-      <div className={`p-8 border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-8 transition-all cursor-pointer ${active ? 'bg-black' : 'bg-black hover:bg-white/5'}`}>
-         <div className="flex items-center gap-8">
-           <div className={`w-16 h-16 border flex items-center justify-center font-black text-2xl italic ${active ? 'border-white text-white' : 'border-white/10 text-white/20'}`}>
+    <div className={`bg-white border transition-all rounded-2xl overflow-hidden shadow-sm ${active ? 'border-indigo-600 ring-1 ring-indigo-600' : 'border-slate-200 hover:border-slate-300'}`}>
+      <div className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-8 cursor-pointer">
+         <div className="flex items-center gap-6">
+           <div className="w-14 h-14 bg-slate-100 rounded-xl flex items-center justify-center font-bold text-slate-400 text-xl">
              {name[0]}
            </div>
            <div>
-               <h4 className="text-xl font-black tracking-tight uppercase flex items-center gap-4 italic">
-                 {name} <BadgeCheck size={20} className="text-white" />
+               <h4 className="font-bold text-slate-900 flex items-center gap-2">
+                 {name} 
+                 {isPro && (
+                   <span className="flex items-center gap-1 px-2 py-0.5 bg-gradient-to-r from-amber-400 to-amber-600 text-white text-[9px] font-black rounded-full shadow-sm">
+                     <Zap size={10} fill="currentColor" /> PRO
+                   </span>
+                 )}
+                 <BadgeCheck size={18} className="text-indigo-500" />
                </h4>
-              <div className="flex items-center gap-6 text-[9px] font-black text-white/30 uppercase tracking-[0.2em] mt-3">
-                <span className="text-white italic">AI_SCORE: {score}</span>
-                <span>RELAYED {date}</span>
+              <div className="flex items-center gap-4 text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-wider">
+                <span className="text-indigo-600">AI Score: {score}</span>
+                <span>Submitted {date}</span>
               </div>
            </div>
          </div>
-         <div className="flex items-center gap-12">
+         <div className="flex items-center gap-8">
             <div className="text-right">
-               <p className="text-2xl font-black italic">{rate}</p>
-               <p className="text-[9px] text-white/20 font-black uppercase tracking-widest mt-1">PROPOSED_RATE</p>
+               <p className="text-xl font-bold text-slate-900">{rate}</p>
+               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Proposed Rate</p>
             </div>
-            <ChevronRight size={24} className="text-white/20" />
+            <ChevronRight size={20} className="text-slate-300" />
          </div>
       </div>
     </div>

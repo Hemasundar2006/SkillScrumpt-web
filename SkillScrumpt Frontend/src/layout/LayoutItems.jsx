@@ -75,7 +75,7 @@ export function Navbar() {
                    <span className="text-[9px] font-black uppercase tracking-widest px-3 py-1 bg-white text-black">PRO</span>
                  )}
                  <button className="text-[10px] font-black uppercase tracking-widest flex items-center gap-3 group">
-                   {user.role === 'admin' ? 'System Control' : 'Secure Dashboard'}
+                   {user.role === 'admin' ? 'Admin Panel' : 'Dashboard'}
                    <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                  </button>
               </Link>
@@ -84,7 +84,7 @@ export function Navbar() {
                 <Link to="/login" className="text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-white transition-colors">Login</Link>
                 <Link to="/register">
                   <button className="px-8 py-3 bg-white text-black text-[10px] font-black uppercase tracking-widest hover:bg-white/90 transition-all">
-                    Establish Identity
+                    Sign Up
                   </button>
                 </Link>
               </>
@@ -139,7 +139,7 @@ export function Footer() {
               SkillScrumpt.in
             </Link>
             <p className="text-white/40 text-[11px] font-bold uppercase tracking-widest leading-relaxed">
-              AI-Proctored Skill Verification <br />& Global Freelance Marketplace. <br />Bridging the gap between verified <br />talent and dominant opportunities.
+              AI-Proctored Skill Verification <br />& Global Freelance Marketplace. <br />Empowering verified talent with <br />global opportunities.
             </p>
           </div>
           
@@ -175,7 +175,7 @@ export function Footer() {
         </div>
         
         <div className="mt-24 pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
-          <p className="text-white/20 text-[10px] font-black uppercase tracking-[0.3em]">© 2026 SkillScrumpt.in Authorized Global Operation.</p>
+          <p className="text-white/20 text-[10px] font-black uppercase tracking-[0.3em]">© 2026 SkillScrumpt.in All Rights Reserved.</p>
           <div className="flex gap-12 text-white/40">
             <div className="text-[10px] font-black uppercase tracking-widest hover:text-white cursor-pointer transition-colors">Twitter</div>
             <div className="text-[10px] font-black uppercase tracking-widest hover:text-white cursor-pointer transition-colors">Discord</div>
