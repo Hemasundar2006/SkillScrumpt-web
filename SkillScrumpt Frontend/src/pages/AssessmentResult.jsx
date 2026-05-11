@@ -111,9 +111,9 @@ export function AssessmentResult() {
             {/* Performance Matrix */}
             <div className="grid md:grid-cols-3 gap-1 border-t border-white/10 mb-24">
               <MetricCard 
-                label="TECHNICAL_SCORE" 
+                label="OVERALL_SCORE" 
                 value={`${score}%`} 
-                sub="BASED ON 21_PROMPT_SEQUENCE" 
+                sub="WEIGHTED_COMPOSITE_SCORE" 
                 color="text-white"
               />
               <MetricCard 

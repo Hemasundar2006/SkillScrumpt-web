@@ -57,7 +57,8 @@ exports.submitResult = async (req, res) => {
       totalQuestions, 
       correctAnswers, 
       timeTaken, 
-      proctoringLogs 
+      proctoringLogs,
+      proctoringReport
     } = req.body;
 
     // Check if already attempted (secondary server-side check)
@@ -66,22 +67,49 @@ exports.submitResult = async (req, res) => {
       return res.status(403).json({ message: 'Submission rejected: Duplicate attempt detected.' });
     }
 
-    // AI Analysis Simulation (This would use the BACKEND_PROMPT.md logic)
-    const cheatingProbability = calculateCheatingProbability(proctoringLogs);
-    const status = (score / totalQuestions > 0.7 && cheatingProbability < 0.3) ? 'passed' : 'failed';
+    let finalScore = score;
+    let cheatingProbability = 0;
+    let proctoringSummary = 'Session verified clean.';
+
+    if (proctoringReport) {
+      // Use the actual AI Proctoring report
+      const proctoringScore = proctoringReport.proctoring_score || 100;
+      
+      // Cheating probability is inversely proportional to proctoring score
+      cheatingProbability = (100 - proctoringScore) / 100;
+      
+      // Calculate final overall score combining technical score and proctoring integrity
+      // Technical score is 70% weight, Proctoring integrity is 30% weight
+      finalScore = Math.round((score * 0.7) + (proctoringScore * 0.3));
+
+      if (proctoringScore < 60) {
+        proctoringSummary = `High risk of integrity violation. AI Proctoring Score: ${proctoringScore}/100.`;
+      } else if (proctoringScore < 85) {
+        proctoringSummary = `Minor anomalies detected. AI Proctoring Score: ${proctoringScore}/100.`;
+      } else {
+        proctoringSummary = `Optimal integrity. AI Proctoring Score: ${proctoringScore}/100.`;
+      }
+    } else {
+      // Fallback if no report is provided
+      cheatingProbability = calculateCheatingProbability(proctoringLogs);
+      proctoringSummary = cheatingProbability > 0.5 ? 'Suspicious activity detected.' : 'Session verified clean.';
+    }
+
+    const status = (finalScore >= 70 && cheatingProbability < 0.4) ? 'passed' : 'failed';
 
     const result = await AssessmentResult.create({
       assessment: req.params.id,
       user: req.user._id,
-      score,
+      score: finalScore,
       totalQuestions,
       correctAnswers,
       timeTaken,
       status,
-      proctoringLogs,
+      proctoringLogs: proctoringReport?.violations || proctoringLogs || [],
       aiAnalysis: {
         cheatingProbability,
-        summary: cheatingProbability > 0.5 ? 'Suspicious activity detected.' : 'Session verified clean.'
+        summary: proctoringSummary,
+        rawReport: proctoringReport
       }
     });
 
@@ -99,7 +127,12 @@ exports.submitResult = async (req, res) => {
       const assessment = await Assessment.findById(req.params.id);
       updateData.$inc = { aiScore: 50 };
       if (!updateData.$push.badges) updateData.$push.badges = [];
-      updateData.$push.badges = { name: assessment.reward, assessmentId: assessment._id };
+      updateData.$push.badges = { 
+        name: assessment?.reward || 'Certified Professional', 
+        assessmentId: req.params.id,
+        score: finalScore,
+        earnedAt: new Date()
+      };
     }
 
     await User.findByIdAndUpdate(req.user._id, updateData);
@@ -110,7 +143,7 @@ exports.submitResult = async (req, res) => {
   }
 };
 
-// Simple simulation of AI logic defined in BACKEND_PROMPT.md
+// Simple simulation of AI logic as fallback
 function calculateCheatingProbability(logs) {
   if (!logs || logs.length === 0) return 0.05;
   

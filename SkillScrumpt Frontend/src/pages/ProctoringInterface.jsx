@@ -133,13 +133,49 @@ export function AIProctoringInterface() {
     if (isSubmitting) return;
     setIsSubmitting(true);
     const report = await stopProctoring();
-    navigate('/assessments/result', { 
-        state: { 
-            score: 85,
-            proctoringScore: report?.proctoring_score || 100,
-            report: report
-        } 
-    });
+    
+    try {
+      // Calculate basic technical score from answers
+      let correctCount = 0;
+      Object.keys(answers).forEach(qId => {
+        // Mock correct answer logic: assume option A (0) is always correct for MCQ
+        if (questions[qId].type === 'mcq' && answers[qId] === 0) {
+          correctCount++;
+        } else if (questions[qId].type === 'coding' && answers[qId].length > 20) {
+          correctCount++;
+        }
+      });
+      
+      const technicalScore = Math.round((correctCount / questions.length) * 100) || 85;
+
+      const response = await api.post(`/assessments/${testId || 'react-assessment-01'}/submit`, {
+        score: technicalScore,
+        totalQuestions: questions.length,
+        correctAnswers: correctCount,
+        timeTaken: 3600 - timeLeft,
+        proctoringReport: report, // Sending the full report to backend
+      });
+
+      navigate('/assessments/result', { 
+          state: { 
+              score: response.data.score || technicalScore,
+              proctoringScore: report?.proctoring_score || 100,
+              report: report,
+              status: response.data.status
+          } 
+      });
+    } catch (error) {
+      console.error("Error submitting assessment:", error);
+      // Fallback if backend fails
+      navigate('/assessments/result', { 
+          state: { 
+              score: 85,
+              proctoringScore: report?.proctoring_score || 100,
+              report: report,
+              status: 'failed'
+          } 
+      });
+    }
   };
 
   if (isLocked) {
