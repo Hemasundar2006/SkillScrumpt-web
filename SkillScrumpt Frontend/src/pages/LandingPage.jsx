@@ -323,7 +323,7 @@ export function LandingPage() {
       {/* APPROACH SECTION (BENTO) */}
       <section className="py-40">
         <div className="max-w-[1400px] mx-auto px-6">
-          <div className="text-[11px] font-black uppercase tracking-[0.3em] text-muted mb-4">The Advantage</div>
+          <div className="text-[11px] font-black uppercase tracking-[0.3em] text-muted mb-4">Why SkillScrumpt</div>
           <h2 className="text-5xl md:text-7xl font-black tracking-tighter mb-20 leading-[0.9]">
             Where integrity <br />meets velocity.
           </h2>
