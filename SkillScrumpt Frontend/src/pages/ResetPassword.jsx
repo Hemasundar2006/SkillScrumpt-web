@@ -73,7 +73,7 @@ export default function ResetPassword() {
                   type={showPassword ? "text" : "password"}
                   required
                   placeholder="••••••••"
-                  className="w-full bg-slate-50 border border-slate-200 py-4 px-6 rounded-2xl text-sm font-medium focus:outline-none focus:border-indigo-500 transition-all"
+                  className="w-full bg-slate-50 border border-slate-200 py-4 px-6 rounded-2xl text-sm font-medium text-slate-900 focus:outline-none focus:border-indigo-500 transition-all placeholder:text-slate-400"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
@@ -86,7 +86,7 @@ export default function ResetPassword() {
                 type={showPassword ? "text" : "password"}
                 required
                 placeholder="••••••••"
-                className="w-full bg-slate-50 border border-slate-200 py-4 px-6 rounded-2xl text-sm font-medium focus:outline-none focus:border-indigo-500 transition-all"
+                className="w-full bg-slate-50 border border-slate-200 py-4 px-6 rounded-2xl text-sm font-medium text-slate-900 focus:outline-none focus:border-indigo-500 transition-all placeholder:text-slate-400"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
