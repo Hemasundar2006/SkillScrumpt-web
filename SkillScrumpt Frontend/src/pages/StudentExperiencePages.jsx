@@ -47,42 +47,51 @@ export function StudentProjects() {
     }
   };
 
-  if (isLoading && !user) return <div className="flex justify-center py-40 bg-black min-h-screen"><Loader2 className="animate-spin text-white" size={48} /></div>;
+  if (isLoading && !user) return <div className="flex justify-center py-40 bg-slate-50 min-h-screen"><Loader2 className="animate-spin text-slate-400" size={48} /></div>;
 
   return (
     <DashboardLayout user={user}>
-      <header className="mb-16">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-          <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em]">Sector: Operations Dashboard</span>
-        </div>
-        <h1 className="text-6xl font-black tracking-tighter uppercase italic">CONTRACT <br />MANIFEST.</h1>
-      </header>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-1 mb-16">
-        <StatItem label="ACTIVE_CONTRACTS" value={user?.activeContractsCount || 0} color="text-white" />
-        <StatItem label="COMPLETED_CYCLES" value={user?.completedProjectsCount || 0} color="text-white/40" />
-        <StatItem label="OPEN_SIGNALS" value={user?.proposalsCount || 0} color="text-white/40" />
-      </div>
-
-      <section className="space-y-12">
-         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-8 border-b border-white/10 pb-8">
-           <div className="flex gap-10">
-             <button className="text-[10px] font-black text-white uppercase tracking-[0.3em] border-b-2 border-white pb-2">ACTIVE_DIRECTIVES</button>
-             <button className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em] hover:text-white transition-all pb-2">PENDING_SIGNALS</button>
-           </div>
-           <div className="flex gap-4">
-             <button className="p-3 border border-white/10 text-white/20 hover:text-white hover:border-white transition-all"><Filter size={16} /></button>
-             <button className="p-3 border border-white/10 text-white/20 hover:text-white hover:border-white transition-all"><Search size={16} /></button>
-           </div>
-         </div>
-
-         <div className="space-y-4">
-            <div className="py-32 text-center border border-dashed border-white/10 bg-white/[0.02]">
-              <p className="text-white/20 font-black uppercase tracking-[0.4em] text-[10px] italic">NO_ACTIVE_DIRECTIVES_DETECTED. BROWSE_MARKETPLACE_TO_INITIALIZE.</p>
+      <div className="bg-slate-50 min-h-screen pb-24 font-sans px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto pt-8">
+          <header className="mb-12">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse shadow-sm" />
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Project Hub</span>
             </div>
-         </div>
-      </section>
+            <h1 className="text-4xl font-bold tracking-tight text-slate-900">My Contracts</h1>
+          </header>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <StatItem label="Active Contracts" value={user?.activeContractsCount || 0} active />
+            <StatItem label="Completed Projects" value={user?.completedProjectsCount || 0} />
+            <StatItem label="Pending Proposals" value={user?.proposalsCount || 0} />
+          </div>
+
+          <section className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-8 md:p-10">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-8 border-b border-slate-100 pb-6 mb-8">
+              <div className="flex gap-4">
+                <button className="text-sm font-bold text-slate-900 bg-slate-100 px-6 py-2.5 rounded-xl transition-all">Active</button>
+                <button className="text-sm font-bold text-slate-500 hover:text-slate-900 hover:bg-slate-50 px-6 py-2.5 rounded-xl transition-all">Pending</button>
+                <button className="text-sm font-bold text-slate-500 hover:text-slate-900 hover:bg-slate-50 px-6 py-2.5 rounded-xl transition-all">Completed</button>
+              </div>
+              <div className="flex gap-3">
+                <button className="p-2.5 border border-slate-200 text-slate-400 hover:text-slate-600 hover:border-slate-300 rounded-xl transition-all shadow-sm bg-white"><Filter size={18} /></button>
+                <button className="p-2.5 border border-slate-200 text-slate-400 hover:text-slate-600 hover:border-slate-300 rounded-xl transition-all shadow-sm bg-white"><Search size={18} /></button>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+                <div className="py-24 text-center">
+                  <div className="w-16 h-16 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-slate-400">
+                    <Briefcase size={24} />
+                  </div>
+                  <p className="text-slate-500 font-bold text-sm">No active contracts found.</p>
+                  <p className="text-slate-400 text-xs mt-2">Browse the marketplace to start bidding on projects.</p>
+                </div>
+            </div>
+          </section>
+        </div>
+      </div>
     </DashboardLayout>
   );
 }
@@ -109,107 +118,104 @@ export function StudentSkills() {
     }
   };
 
-  if (isLoading && !user) return <div className="flex justify-center py-40 bg-black min-h-screen"><Loader2 className="animate-spin text-white" size={48} /></div>;
+  if (isLoading && !user) return <div className="flex justify-center py-40 bg-slate-50 min-h-screen"><Loader2 className="animate-spin text-slate-400" size={48} /></div>;
 
   return (
     <DashboardLayout user={user}>
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-12 mb-20">
-        <div>
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-            <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em]">Sector: Expertise Manifest</span>
-          </div>
-          <h1 className="text-6xl font-black tracking-tighter uppercase italic">SKILLS <br />& BADGES.</h1>
-        </div>
-        <button 
-          onClick={() => navigate('/assessments')}
-          className="flex items-center gap-4 bg-white text-black py-6 px-12 font-black uppercase tracking-[0.3em] text-xs hover:bg-white/90 transition-all group"
-        >
-          <Zap size={18} /> INITIATE_ASSESSMENT
-        </button>
-      </header>
-
-      <div className="grid lg:grid-cols-3 gap-12">
-        <div className="lg:col-span-2 space-y-24">
-          <section>
-            <div className="flex items-center gap-4 mb-12">
-              <h3 className="text-3xl font-black tracking-tighter uppercase italic">VERIFIED_BADGES.</h3>
-              <div className="h-[1px] bg-white/10 flex-1" />
+      <div className="bg-slate-50 min-h-screen pb-24 font-sans px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto pt-8">
+          <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-16">
+            <div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse shadow-sm" />
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Expertise Profile</span>
+              </div>
+              <h1 className="text-4xl font-bold tracking-tight text-slate-900">Skills & Badges</h1>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
-              {user?.badges?.length > 0 ? user.badges.map((badge, i) => (
-                <BadgeItem 
-                  key={i} 
-                  id={badge.assessmentId}
-                  title={badge.name || badge.title} 
-                  score={badge.score} 
-                  date={new Date(badge.issuedAt || badge.earnedAt).toLocaleDateString().toUpperCase()} 
-                />
-              )) : (
-                <div className="col-span-2 p-16 text-center border border-dashed border-white/10 bg-white/[0.02]">
-                  <p className="text-white/20 font-black uppercase tracking-[0.4em] text-[10px] mb-8 italic">ZERO_VERIFIED_CREDENTIALS_RECORDED.</p>
-                  <button onClick={() => navigate('/assessments')} className="px-10 py-4 border border-white text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all">INITIALIZE_FIRST_TASK</button>
+            <button 
+              onClick={() => navigate('/assessments')}
+              className="flex items-center gap-3 bg-indigo-600 text-white py-3.5 px-6 rounded-xl font-bold text-sm hover:bg-indigo-700 transition-all shadow-md group"
+            >
+              <Zap size={18} /> Take New Assessment
+            </button>
+          </header>
+
+          <div className="grid lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2 space-y-12">
+              <section className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-8 md:p-10">
+                <div className="flex items-center justify-between mb-8 pb-6 border-b border-slate-100">
+                  <h3 className="text-2xl font-bold tracking-tight text-slate-900">Verified Badges</h3>
+                  <BadgeCheckIcon />
                 </div>
-              )}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {user?.badges?.length > 0 ? user.badges.map((badge, i) => (
+                    <BadgeItem 
+                      key={i} 
+                      id={badge.assessmentId}
+                      title={badge.name || badge.title} 
+                      score={badge.score} 
+                      date={new Date(badge.issuedAt || badge.earnedAt).toLocaleDateString()} 
+                    />
+                  )) : (
+                    <div className="col-span-2 py-16 text-center bg-slate-50 rounded-2xl border border-slate-100">
+                      <p className="text-slate-500 font-bold text-sm mb-4">You haven't earned any verified badges yet.</p>
+                      <button onClick={() => navigate('/assessments')} className="px-6 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-all shadow-sm">Explore Assessments</button>
+                    </div>
+                  )}
+                </div>
+              </section>
+
+              <section className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-8 md:p-10">
+                 <div className="flex items-center justify-between mb-8 pb-6 border-b border-slate-100">
+                   <h3 className="text-2xl font-bold tracking-tight text-slate-900">Technical Proficiency</h3>
+                   <Cpu size={24} className="text-indigo-600" />
+                 </div>
+                 <div className="space-y-2">
+                    {user?.skills?.length > 0 ? user.skills.map((skill, i) => (
+                      <SkillLevelRow key={i} label={skill} value={80 + (i * 5) % 20} />
+                    )) : (
+                      <p className="py-12 text-slate-500 text-center font-bold text-sm">No specific skills listed on profile.</p>
+                    )}
+                 </div>
+              </section>
             </div>
-          </section>
 
-          <section>
-             <div className="flex items-center gap-4 mb-12">
-               <h3 className="text-3xl font-black tracking-tighter uppercase italic">TECHNICAL_CORRELATION.</h3>
-               <div className="h-[1px] bg-white/10 flex-1" />
-             </div>
-             <div className="border border-white/10 bg-white/5 divide-y divide-white/10">
-                {user?.skills?.length > 0 ? user.skills.map((skill, i) => (
-                  <SkillLevelRow key={i} label={skill} value={80 + (i * 5) % 20} />
-                )) : (
-                  <p className="p-16 text-white/20 text-center font-black uppercase tracking-[0.4em] text-[10px] italic">NO_SKILL_SIGNALS_RECORDED.</p>
-                )}
-             </div>
-          </section>
-        </div>
-
-        <aside className="space-y-12">
-          <div className="p-1 border border-white/10 bg-white/5">
-            <div className="p-10 border border-white/10 bg-black relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 border border-white/5 -mr-16 -mt-16 rotate-45 pointer-events-none" />
-              <div className="relative z-10">
-                <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20 mb-8 italic text-center">AI_IDENTITY_SCORE</h4>
-                <div className="text-7xl font-black italic tracking-tighter text-center mb-8">{user?.aiScore || 0}</div>
-                <div className="w-full h-[1px] bg-white/10 mb-12 relative">
-                   <div className="absolute top-0 left-0 bg-white h-full transition-all duration-1000" style={{ width: `${Math.min((user?.aiScore / 1000) * 100, 100)}%` }} />
+            <aside className="space-y-6">
+              <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-8 text-center relative overflow-hidden group hover:shadow-md transition-all">
+                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-500 to-purple-500" />
+                <h4 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-6 mt-4">AI Identity Score</h4>
+                <div className="text-6xl font-bold tracking-tighter text-slate-900 mb-6">{user?.aiScore || 0}</div>
+                
+                <div className="w-full h-2 bg-slate-100 rounded-full mb-8 overflow-hidden">
+                   <div className="bg-indigo-600 h-full rounded-full transition-all duration-1000" style={{ width: `${Math.min((user?.aiScore / 1000) * 100, 100)}%` }} />
                 </div>
-                <div className="flex flex-col gap-4 items-center">
-                   <div className="flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-white/60">
-                     <CheckCircle size={14} className={user?.isVerified ? 'text-white' : 'text-white/20'} />
-                     STATUS: {user?.isVerified ? 'ELITE_VERIFIED' : 'PENDING_VALIDATION'}
+                
+                <div className="flex justify-center">
+                   <div className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold shadow-sm ${user?.isVerified ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-slate-50 text-slate-600 border border-slate-200'}`}>
+                     <CheckCircle size={16} className={user?.isVerified ? 'text-emerald-500' : 'text-slate-400'} />
+                     {user?.isVerified ? 'Elite Verified' : 'Standard Profile'}
                    </div>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <div className="p-1 border border-white/10 bg-white/5">
-            <div className="p-10 bg-black border border-white/10 group relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 border border-white/5 -mr-16 -mt-16 rotate-45 pointer-events-none" />
-              <div className="relative z-10">
-                <div className="inline-block px-4 py-1 border border-white/20 text-[8px] font-black uppercase tracking-widest text-white/40 mb-6">PARTNER_PROTOCOL</div>
-                <h4 className="text-2xl font-black tracking-tighter italic uppercase mb-4">RESUME_SYNTHESIS.</h4>
-                <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-12 leading-relaxed">
-                  USE <span className="text-white">RESUSOLVE</span> TO GENERATE AN ATS-OPTIMIZED DOSSIER THAT COMPLEMENTS YOUR SkillScrumpt.in BADGES.
+              <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-8 relative overflow-hidden group hover:shadow-md transition-all">
+                <div className="inline-block px-3 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-bold mb-6">Partner Tool</div>
+                <h4 className="text-xl font-bold tracking-tight text-slate-900 mb-3">Resume Synthesis</h4>
+                <p className="text-sm font-medium text-slate-500 mb-8 leading-relaxed">
+                  Use <span className="font-bold text-slate-900">ResuSolve</span> to generate an ATS-optimized resume that highlights your verified SkillScrumpt badges.
                 </p>
                 <a 
                   href="https://resusolve.vercel.app" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="block text-center py-5 bg-white text-black font-black uppercase tracking-widest text-[10px] hover:bg-white/90 transition-all"
+                  className="flex items-center justify-center py-3.5 bg-slate-900 text-white font-bold rounded-xl text-sm hover:bg-slate-800 transition-all shadow-md"
                 >
-                  START_SYNTHESIS
+                  Create Resume
                 </a>
               </div>
-            </div>
+            </aside>
           </div>
-        </aside>
+        </div>
       </div>
     </DashboardLayout>
   );
@@ -257,74 +263,76 @@ export function StudentSettings() {
     }
   };
 
-  if (isLoading && !user) return <div className="flex justify-center py-40 bg-black min-h-screen"><Loader2 className="animate-spin text-white" size={48} /></div>;
+  if (isLoading && !user) return <div className="flex justify-center py-40 bg-slate-50 min-h-screen"><Loader2 className="animate-spin text-slate-400" size={48} /></div>;
 
   return (
     <DashboardLayout user={user}>
-       <header className="mb-20">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-            <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em]">Sector: Identity Management</span>
-          </div>
-          <h1 className="text-6xl font-black tracking-tighter uppercase italic">ACCOUNT <br />PARAMETERS.</h1>
-      </header>
+      <div className="bg-slate-50 min-h-screen pb-24 font-sans px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto pt-8">
+          <header className="mb-12">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse shadow-sm" />
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Account Management</span>
+            </div>
+            <h1 className="text-4xl font-bold tracking-tight text-slate-900">Settings</h1>
+          </header>
 
-      <div className="grid lg:grid-cols-4 gap-12">
-        <div className="lg:col-span-1 space-y-1">
-           <SettingsLink icon={User} label="CORE_IDENTITY" active />
-           <SettingsLink icon={Lock} label="SECURITY_PASS" />
-           <SettingsLink icon={Bell} label="RELAY_NOTICES" />
-           <SettingsLink icon={CreditCard} label="FINANCIAL_RECORDS" />
-           <SettingsLink icon={Shield} label="AI_PRIVACY" />
-        </div>
+          <div className="grid lg:grid-cols-4 gap-8">
+            <div className="lg:col-span-1 space-y-2">
+               <SettingsLink icon={User} label="Profile Info" active />
+               <SettingsLink icon={Lock} label="Security" />
+               <SettingsLink icon={Bell} label="Notifications" />
+               <SettingsLink icon={CreditCard} label="Billing" />
+               <SettingsLink icon={Shield} label="Privacy" />
+            </div>
 
-        <div className="lg:col-span-3">
-          <div className="p-1 border border-white/10 bg-white/5">
-            <div className="bg-black border border-white/10 p-12 md:p-20 space-y-12">
-              <div className="grid md:grid-cols-2 gap-12">
-                <div className="space-y-3">
-                  <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.4em] ml-1">GIVEN_NAME</label>
-                  <input 
-                    type="text" 
-                    value={formData.firstName} 
-                    onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-                    className="w-full px-6 py-4 bg-transparent border border-white/20 focus:border-white outline-none transition-all font-black uppercase tracking-widest placeholder:text-white/10" 
-                  />
+            <div className="lg:col-span-3">
+              <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-8 md:p-12">
+                <div className="grid md:grid-cols-2 gap-8 mb-8">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">First Name</label>
+                    <input 
+                      type="text" 
+                      value={formData.firstName} 
+                      onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                      className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all font-medium text-slate-900" 
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Last Name</label>
+                    <input 
+                      type="text" 
+                      value={formData.lastName} 
+                      onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+                      className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all font-medium text-slate-900" 
+                    />
+                  </div>
+                  <div className="space-y-2 md:col-span-2">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Email Address</label>
+                    <input 
+                      type="email" 
+                      value={formData.email} 
+                      disabled
+                      className="w-full px-5 py-3.5 bg-slate-100 border border-slate-200 rounded-xl text-slate-500 outline-none font-medium cursor-not-allowed" 
+                    />
+                  </div>
                 </div>
-                <div className="space-y-3">
-                  <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.4em] ml-1">SURNAME</label>
-                  <input 
-                    type="text" 
-                    value={formData.lastName} 
-                    onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-                    className="w-full px-6 py-4 bg-transparent border border-white/20 focus:border-white outline-none transition-all font-black uppercase tracking-widest placeholder:text-white/10" 
-                  />
-                </div>
-                <div className="space-y-3 md:col-span-2">
-                  <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.4em] ml-1">IDENTITY_EMAIL</label>
-                  <input 
-                    type="email" 
-                    value={formData.email} 
-                    disabled
-                    className="w-full px-6 py-4 bg-white/[0.02] border border-white/5 text-white/20 outline-none font-black uppercase tracking-widest cursor-not-allowed" 
-                  />
-                </div>
-              </div>
 
-              <div className="space-y-3">
-                <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.4em] ml-1">OPERATIVE_BIO</label>
-                <textarea 
-                  rows={6} 
-                  value={formData.bio}
-                  onChange={(e) => setFormData({...formData, bio: e.target.value})}
-                  className="w-full px-6 py-4 bg-transparent border border-white/20 focus:border-white outline-none transition-all font-bold placeholder:text-white/10 resize-none uppercase tracking-widest text-[11px]"
-                  placeholder="ESTABLISH YOUR PROFESSIONAL DIRECTIVE..."
-                ></textarea>
-              </div>
+                <div className="space-y-2 mb-10">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Professional Bio</label>
+                  <textarea 
+                    rows={5} 
+                    value={formData.bio}
+                    onChange={(e) => setFormData({...formData, bio: e.target.value})}
+                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all font-medium text-slate-900 resize-none"
+                    placeholder="Tell clients about your expertise..."
+                  ></textarea>
+                </div>
 
-              <div className="pt-12 border-t border-white/10 flex justify-end gap-8">
-                 <button className="px-10 py-5 border border-white/10 text-white/40 font-black uppercase tracking-[0.3em] text-[10px] hover:text-white transition-all">ABORT_CHANGES</button>
-                 <button onClick={handleUpdate} className="px-16 py-5 bg-white text-black font-black uppercase tracking-[0.3em] text-[10px] hover:bg-white/90 transition-all">SAVE_PARAMETERS</button>
+                <div className="pt-8 border-t border-slate-100 flex justify-end gap-4">
+                   <button className="px-6 py-3 border border-slate-200 rounded-xl text-slate-600 font-bold text-sm hover:bg-slate-50 transition-all shadow-sm">Cancel</button>
+                   <button onClick={handleUpdate} className="px-8 py-3 bg-indigo-600 text-white font-bold rounded-xl text-sm hover:bg-indigo-700 transition-all shadow-md">Save Changes</button>
+                </div>
               </div>
             </div>
           </div>
@@ -336,11 +344,11 @@ export function StudentSettings() {
 
 // --- Helper Components ---
 
-function StatItem({ label, value, color }) {
+function StatItem({ label, value, active = false }) {
   return (
-    <div className="p-10 border border-white/10 bg-white/[0.02] hover:bg-white/5 transition-all">
-      <p className="text-[9px] font-black text-white/20 uppercase tracking-[0.4em] mb-4 italic">{label}</p>
-      <div className={`text-5xl font-black italic tracking-tighter ${color}`}>{value}</div>
+    <div className={`p-8 rounded-3xl border transition-all shadow-sm ${active ? 'bg-indigo-600 border-indigo-700 text-white shadow-md' : 'bg-white border-slate-200 text-slate-900 hover:shadow-md'}`}>
+      <p className={`text-xs font-bold uppercase tracking-widest mb-3 ${active ? 'text-indigo-200' : 'text-slate-500'}`}>{label}</p>
+      <div className="text-5xl font-bold tracking-tighter">{value}</div>
     </div>
   );
 }
@@ -350,23 +358,25 @@ function BadgeItem({ title, score, date, id }) {
   return (
     <div 
       onClick={() => id && navigate(`/dashboard/student/skills/${id}`)}
-      className="p-10 border border-white/10 bg-black hover:bg-white/5 transition-all group cursor-pointer relative"
+      className="p-6 border border-slate-200 bg-white rounded-2xl hover:border-indigo-300 hover:shadow-md transition-all group cursor-pointer relative"
     >
-      <div className="flex items-center gap-6 mb-10">
-        <div className="w-16 h-16 border border-white/10 flex items-center justify-center text-white/40 group-hover:bg-white group-hover:text-black transition-all italic">
-          <Award size={32} />
+      <div className="flex items-center gap-4 mb-6">
+        <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-sm group-hover:scale-110 transition-transform">
+          <Award size={24} />
         </div>
         <div>
-          <h4 className="text-xl font-black tracking-tight uppercase group-hover:italic">{title}</h4>
-          <p className="text-[9px] text-white/20 font-black uppercase tracking-widest mt-2">EARNED_{date}</p>
+          <h4 className="text-base font-bold tracking-tight text-slate-900">{title}</h4>
+          <p className="text-xs text-slate-500 font-medium mt-0.5">Earned {date}</p>
         </div>
       </div>
       <div className="flex justify-between items-end">
         <div>
-          <p className="text-[9px] text-white/20 font-black uppercase tracking-[0.3em] mb-2">AI_CORRELATION</p>
-          <p className="text-4xl font-black italic tracking-tighter text-white">{score}</p>
+          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-1">AI Correlation</p>
+          <p className="text-2xl font-bold tracking-tight text-indigo-600">{score}</p>
         </div>
-        <div className="px-3 py-1 border border-white/10 text-[8px] font-black uppercase tracking-widest group-hover:border-white">VERIFIED_ID</div>
+        <div className="px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded flex items-center gap-1 text-[10px] font-bold shadow-sm">
+          <Shield size={10} /> Verified
+        </div>
       </div>
     </div>
   );
@@ -374,16 +384,16 @@ function BadgeItem({ title, score, date, id }) {
 
 function SkillLevelRow({ label, value }) {
   return (
-    <div className="p-10 flex items-center justify-between group hover:bg-white/5 transition-colors">
-       <div className="flex-1">
-         <h5 className="text-xl font-black tracking-tight uppercase group-hover:italic mb-6">{label}</h5>
-         <div className="w-full max-w-lg bg-white/5 h-[1px] relative">
-            <div className="absolute top-0 left-0 bg-white h-full transition-all duration-1000" style={{ width: `${value}%` }} />
+    <div className="p-4 flex items-center justify-between group hover:bg-slate-50 rounded-xl transition-colors">
+       <div className="flex-1 mr-8">
+         <h5 className="text-sm font-bold tracking-tight text-slate-900 mb-3">{label}</h5>
+         <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+            <div className="bg-indigo-500 h-full rounded-full transition-all duration-1000" style={{ width: `${value}%` }} />
          </div>
        </div>
-       <div className="text-right">
-          <span className="text-3xl font-black italic tracking-tighter">{value}</span>
-          <span className="text-[9px] font-black text-white/20 uppercase tracking-widest block mt-2">LEVEL</span>
+       <div className="text-right w-16">
+          <span className="text-xl font-bold tracking-tight text-slate-900">{value}</span>
+          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Score</span>
        </div>
     </div>
   );
@@ -391,14 +401,26 @@ function SkillLevelRow({ label, value }) {
 
 function SettingsLink({ icon: Icon, label, active = false }) {
   return (
-    <button className={`flex items-center justify-between w-full p-6 transition-all font-black text-[10px] uppercase tracking-[0.3em] ${
-      active ? 'bg-white text-black' : 'text-white/30 hover:text-white hover:bg-white/5 border border-transparent'
+    <button className={`flex items-center justify-between w-full p-4 rounded-xl transition-all font-bold text-sm ${
+      active ? 'bg-indigo-50 text-indigo-700 shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
     }`}>
-      <div className="flex items-center gap-4">
-        <Icon size={16} />
+      <div className="flex items-center gap-3">
+        <Icon size={18} className={active ? 'text-indigo-600' : 'text-slate-400'} />
         <span>{label}</span>
       </div>
-      <ChevronRight size={14} className={active ? 'text-black' : 'text-white/10'} />
+      <ChevronRight size={16} className={active ? 'text-indigo-400' : 'text-slate-300 opacity-0 group-hover:opacity-100'} />
     </button>
   );
+}
+
+function BadgeCheckIcon() {
+  return (
+    <div className="flex -space-x-2">
+      {[1,2,3].map(i => (
+        <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-indigo-100 flex items-center justify-center text-indigo-500 shadow-sm z-10 relative">
+          <Shield size={14} />
+        </div>
+      ))}
+    </div>
+  )
 }
