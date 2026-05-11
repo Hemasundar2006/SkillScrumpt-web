@@ -44,12 +44,15 @@ const userSchema = new mongoose.Schema({
   isPro: { type: Boolean, default: false },
   
   // Security: Tracking attempts to prevent retakes
-  attemptedExams: [{
-    examId: { type: String, required: true },
-    attemptedAt: { type: Date, default: Date.now },
-    status: { type: String, enum: ['completed', 'failed', 'abandoned'] }
-  }]
-}, { timestamps: true });
+    attemptedExams: [{
+      examId: { type: String, required: true },
+      attemptedAt: { type: Date, default: Date.now },
+      status: { type: String, enum: ['completed', 'failed', 'abandoned'] }
+    }],
+    
+    resetPasswordToken: String,
+    resetPasswordExpire: Date
+  }, { timestamps: true });
 
 userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();

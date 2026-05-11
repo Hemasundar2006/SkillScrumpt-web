@@ -1,6 +1,8 @@
 const User = require('../models/User');
 const Feedback = require('../models/Feedback');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const { sendEmail, templates } = require('../utils/mailService');
 
 // @desc    Register a new user
 // @route   POST /api/v1/users/register
@@ -30,6 +32,14 @@ exports.registerUser = async (req, res) => {
     const user = await User.create(userData);
 
     if (user) {
+      // Send Welcome Email
+      try {
+        const template = user.role === 'client' ? templates.welcomeClient(user.firstName) : templates.welcomeStudent(user.firstName);
+        await sendEmail(user.email, template.subject, template.html);
+      } catch (err) {
+        console.error('Failed to send welcome email:', err);
+      }
+
       res.status(201).json({
         _id: user._id,
         firstName: user.firstName,
@@ -209,6 +219,83 @@ exports.updateUserProfile = async (req, res) => {
     } else {
       res.status(404).json({ message: 'User not found' });
     }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Forgot Password
+// @route   POST /api/v1/users/forgot-password
+// @access  Public
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(20).toString('hex');
+    user.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+    user.resetPasswordExpire = Date.now() + 3600000; // 1 hour
+
+    await user.save();
+
+    const resetUrl = `${process.env.FRONTEND_URL || 'https://skillscrumpt.in'}/reset-password/${resetToken}`;
+    const template = templates.forgotPassword(user.firstName, resetUrl);
+
+    await sendEmail(user.email, template.subject, template.html);
+
+    res.json({ message: 'Password reset link sent to your email.' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Reset Password
+// @route   POST /api/v1/users/reset-password/:token
+// @access  Public
+exports.resetPassword = async (req, res) => {
+  try {
+    const resetPasswordToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
+
+    const user = await User.findOne({
+      resetPasswordToken,
+      resetPasswordExpire: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired token' });
+    }
+
+    user.password = req.body.password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+
+    await user.save();
+
+    res.json({ message: 'Password reset successfully.' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Send Test Link to Desktop
+// @route   POST /api/v1/users/desktop-handoff
+// @access  Protected
+exports.desktopHandoff = async (req, res) => {
+  try {
+    const { testId } = req.body;
+    const user = await User.findById(req.user._id);
+
+    const testLink = `${process.env.FRONTEND_URL || 'https://skillscrumpt.in'}/assessments/start/${testId}`;
+    const template = templates.desktopHandoff(testLink);
+
+    await sendEmail(user.email, template.subject, template.html);
+
+    res.json({ message: 'Link sent to your email for desktop access.' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

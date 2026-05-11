@@ -2,6 +2,7 @@ const Assessment = require('../models/Assessment');
 const AssessmentResult = require('../models/AssessmentResult');
 const User = require('../models/User');
 const Settings = require('../models/Settings');
+const { sendEmail, templates } = require('../utils/mailService');
 
 // @desc    Get all assessments
 // @route   GET /api/v1/assessments
@@ -149,6 +150,22 @@ exports.submitResult = async (req, res) => {
     }
 
     await User.findByIdAndUpdate(req.user._id, updateData);
+
+    // Send Assessment Result Email
+    try {
+      const assessmentData = await Assessment.findById(req.params.id);
+      const badgeName = status === 'passed' ? (assessmentData?.reward || 'Certified Professional') : null;
+      const template = templates.assessmentResult(
+        user.firstName, 
+        assessmentData.title, 
+        finalScore, 
+        status, 
+        badgeName
+      );
+      await sendEmail(user.email, template.subject, template.html);
+    } catch (mailErr) {
+      console.error('Failed to send assessment result email:', mailErr);
+    }
 
     res.status(201).json(result);
   } catch (error) {

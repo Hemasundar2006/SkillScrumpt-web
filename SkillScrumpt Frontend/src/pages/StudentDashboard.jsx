@@ -15,7 +15,8 @@ import {
   ArrowRight,
   Star,
   Activity,
-  Code
+  Code,
+  BadgeCheck
 } from 'lucide-react';
 import { Card, Badge, Button } from '../components/UI';
 import { Link, useLocation, useNavigate } from 'react-router-dom';

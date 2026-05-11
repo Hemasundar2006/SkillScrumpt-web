@@ -12,6 +12,8 @@ import { AboutPage, PricingPage, ProctoringPage, MarketplacePage } from './pages
 import { AIProctoringInterface } from './pages/ProctoringInterface';
 import { AssessmentResult } from './pages/AssessmentResult';
 import { PostNewProject, HelpCenter } from './pages/UtilityPages';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import { StudentEarnings } from './pages/EarningsPage';
 import { SharedSettingsPage } from './pages/SharedSettingsPage';
 import { 
@@ -51,7 +53,10 @@ function AppLayout({ children }) {
     location.pathname === '/settings' ||
     location.pathname === '/post-project'
   ));
-  const isAuth = location.pathname === '/login' || location.pathname === '/register';
+  const isAuth = location.pathname === '/login' || 
+                 location.pathname === '/register' || 
+                 location.pathname === '/forgot-password' || 
+                 location.pathname.includes('/reset-password');
   const isHome = location.pathname === '/';
 
   return (
@@ -136,6 +141,20 @@ function App() {
             <PublicRoute>
               <PageWrapper>
                 <Register />
+              </PageWrapper>
+            </PublicRoute>
+          } />
+          <Route path="/forgot-password" element={
+            <PublicRoute>
+              <PageWrapper>
+                <ForgotPassword />
+              </PageWrapper>
+            </PublicRoute>
+          } />
+          <Route path="/reset-password/:token" element={
+            <PublicRoute>
+              <PageWrapper>
+                <ResetPassword />
               </PageWrapper>
             </PublicRoute>
           } />

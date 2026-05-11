@@ -603,6 +603,23 @@ function TelemetryCard({ icon: Icon, label, value, active }) {
 }
 
 function DesktopRequiredView() {
+  const [isSending, setIsSending] = useState(false);
+  const [sent, setSent] = useState(false);
+  const location = useLocation();
+  const testId = location.state?.testId || 'react-assessment-01';
+
+  const handleSendLink = async () => {
+    setIsSending(true);
+    try {
+      await api.post('/users/desktop-handoff', { testId });
+      setSent(true);
+    } catch (err) {
+      console.error("Failed to send link", err);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-8">
       <div className="max-w-md w-full bg-white rounded-[2rem] p-12 text-center shadow-xl border border-slate-100">
@@ -613,11 +630,26 @@ function DesktopRequiredView() {
         <p className="text-slate-500 text-sm font-medium leading-relaxed mb-10">
           AI Proctoring requires an established desktop environment for biometric synchronization and screen monitoring.
         </p>
-        <Link to="/dashboard/student" className="block">
-          <button className="w-full py-4 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-all shadow-md">
-            Return to Dashboard
+        
+        <div className="space-y-4">
+          <button 
+             onClick={handleSendLink}
+             disabled={isSending || sent}
+             className={`w-full py-4 font-bold rounded-2xl transition-all shadow-md flex items-center justify-center gap-3 ${
+               sent ? 'bg-emerald-50 text-emerald-600 cursor-default' : 'bg-indigo-600 text-white hover:bg-indigo-700'
+             }`}
+          >
+            {isSending ? 'Sending...' : sent ? 'Link Sent to Email' : 'Send Link to Desktop'}
+            {!isSending && !sent && <ArrowRight size={18} />}
+            {sent && <CheckCircle size={18} />}
           </button>
-        </Link>
+
+          <Link to="/dashboard/student" className="block">
+            <button className="w-full py-4 bg-slate-100 text-slate-600 font-bold rounded-2xl hover:bg-slate-200 transition-all">
+              Return to Dashboard
+            </button>
+          </Link>
+        </div>
       </div>
     </div>
   );
