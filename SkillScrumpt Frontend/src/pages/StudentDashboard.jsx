@@ -325,6 +325,41 @@ export function StudentDashboard() {
               </button>
             </motion.section>
 
+            {/* Verified Credentials */}
+            <motion.section
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.5 }}
+              className="bg-white rounded-[2rem] p-8 shadow-sm border border-slate-100"
+            >
+              <h3 className="text-base font-bold text-slate-900 mb-6 flex items-center gap-2">
+                <BadgeCheck size={20} className="text-emerald-500" /> Verified Credentials
+              </h3>
+              
+              {user?.badges && user.badges.length > 0 ? (
+                <div className="space-y-4">
+                  {user.badges.map((badge, i) => (
+                    <div key={i} className="p-4 bg-slate-50 border border-slate-100 rounded-2xl flex items-center gap-4 group hover:bg-emerald-50 hover:border-emerald-100 transition-all">
+                      <div className="w-10 h-10 bg-white text-emerald-500 rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                        <Award size={20} />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-xs font-bold text-slate-900 leading-tight mb-0.5">{badge.name}</p>
+                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest italic">Verified: {new Date(badge.earnedAt).toLocaleDateString()}</p>
+                      </div>
+                      <div className="text-right">
+                         <p className="text-sm font-black text-emerald-600">{badge.score}%</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="py-8 text-center border-2 border-dashed border-slate-100 rounded-2xl">
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest italic">No Badges Authenticated</p>
+                </div>
+              )}
+            </motion.section>
+
             {/* Quick Actions */}
             <motion.section
               initial={{ opacity: 0, x: 20 }}

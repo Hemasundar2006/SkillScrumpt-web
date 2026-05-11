@@ -84,20 +84,31 @@ exports.submitResult = async (req, res) => {
       // Technical score is 70% weight, Proctoring integrity is 30% weight
       finalScore = Math.round((score * 0.7) + (proctoringScore * 0.3));
 
-      if (proctoringScore < 60) {
-        proctoringSummary = `High risk of integrity violation. AI Proctoring Score: ${proctoringScore}/100.`;
+      if (proctoringScore < 50) {
+        proctoringSummary = `CRITICAL_VIOLATION: AI proctoring detected significant integrity anomalies. Assessment terminated with failure status.`;
+        cheatingProbability = 0.9; // Force failure
+      } else if (proctoringScore < 70) {
+        proctoringSummary = `INTEGRITY_ALERT: Multiple suspicious behaviors detected during the session.`;
       } else if (proctoringScore < 85) {
-        proctoringSummary = `Minor anomalies detected. AI Proctoring Score: ${proctoringScore}/100.`;
+        proctoringSummary = `NOMINAL_ANOMALIES: Minor behavioral deviations recorded.`;
       } else {
-        proctoringSummary = `Optimal integrity. AI Proctoring Score: ${proctoringScore}/100.`;
+        proctoringSummary = `VERIFIED_CLEAN: Session maintained optimal integrity standards.`;
       }
     } else {
       // Fallback if no report is provided
       cheatingProbability = calculateCheatingProbability(proctoringLogs);
-      proctoringSummary = cheatingProbability > 0.5 ? 'Suspicious activity detected.' : 'Session verified clean.';
+      proctoringSummary = cheatingProbability > 0.5 ? 'SECURITY_BREACH: Suspicious activity detected via telemetry logs.' : 'VERIFIED_CLEAN: No significant telemetry alerts.';
     }
 
-    const status = (finalScore >= 70 && cheatingProbability < 0.4) ? 'passed' : 'failed';
+    // A test fails if either the technical score is too low (< 70) OR if suspicious activity is high
+    const status = (finalScore >= 70 && cheatingProbability < 0.5) ? 'passed' : 'failed';
+    
+    // Explicitly set failure reason if it's proctoring related
+    if (status === 'failed' && cheatingProbability >= 0.5) {
+      proctoringSummary = proctoringSummary || "FAILED: Security protocols detected suspicious activity.";
+    } else if (status === 'failed' && finalScore < 70) {
+      proctoringSummary = "FAILED: Technical performance did not meet the required threshold.";
+    }
 
     const result = await AssessmentResult.create({
       assessment: req.params.id,

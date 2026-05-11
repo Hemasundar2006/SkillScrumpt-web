@@ -38,11 +38,19 @@ import { Navigate } from 'react-router-dom';
 
 function AppLayout({ children }) {
   const location = useLocation();
-  const isDashboardRoute = location.pathname.includes('/dashboard') || location.pathname.includes('/workspace');
-  // If user is logged in and visits profile or marketplace, treat it like dashboard
+  const isDashboardRoute = location.pathname.includes('/dashboard') || 
+                           location.pathname.includes('/workspace') || 
+                           location.pathname.includes('/assessments');
+  // If user is logged in and visits profile, marketplace, or projects, treat it like dashboard
   const userStr = localStorage.getItem('user');
   const isLoggedIn = !!userStr;
-  const isDashboard = isDashboardRoute || (isLoggedIn && (location.pathname.includes('/profile/') || location.pathname.includes('/marketplace') || location.pathname.includes('/projects')));
+  const isDashboard = isDashboardRoute || (isLoggedIn && (
+    location.pathname.includes('/profile/') || 
+    location.pathname.includes('/marketplace') || 
+    location.pathname.includes('/projects') ||
+    location.pathname === '/settings' ||
+    location.pathname === '/post-project'
+  ));
   const isAuth = location.pathname === '/login' || location.pathname === '/register';
   const isHome = location.pathname === '/';
 

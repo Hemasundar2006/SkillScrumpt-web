@@ -161,7 +161,8 @@ export function AIProctoringInterface() {
               score: response.data.score || technicalScore,
               proctoringScore: report?.proctoring_score || 100,
               report: report,
-              status: response.data.status
+              status: response.data.status,
+              assessmentId: testId || 'react-assessment-01'
           } 
       });
     } catch (error) {
