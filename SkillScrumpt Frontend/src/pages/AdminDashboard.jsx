@@ -9,7 +9,12 @@ import {
   PieChart,
   Activity,
   Loader2,
-  Shield
+  Shield,
+  ArrowRight,
+  Settings,
+  Zap,
+  Globe,
+  X
 } from 'lucide-react';
 import { Card, Badge, Button } from '../components/UI';
 import api from '../utils/api';
@@ -36,10 +41,8 @@ export function AdminDashboard() {
   }, []);
 
   useEffect(() => {
-    // Extract tab from URL: /dashboard/admin/users -> users
     const pathParts = location.pathname.split('/');
     const tabFromUrl = pathParts[pathParts.length - 1];
-    
     if (['users', 'audits', 'finances'].includes(tabFromUrl)) {
       setActiveTab(tabFromUrl);
     } else {
@@ -69,7 +72,6 @@ export function AdminDashboard() {
         api.get(`/users/profile/${savedUser._id || savedUser.id}`),
         api.get('/admin/stats')
       ]);
-      
       setUser(profileRes.data);
       setStats(statsRes.data.stats);
       setRecentActivity(statsRes.data.recentActivity);
@@ -83,7 +85,6 @@ export function AdminDashboard() {
   const fetchAllUsers = async () => {
     try {
       const { data } = await api.get('/admin/users');
-      // Enforce data originality: standardizing state update to prevent duplicates
       setFullUsers([...data.data]);
     } catch (err) {
       console.error('Error fetching users:', err);
@@ -124,88 +125,93 @@ export function AdminDashboard() {
         maintenanceMode: !settings.maintenanceMode 
       });
       setSettings(response.data.data);
-      alert(`Maintenance mode ${response.data.data.maintenanceMode ? 'ENABLED' : 'DISABLED'}`);
+      alert(`SYSTEM STATUS: ${response.data.data.maintenanceMode ? 'MAINTENANCE_LOCKED' : 'ONLINE'}`);
     } catch (err) {
-      alert('Error updating settings');
+      alert('PROTOCOL_ERROR: SETTINGS_UPDATE_FAILED');
     } finally {
       setIsUpdatingSettings(false);
     }
   };
 
-  if (isLoading && !user) return <div className="flex justify-center py-40"><Loader2 className="animate-spin text-primary" size={48} /></div>;
+  if (isLoading && !user) return <div className="flex justify-center py-40 bg-black min-h-screen"><Loader2 className="animate-spin text-white/20" size={64} /></div>;
 
   return (
     <DashboardLayout user={user}>
-      <header className="flex justify-between items-center mb-10">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-16">
         <div>
-          <h1 className="text-3xl font-bold text-secondary">Admin Dashboard</h1>
-          <p className="text-gray-500 font-medium text-sm">Monitoring SkillScrumpt Ecosystem Activity</p>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+            <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em]">Sector: Global Oversight</span>
+          </div>
+          <h1 className="text-6xl font-black tracking-tighter uppercase italic">CONTROL CENTER.</h1>
+          <p className="text-white/40 font-black text-[10px] uppercase tracking-[0.2em] mt-2">Monitoring platform-wide telemetry and economic throughput on SkillScrumpt.in.</p>
         </div>
         <div className="flex gap-4">
-           <Button variant="outline" className="flex items-center gap-2">
-             <PieChart size={18} /> Generate Report
-           </Button>
+           <button className="px-8 py-4 border border-white/10 text-[10px] font-black uppercase tracking-widest hover:border-white transition-all">
+             Generate Dossier
+           </button>
            <Link to="/dashboard/admin/create-test">
-             <Button className="flex items-center gap-2">
-               <Plus size={18} /> Create Proctoring Test
-             </Button>
+             <button className="px-8 py-4 bg-white text-black text-[10px] font-black uppercase tracking-widest hover:bg-white/90 transition-all flex items-center gap-3">
+               <Plus size={16} /> Deploy Test
+             </button>
            </Link>
         </div>
       </header>
 
-      <div className="flex bg-white/50 backdrop-blur-md p-1.5 rounded-2xl border border-gray-100 mb-10 w-fit">
+      <div className="flex border-b border-white/10 gap-12 mb-16">
         {['overview', 'users', 'audits', 'finances'].map((tab) => (
           <button
             key={tab}
             onClick={() => handleTabChange(tab)}
-            className={`px-8 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
-              activeTab === tab ? 'bg-secondary text-white shadow-xl shadow-secondary/20' : 'text-gray-400 hover:text-secondary'
+            className={`pb-4 text-[10px] font-black uppercase tracking-[0.3em] transition-all relative ${
+              activeTab === tab ? 'text-white' : 'text-white/20 hover:text-white'
             }`}
           >
             {tab}
+            {activeTab === tab && <div className="absolute bottom-0 left-0 w-full h-[2px] bg-white" />}
           </button>
         ))}
       </div>
 
-      <div className="space-y-8 relative z-10">
+      <div className="space-y-16 relative z-10">
         {activeTab === 'overview' && (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <StatCard label="Total Users" value={stats?.totalUsers || 0} icon={Users} color="text-blue-500" />
-              <StatCard label="Active Projects" value={stats?.totalProjects || 0} icon={Briefcase} color="text-primary" />
-              <StatCard label="Live Audits" value={stats?.totalAssessments || 0} icon={Activity} color="text-purple-500" />
-              <StatCard label="Platform Volume" value={`₹${stats?.totalVolume?.toLocaleString() || 0}`} icon={DollarSign} color="text-green-500" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <StatCard label="TOTAL OPERATIVES" value={stats?.totalUsers || 0} icon={Users} />
+              <StatCard label="ACTIVE DIRECTIVES" value={stats?.totalProjects || 0} icon={Briefcase} />
+              <StatCard label="LIVE AUDITS" value={stats?.totalAssessments || 0} icon={Activity} />
+              <StatCard label="ECONOMIC VOLUME" value={`₹${stats?.totalVolume?.toLocaleString() || 0}`} icon={Globe} />
             </div>
 
-            <div className="grid lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2 space-y-8">
+            <div className="grid lg:grid-cols-3 gap-16">
+              <div className="lg:col-span-2 space-y-12">
                 <section>
-                  <h3 className="text-xl font-black mb-6 flex items-center gap-2 text-secondary tracking-tighter">
-                    <Activity size={24} className="text-primary" /> Recent Platform Pulse
-                  </h3>
-                  <div className="bg-white rounded-[2rem] border border-gray-100 overflow-hidden shadow-xl shadow-blue-900/5">
+                  <div className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em] mb-10 flex items-center gap-4">
+                    <Activity size={14} className="text-white" /> SYSTEM PULSE
+                  </div>
+                  <div className="border border-white/10 bg-white/5 overflow-hidden">
                     <table className="w-full text-left">
                       <thead>
-                        <tr className="bg-gray-50/50 border-b border-gray-100">
-                          <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Entity</th>
-                          <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Type</th>
-                          <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Metric</th>
-                          <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Status</th>
+                        <tr className="border-b border-white/10 bg-white/5">
+                          <th className="p-6 text-[9px] font-black text-white/40 uppercase tracking-widest">Target</th>
+                          <th className="p-4 text-[9px] font-black text-white/40 uppercase tracking-widest">Type</th>
+                          <th className="p-4 text-[9px] font-black text-white/40 uppercase tracking-widest">Metric</th>
+                          <th className="p-4 text-[9px] font-black text-white/40 uppercase tracking-widest">Status</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-gray-50">
+                      <tbody className="divide-y divide-white/5">
                         {recentActivity.projects.map(proj => (
-                          <tr key={proj._id} className="hover:bg-gray-50/80 transition-colors">
+                          <tr key={proj._id} className="hover:bg-white/5 transition-colors group">
                             <td className="p-6">
-                               <p className="font-black text-secondary text-sm">{proj.title}</p>
-                               <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{proj.client?.firstName}</p>
+                               <p className="font-black text-white uppercase text-xs tracking-tight group-hover:italic">{proj.title}</p>
+                               <p className="text-[9px] text-white/20 font-black uppercase tracking-widest mt-1">{proj.client?.firstName}</p>
                             </td>
-                            <td className="p-4"><Badge variant="neutral" className="bg-gray-100 border-none font-black text-[9px]">Project</Badge></td>
-                            <td className="p-4 font-black text-secondary text-sm">₹{proj.budget}</td>
+                            <td className="p-4"><div className="px-3 py-1 border border-white/10 text-[8px] font-black uppercase">Project</div></td>
+                            <td className="p-4 font-black text-white text-xs italic tracking-tighter">₹{proj.budget}</td>
                             <td className="p-4">
-                              <div className="flex items-center gap-2">
-                                <div className={`w-2 h-2 rounded-full ${proj.status === 'completed' ? 'bg-green-500' : 'bg-primary'}`} />
-                                <span className="text-[10px] font-black text-secondary uppercase tracking-widest">{proj.status}</span>
+                              <div className="flex items-center gap-3">
+                                <div className={`w-1.5 h-1.5 rounded-full ${proj.status === 'completed' ? 'bg-white' : 'bg-white/20'}`} />
+                                <span className="text-[9px] font-black text-white/40 uppercase tracking-widest">{proj.status}</span>
                               </div>
                             </td>
                           </tr>
@@ -216,23 +222,25 @@ export function AdminDashboard() {
                 </section>
               </div>
 
-              <aside className="space-y-8">
+              <aside className="space-y-12">
                 <section>
-                  <h3 className="text-xl font-black mb-6 text-secondary tracking-tighter">Ecosystem Vitals</h3>
-                  <Card className="p-8 border-none shadow-xl bg-white space-y-6 rounded-[2rem]">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-black text-secondary">Maintenance Mode</p>
-                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Seal ecosystem access</p>
+                  <div className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em] mb-10">System Infrastructure</div>
+                  <div className="p-1 border border-white/10 bg-white/5">
+                    <div className="p-8 border border-white/5 bg-black space-y-8">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-[10px] font-black text-white uppercase tracking-widest italic">MAINTENANCE_MODE</p>
+                          <p className="text-[9px] text-white/20 font-black uppercase tracking-widest mt-2">SEAL PLATFORM ACCESS</p>
+                        </div>
+                        <button 
+                          onClick={handleToggleMaintenance}
+                          className={`w-12 h-6 border transition-all relative p-1 ${settings.maintenanceMode ? 'border-white bg-white' : 'border-white/20'}`}
+                        >
+                           <div className={`w-3 h-3 transition-all ${settings.maintenanceMode ? 'translate-x-6 bg-black' : 'translate-x-0 bg-white/20'}`} />
+                        </button>
                       </div>
-                      <button 
-                        onClick={handleToggleMaintenance}
-                        className={`w-14 h-7 rounded-full transition-all relative p-1 ${settings.maintenanceMode ? 'bg-red-500 shadow-lg shadow-red-500/30' : 'bg-gray-200'}`}
-                      >
-                         <div className={`w-5 h-5 rounded-full bg-white shadow-sm transition-all ${settings.maintenanceMode ? 'translate-x-7' : 'translate-x-0'}`} />
-                      </button>
                     </div>
-                  </Card>
+                  </div>
                 </section>
               </aside>
             </div>
@@ -241,55 +249,54 @@ export function AdminDashboard() {
 
         {activeTab === 'users' && (
           <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="flex justify-between items-center mb-8">
-              <h3 className="text-2xl font-black text-secondary tracking-tighter">User Management Hub</h3>
+            <div className="flex justify-between items-end mb-12 pb-6 border-b border-white/10">
+              <h3 className="text-4xl font-black tracking-tighter uppercase italic">USER MANAGEMENT.</h3>
               <div className="relative">
-                <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input className="pl-12 pr-6 py-3 bg-white border border-gray-100 rounded-2xl w-80 shadow-sm outline-none focus:border-primary transition-all font-bold text-sm" placeholder="Search by name or email..." />
+                <Search size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-white/20" />
+                <input className="pl-14 pr-8 py-4 bg-white/5 border border-white/10 w-96 outline-none focus:border-white transition-all font-black text-[10px] uppercase tracking-widest" placeholder="SEARCH IDENTITIES..." />
               </div>
             </div>
-            <div className="bg-white rounded-[2.5rem] border border-gray-100 overflow-hidden shadow-2xl shadow-blue-900/5">
+            <div className="border border-white/10 bg-white/5 overflow-hidden">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="bg-gray-50/50 border-b border-gray-100">
-                    <th className="p-8 text-[10px] font-black text-gray-400 uppercase tracking-widest">Candidate / Client</th>
-                    <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Role</th>
-                    <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">AI Integrity</th>
-                    <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Status</th>
-                    <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Actions</th>
+                  <tr className="bg-white/5 border-b border-white/10">
+                    <th className="p-8 text-[9px] font-black text-white/40 uppercase tracking-widest">Operative Signature</th>
+                    <th className="p-4 text-[9px] font-black text-white/40 uppercase tracking-widest">Function</th>
+                    <th className="p-4 text-[9px] font-black text-white/40 uppercase tracking-widest">Integrity Pulse</th>
+                    <th className="p-4 text-[9px] font-black text-white/40 uppercase tracking-widest">Clearance</th>
+                    <th className="p-4 text-[9px] font-black text-white/40 uppercase tracking-widest">Directives</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-50">
+                <tbody className="divide-y divide-white/5">
                   {fullUsers.map(u => (
-                    <tr key={u._id} className="hover:bg-gray-50/80 transition-colors">
+                    <tr key={u._id} className="hover:bg-white/5 transition-colors group">
                       <td className="p-8">
-                        <div className="flex items-center gap-4">
-                           <div className="w-12 h-12 rounded-2xl bg-secondary flex items-center justify-center text-white font-black">{u.firstName[0]}</div>
+                        <div className="flex items-center gap-6">
+                           <div className="w-12 h-12 border border-white/10 flex items-center justify-center font-black italic text-xl group-hover:bg-white group-hover:text-black transition-all">{u.firstName[0]}</div>
                            <div>
-                             <p className="font-black text-secondary text-sm">{u.firstName} {u.lastName}</p>
-                             <p className="text-[10px] text-gray-400 font-bold tracking-tight">{u.email}</p>
+                             <p className="font-black text-white text-sm uppercase tracking-tight group-hover:italic">{u.firstName} {u.lastName}</p>
+                             <p className="text-[9px] text-white/20 font-black tracking-widest mt-1 uppercase">{u.email}</p>
                            </div>
                         </div>
                       </td>
-                      <td className="p-4"><Badge variant="neutral" className="bg-gray-100 text-gray-500 border-none font-black text-[9px] uppercase">{u.role}</Badge></td>
+                      <td className="p-4"><div className="px-3 py-1 border border-white/10 text-[8px] font-black uppercase text-white/40">{u.role}</div></td>
                       <td className="p-4">
-                         <div className="flex items-center gap-3">
-                           <div className="w-24 bg-gray-100 h-1.5 rounded-full overflow-hidden">
-                             <div className="bg-primary h-full" style={{ width: `${u.aiScore || 0}%` }} />
+                         <div className="flex items-center gap-4">
+                           <div className="w-24 bg-white/5 h-1 border border-white/5">
+                             <div className="bg-white h-full" style={{ width: `${u.aiScore || 0}%` }} />
                            </div>
-                           <span className="text-xs font-black text-secondary">{u.aiScore || 0}%</span>
+                           <span className="text-[10px] font-black italic text-white/80">{u.aiScore || 0}%</span>
                          </div>
                       </td>
                       <td className="p-4">
-                         {u.isVerified ? 
-                           <Badge className="bg-green-100 text-green-700 border-none font-black text-[9px] uppercase">Verified Elite</Badge> : 
-                           <Badge className="bg-amber-100 text-amber-700 border-none font-black text-[9px] uppercase">Pending</Badge>
-                         }
+                         <div className={`px-4 py-1 border text-[8px] font-black uppercase tracking-widest ${u.isVerified ? 'border-white text-white' : 'border-white/10 text-white/20'}`}>
+                           {u.isVerified ? 'VERIFIED_ELITE' : 'PENDING'}
+                         </div>
                       </td>
                       <td className="p-4">
-                         <div className="flex gap-2">
-                           <Button onClick={() => navigate(`/profile/${u._id || u.id}`)} size="sm" variant="outline" className="text-[9px] font-black uppercase tracking-widest px-4 h-9">View Profile</Button>
-                           <Button size="sm" className="text-[9px] font-black uppercase tracking-widest px-4 h-9">Verify</Button>
+                         <div className="flex gap-4">
+                           <button onClick={() => navigate(`/profile/${u._id || u.id}`)} className="text-[9px] font-black uppercase tracking-widest text-white/30 hover:text-white transition-colors">Dossier</button>
+                           <button className="text-[9px] font-black uppercase tracking-widest text-white/30 hover:text-white transition-colors">Audit</button>
                          </div>
                       </td>
                     </tr>
@@ -302,44 +309,44 @@ export function AdminDashboard() {
 
         {activeTab === 'audits' && (
            <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="flex justify-between items-center mb-8">
-                <h3 className="text-2xl font-black text-secondary tracking-tighter">Proctoring Audit Vault</h3>
-                <Badge variant="primary">{fullAudits.length} Sessions Recorded</Badge>
+              <div className="flex justify-between items-end mb-12 pb-6 border-b border-white/10">
+                <h3 className="text-4xl font-black tracking-tighter uppercase italic">AUDIT VAULT.</h3>
+                <div className="text-[10px] font-black uppercase tracking-widest text-white/40">{fullAudits.length} SESSIONS_RECORDED</div>
               </div>
-              <div className="bg-white rounded-[2.5rem] border border-gray-100 overflow-hidden shadow-2xl shadow-blue-900/5">
+              <div className="border border-white/10 bg-white/5 overflow-hidden">
                 <table className="w-full text-left">
                   <thead>
-                    <tr className="bg-gray-50/50 border-b border-gray-100">
-                      <th className="p-8 text-[10px] font-black text-gray-400 uppercase tracking-widest">Candidate</th>
-                      <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Assessment</th>
-                      <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Integrity Score</th>
-                      <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Status</th>
-                      <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Date</th>
+                    <tr className="bg-white/5 border-b border-white/10">
+                      <th className="p-8 text-[9px] font-black text-white/40 uppercase tracking-widest">Candidate Signature</th>
+                      <th className="p-4 text-[9px] font-black text-white/40 uppercase tracking-widest">Target Module</th>
+                      <th className="p-4 text-[9px] font-black text-white/40 uppercase tracking-widest">Integrity Metric</th>
+                      <th className="p-4 text-[9px] font-black text-white/40 uppercase tracking-widest">Validation</th>
+                      <th className="p-4 text-[9px] font-black text-white/40 uppercase tracking-widest">Timestamp</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-50">
+                  <tbody className="divide-y divide-white/5">
                     {fullAudits.map(audit => (
-                      <tr key={audit._id} className="hover:bg-gray-50/80 transition-colors">
+                      <tr key={audit._id} className="hover:bg-white/5 transition-colors group">
                         <td className="p-8">
-                          <p className="font-black text-secondary text-sm">{audit.user?.firstName} {audit.user?.lastName}</p>
-                          <p className="text-[10px] text-gray-400 font-bold tracking-tight">{audit.user?.email}</p>
+                          <p className="font-black text-white text-sm uppercase tracking-tight group-hover:italic">{audit.user?.firstName} {audit.user?.lastName}</p>
+                          <p className="text-[9px] text-white/20 font-black uppercase tracking-widest mt-1">{audit.user?.email}</p>
                         </td>
                         <td className="p-4">
-                           <p className="text-xs font-black text-secondary">{audit.assessment?.title || 'General Test'}</p>
-                           <Badge variant="neutral" className="bg-gray-100 border-none font-bold text-[8px] uppercase">{audit.assessment?.category}</Badge>
+                           <p className="text-[10px] font-black text-white uppercase tracking-widest">{audit.assessment?.title || 'GENERAL_TEST'}</p>
+                           <p className="text-[8px] font-black text-white/20 uppercase mt-1">{audit.assessment?.category}</p>
                         </td>
                         <td className="p-4">
-                           <div className="flex items-center gap-2">
-                             <div className={`w-3 h-3 rounded-full ${audit.score >= 80 ? 'bg-green-500' : 'bg-red-500'}`} />
-                             <span className="font-black text-secondary text-sm">{audit.score}%</span>
+                           <div className="flex items-center gap-3">
+                             <div className={`w-1.5 h-1.5 rounded-full ${audit.score >= 80 ? 'bg-white shadow-[0_0_8px_white]' : 'bg-white/10'}`} />
+                             <span className="font-black text-white text-xs italic italic">{audit.score}%</span>
                            </div>
                         </td>
                         <td className="p-4">
-                           <Badge className={audit.isPassed ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}>
+                           <div className={`px-4 py-1 border text-[8px] font-black uppercase tracking-widest ${audit.isPassed ? 'border-white text-white italic' : 'border-red-500/50 text-red-500'}`}>
                              {audit.isPassed ? 'CLEARED' : 'FLAGGED'}
-                           </Badge>
+                           </div>
                         </td>
-                        <td className="p-4 text-xs font-bold text-gray-400">
+                        <td className="p-4 text-[9px] font-black text-white/30 uppercase tracking-widest">
                           {new Date(audit.createdAt).toLocaleDateString()}
                         </td>
                       </tr>
@@ -352,47 +359,44 @@ export function AdminDashboard() {
 
         {activeTab === 'finances' && (
            <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="flex justify-between items-center mb-8">
-                <h3 className="text-2xl font-black text-secondary tracking-tighter">Financial Tracking Ledger</h3>
-                <div className="flex items-center gap-4">
-                  <div className="text-right">
-                    <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Total Platform Volume</p>
-                    <p className="text-xl font-black text-emerald-500 tracking-tight">₹{fullTransactions.reduce((acc, curr) => acc + (curr.amount || 0), 0).toLocaleString()}</p>
-                  </div>
-                  <Badge variant="primary">{fullTransactions.length} TXNS</Badge>
+              <div className="flex justify-between items-end mb-12 pb-6 border-b border-white/10">
+                <h3 className="text-4xl font-black tracking-tighter uppercase italic">LEDGER ANALYSIS.</h3>
+                <div className="text-right">
+                  <p className="text-[9px] text-white/30 font-black uppercase tracking-widest mb-1">AGGREGATE VOLUME</p>
+                  <p className="text-3xl font-black text-white italic tracking-tighter">₹{fullTransactions.reduce((acc, curr) => acc + (curr.amount || 0), 0).toLocaleString()}</p>
                 </div>
               </div>
-              <div className="bg-white rounded-[2.5rem] border border-gray-100 overflow-hidden shadow-2xl shadow-blue-900/5">
+              <div className="border border-white/10 bg-white/5 overflow-hidden">
                 <table className="w-full text-left">
                   <thead>
-                    <tr className="bg-gray-50/50 border-b border-gray-100">
-                      <th className="p-8 text-[10px] font-black text-gray-400 uppercase tracking-widest">Transaction ID</th>
-                      <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Amount</th>
-                      <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Client (Payer)</th>
-                      <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Expert (Payee)</th>
-                      <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Status</th>
+                    <tr className="bg-white/5 border-b border-white/10">
+                      <th className="p-8 text-[9px] font-black text-white/40 uppercase tracking-widest">Relay Signature</th>
+                      <th className="p-4 text-[9px] font-black text-white/40 uppercase tracking-widest">Throughput</th>
+                      <th className="p-4 text-[9px] font-black text-white/40 uppercase tracking-widest">Source (Client)</th>
+                      <th className="p-4 text-[9px] font-black text-white/40 uppercase tracking-widest">Sink (Expert)</th>
+                      <th className="p-4 text-[9px] font-black text-white/40 uppercase tracking-widest">Status</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-50">
+                  <tbody className="divide-y divide-white/5">
                     {fullTransactions.map(txn => (
-                      <tr key={txn._id} className="hover:bg-gray-50/80 transition-colors">
+                      <tr key={txn._id} className="hover:bg-white/5 transition-colors group">
                         <td className="p-8">
-                          <p className="font-mono text-[10px] font-black text-primary bg-primary/5 px-3 py-1 rounded-full w-fit uppercase tracking-widest">
-                            TXN-{txn._id?.slice(-10).toUpperCase() || 'EXTERNAL'}
+                          <p className="font-mono text-[9px] font-black text-white bg-white/5 px-4 py-1 border border-white/10 w-fit uppercase tracking-widest group-hover:bg-white group-hover:text-black transition-all">
+                            RELAY_{txn._id?.slice(-8).toUpperCase() || 'EXT'}
                           </p>
-                          <p className="text-[10px] text-gray-400 font-bold mt-1 uppercase tracking-tight">{new Date(txn.date).toLocaleDateString()} {new Date(txn.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                          <p className="text-[8px] text-white/20 font-black mt-2 uppercase tracking-widest">{new Date(txn.date).toLocaleDateString()} / {new Date(txn.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
                         </td>
-                        <td className="p-4 font-black text-secondary text-lg">₹{txn.amount?.toLocaleString()}</td>
+                        <td className="p-4 font-black text-white text-lg italic tracking-tighter">₹{txn.amount?.toLocaleString()}</td>
                         <td className="p-4">
-                           <p className="text-sm font-black text-secondary">{txn.client?.firstName} {txn.client?.lastName}</p>
-                           <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{txn.client?.email}</p>
-                        </td>
-                        <td className="p-4">
-                           <p className="text-sm font-black text-secondary">{txn.professional?.firstName} {txn.professional?.lastName || 'N/A'}</p>
-                           <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{txn.professional?.email || 'N/A'}</p>
+                           <p className="text-[10px] font-black text-white uppercase tracking-tight">{txn.client?.firstName} {txn.client?.lastName}</p>
+                           <p className="text-[8px] text-white/20 font-black uppercase tracking-widest mt-1">{txn.client?.email}</p>
                         </td>
                         <td className="p-4">
-                           <Badge className="bg-emerald-100 text-emerald-700 border-none font-black text-[9px] uppercase tracking-widest">SUCCESSFUL</Badge>
+                           <p className="text-[10px] font-black text-white uppercase tracking-tight">{txn.professional?.firstName || 'SYSTEM'} {txn.professional?.lastName || 'RELAY'}</p>
+                           <p className="text-[8px] text-white/20 font-black uppercase tracking-widest mt-1">{txn.professional?.email || 'INTERNAL'}</p>
+                        </td>
+                        <td className="p-4">
+                           <div className="px-4 py-1 border border-white text-[8px] font-black uppercase tracking-widest italic text-white">SUCCESSFUL</div>
                         </td>
                       </tr>
                     ))}
@@ -407,315 +411,237 @@ export function AdminDashboard() {
 }
 
 export function CreateProctoringTest() {
-  const [isSaving, setIsSaving] = useState(false);
-  const [activeQuestionTab, setActiveQuestionTab] = useState('mcq');
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    reward: '',
-    category: 'Technical',
+    duration: '60',
     difficulty: 'Intermediate',
-    duration: 60,
-    cutoffScore: 70,
-    isProctored: true,
-    questions: []
+    category: 'Technical',
+    questions: [
+      { question: '', options: ['', '', '', ''], correctOption: 0, type: 'mcq' }
+    ]
   });
 
-  const [currentMCQ, setCurrentMCQ] = useState({
-    question: '',
-    options: ['', '', '', ''],
-    correctAnswer: 0,
-    type: 'mcq'
-  });
+  useEffect(() => {
+    const savedUser = JSON.parse(localStorage.getItem('user'));
+    setUser(savedUser);
+  }, []);
 
-  const [currentCoding, setCurrentCoding] = useState({
-    question: '',
-    type: 'coding',
-    initialCode: '// Write your code here',
-    testCases: [{ input: '', output: '', isPublic: true }]
-  });
-
-  const addMCQ = () => {
-    if (!currentMCQ.question) return alert('Please enter a question');
+  const handleAddQuestion = () => {
     setFormData({
       ...formData,
-      questions: [...formData.questions, { ...currentMCQ }]
-    });
-    setCurrentMCQ({
-      question: '',
-      options: ['', '', '', ''],
-      correctAnswer: 0,
-      type: 'mcq'
+      questions: [...formData.questions, { question: '', options: ['', '', '', ''], correctOption: 0, type: 'mcq' }]
     });
   };
 
-  const addCoding = () => {
-    if (!currentCoding.question) return alert('Please enter a coding problem statement');
-    setFormData({
-      ...formData,
-      questions: [...formData.questions, { ...currentCoding }]
-    });
-    setCurrentCoding({
-      question: '',
-      type: 'coding',
-      initialCode: '// Write your code here',
-      testCases: [{ input: '', output: '', isPublic: true }]
-    });
-  };
-
-  const removeQuestion = (index) => {
+  const handleQuestionChange = (index, field, value) => {
     const newQuestions = [...formData.questions];
-    newQuestions.splice(index, 1);
+    newQuestions[index][field] = value;
+    setFormData({ ...formData, questions: newQuestions });
+  };
+
+  const handleOptionChange = (qIndex, oIndex, value) => {
+    const newQuestions = [...formData.questions];
+    newQuestions[qIndex].options[oIndex] = value;
     setFormData({ ...formData, questions: newQuestions });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.questions.length === 0) return alert('Please add at least one question');
-    
-    setIsSaving(true);
+    setIsLoading(true);
     try {
       await api.post('/admin/assessments', formData);
-      alert('Assessment created successfully with ' + formData.questions.length + ' questions!');
-      setFormData({
-        title: '',
-        description: '',
-        category: 'Technical',
-        difficulty: 'Intermediate',
-        duration: 60,
-        cutoffScore: 70,
-        isProctored: true,
-        questions: []
-      });
+      alert('TEST_DEPLOYED: Assessment has been broadcasted to the verification engine.');
+      navigate('/dashboard/admin');
     } catch (err) {
-      alert('Error creating assessment');
+      alert('PROTOCOL_ERROR: FAILED_TO_DEPLOY_TEST');
     } finally {
-      setIsSaving(false);
+      setIsLoading(false);
     }
   };
 
   return (
-    <DashboardLayout user={{ role: 'admin', firstName: 'Admin' }}>
-      <header className="mb-10">
-        <h1 className="text-3xl font-bold text-secondary mb-2">Create Proctoring Test</h1>
-        <p className="text-gray-500 font-medium text-sm">Design a comprehensive assessment with 20 MCQs and 1 Coding Challenge.</p>
+    <DashboardLayout user={user}>
+      <header className="mb-16">
+        <button onClick={() => navigate(-1)} className="flex items-center gap-3 text-white/30 hover:text-white mb-6 transition-all group">
+          <ArrowRight className="rotate-180 group-hover:-translate-x-1 transition-transform" size={16} /> 
+          <span className="text-[10px] font-black uppercase tracking-[0.4em]">Abort Sequence</span>
+        </button>
+        <h1 className="text-6xl font-black tracking-tighter uppercase italic">DEPLOY <br />TEST.</h1>
+        <p className="text-white/40 font-black text-[10px] uppercase tracking-[0.2em] mt-4 italic">GENERATE NEW VERIFICATION DIRECTIVE FOR SkillScrumpt.in</p>
       </header>
 
-      <div className="grid lg:grid-cols-2 gap-10">
-        {/* Left: Configuration & Question Entry */}
-        <div className="space-y-8">
-          <Card className="p-8 bg-white border-none shadow-xl">
-            <h3 className="text-lg font-bold mb-6 text-secondary border-b pb-4">1. Test Configuration</h3>
-            <div className="grid grid-cols-2 gap-6">
-              <div className="space-y-2 col-span-2">
-                <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Test Title</label>
+      <form onSubmit={handleSubmit} className="space-y-12 pb-32">
+        <div className="p-1 border border-white/10 bg-white/5">
+          <div className="bg-black border border-white/10 p-12 md:p-16 space-y-12">
+            <h3 className="text-xl font-black tracking-tight uppercase italic flex items-center gap-4">
+              <Zap size={20} className="text-white" /> CORE_PARAMETERS
+            </h3>
+            
+            <div className="grid md:grid-cols-2 gap-12">
+              <div className="space-y-3">
+                <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.4em]">DIRECTIVE_TITLE</label>
                 <input 
-                  type="text" required
+                  required
+                  type="text" 
                   value={formData.title}
                   onChange={(e) => setFormData({...formData, title: e.target.value})}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-custom outline-none focus:bg-white focus:border-primary transition-all font-medium" 
-                  placeholder="e.g. Fullstack Developer Assessment"
+                  className="w-full px-6 py-4 bg-transparent border border-white/20 focus:border-white outline-none transition-all font-black uppercase tracking-widest"
+                  placeholder="E.G. REACT_CORE_V14"
                 />
               </div>
-              <div className="space-y-2 col-span-2">
-                <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Description</label>
-                <textarea 
-                  value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-custom outline-none focus:bg-white focus:border-primary transition-all font-medium h-20 resize-none" 
-                  placeholder="Describe the skills this test validates..."
+              <div className="space-y-3">
+                <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.4em]">SECTOR (CATEGORY)</label>
+                <input 
+                  required
+                  type="text" 
+                  value={formData.category}
+                  onChange={(e) => setFormData({...formData, category: e.target.value})}
+                  className="w-full px-6 py-4 bg-transparent border border-white/20 focus:border-white outline-none transition-all font-black uppercase tracking-widest"
+                  placeholder="TECHNICAL"
                 />
               </div>
-              <div className="space-y-2">
-                <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Difficulty</label>
+              <div className="space-y-3">
+                <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.4em]">TIME_LIMIT (MINUTES)</label>
+                <input 
+                  required
+                  type="number" 
+                  value={formData.duration}
+                  onChange={(e) => setFormData({...formData, duration: e.target.value})}
+                  className="w-full px-6 py-4 bg-transparent border border-white/20 focus:border-white outline-none transition-all font-black"
+                />
+              </div>
+              <div className="space-y-3">
+                <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.4em]">COMPLEXITY_INDEX</label>
                 <select 
                   value={formData.difficulty}
                   onChange={(e) => setFormData({...formData, difficulty: e.target.value})}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-custom outline-none focus:bg-white focus:border-primary transition-all font-medium"
+                  className="w-full px-6 py-4 bg-transparent border border-white/20 focus:border-white outline-none transition-all font-black uppercase tracking-widest appearance-none cursor-pointer"
                 >
-                  <option value="Entry">Entry</option>
-                  <option value="Intermediate">Intermediate</option>
-                  <option value="Senior">Senior</option>
-                  <option value="Expert">Expert</option>
+                  <option className="bg-black">Beginner</option>
+                  <option className="bg-black">Intermediate</option>
+                  <option className="bg-black">Expert</option>
                 </select>
               </div>
-              <div className="space-y-2">
-                <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Reward Badge Name</label>
-                <input 
-                  type="text" required
-                  value={formData.reward}
-                  onChange={(e) => setFormData({...formData, reward: e.target.value})}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-custom outline-none focus:bg-white focus:border-primary transition-all font-medium" 
-                  placeholder="e.g. React Master Badge"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Duration (Min)</label>
-                <input 
-                  type="number" required
-                  value={formData.duration}
-                  onChange={(e) => setFormData({...formData, duration: parseInt(e.target.value)})}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-custom outline-none focus:bg-white focus:border-primary transition-all font-medium" 
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Cutoff (%)</label>
-                <input 
-                  type="number" required
-                  value={formData.cutoffScore}
-                  onChange={(e) => setFormData({...formData, cutoffScore: parseInt(e.target.value)})}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-custom outline-none focus:bg-white focus:border-primary transition-all font-medium" 
-                />
-              </div>
             </div>
-          </Card>
 
-          <Card className="p-8 bg-white border-none shadow-xl">
-             <div className="flex justify-between items-center mb-6">
-               <h3 className="text-lg font-bold text-secondary">2. Add Questions</h3>
-               <div className="flex bg-gray-100 p-1 rounded-lg">
-                 <button 
-                  onClick={() => setActiveQuestionTab('mcq')}
-                  className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${activeQuestionTab === 'mcq' ? 'bg-white shadow-sm text-primary' : 'text-gray-500'}`}
-                 >MCQ</button>
-                 <button 
-                  onClick={() => setActiveQuestionTab('coding')}
-                  className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${activeQuestionTab === 'coding' ? 'bg-white shadow-sm text-primary' : 'text-gray-500'}`}
-                 >Coding</button>
-               </div>
-             </div>
+            <div className="space-y-3">
+              <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.4em]">MISSION_OBJECTIVE (DESCRIPTION)</label>
+              <textarea 
+                required
+                rows={4}
+                value={formData.description}
+                onChange={(e) => setFormData({...formData, description: e.target.value})}
+                className="w-full px-6 py-4 bg-transparent border border-white/20 focus:border-white outline-none transition-all font-bold uppercase tracking-widest text-[11px] resize-none"
+                placeholder="DESCRIBE THE GOALS OF THIS VERIFICATION CYCLE..."
+              />
+            </div>
+          </div>
+        </div>
 
-             {activeQuestionTab === 'mcq' ? (
-               <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Question Text</label>
+        <div className="space-y-12">
+          <div className="flex items-center gap-6">
+            <h2 className="text-3xl font-black tracking-tighter uppercase italic">DIRECTIVE_MODULES.</h2>
+            <div className="h-[1px] bg-white/10 flex-1" />
+            <button 
+              type="button"
+              onClick={handleAddQuestion}
+              className="px-6 py-2 border border-white text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all flex items-center gap-2"
+            >
+              <Plus size={14} /> ADD_MODULE
+            </button>
+          </div>
+
+          <div className="space-y-8">
+            {formData.questions.map((q, qIdx) => (
+              <div key={qIdx} className="p-1 border border-white/10 bg-white/5">
+                <div className="bg-black border border-white/10 p-10 space-y-10">
+                  <div className="flex justify-between items-start">
+                    <span className="text-[10px] font-black text-white uppercase tracking-[0.4em]">MODULE_0{qIdx + 1}</span>
+                    <button 
+                      type="button"
+                      onClick={() => setFormData({...formData, questions: formData.questions.filter((_, i) => i !== qIdx)})}
+                      className="text-white/20 hover:text-white transition-colors"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+
+                  <div className="space-y-4">
+                    <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.4em]">QUERY_STRING</label>
                     <textarea 
-                      value={currentMCQ.question}
-                      onChange={(e) => setCurrentMCQ({...currentMCQ, question: e.target.value})}
-                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-custom outline-none focus:bg-white focus:border-primary transition-all font-medium resize-none"
-                      placeholder="Enter MCQ question..."
+                      required
+                      rows={2}
+                      value={q.question}
+                      onChange={(e) => handleQuestionChange(qIdx, 'question', e.target.value)}
+                      className="w-full px-6 py-4 bg-transparent border border-white/20 focus:border-white outline-none transition-all font-bold uppercase tracking-widest text-[11px] resize-none"
+                      placeholder="ENTER THE QUESTION TELEMETRY..."
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    {currentMCQ.options.map((opt, i) => (
-                      <div key={i} className="space-y-2">
-                        <label className="text-[10px] font-bold text-gray-400">Option {i + 1} {currentMCQ.correctAnswer === i && <span className="text-green-500 ml-2">(Correct)</span>}</label>
-                        <div className="relative">
+
+                  <div className="grid md:grid-cols-2 gap-8">
+                    {q.options.map((opt, oIdx) => (
+                      <div key={oIdx} className="space-y-3">
+                        <div className="flex justify-between items-center px-1">
+                          <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.4em]">OPTION_{String.fromCharCode(65 + oIdx)}</label>
                           <input 
-                            value={opt}
-                            onChange={(e) => {
-                              const newOpts = [...currentMCQ.options];
-                              newOpts[i] = e.target.value;
-                              setCurrentMCQ({...currentMCQ, options: newOpts});
-                            }}
-                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-custom outline-none focus:bg-white focus:border-primary transition-all font-medium"
-                          />
-                          <button 
-                            onClick={() => setCurrentMCQ({...currentMCQ, correctAnswer: i})}
-                            className={`absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full border-2 transition-all ${currentMCQ.correctAnswer === i ? 'bg-green-500 border-green-500' : 'border-gray-300'}`}
+                            type="radio" 
+                            name={`correct-${qIdx}`} 
+                            checked={q.correctOption === oIdx}
+                            onChange={() => handleQuestionChange(qIdx, 'correctOption', oIdx)}
+                            className="accent-white"
                           />
                         </div>
+                        <input 
+                          required
+                          type="text" 
+                          value={opt}
+                          onChange={(e) => handleOptionChange(qIdx, oIdx, e.target.value)}
+                          className="w-full px-6 py-4 bg-transparent border border-white/20 focus:border-white outline-none transition-all font-black uppercase tracking-widest text-xs"
+                        />
                       </div>
                     ))}
                   </div>
-                  <Button onClick={addMCQ} variant="outline" className="w-full flex items-center justify-center gap-2">
-                    <Plus size={16} /> Add MCQ to List
-                  </Button>
-               </div>
-             ) : (
-               <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Coding Problem Statement</label>
-                    <textarea 
-                      value={currentCoding.question}
-                      onChange={(e) => setCurrentCoding({...currentCoding, question: e.target.value})}
-                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-custom outline-none focus:bg-white focus:border-primary transition-all font-medium resize-none h-32"
-                      placeholder="Explain the problem, constraints, and examples..."
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Initial Boilerplate Code</label>
-                    <textarea 
-                      value={currentCoding.initialCode}
-                      onChange={(e) => setCurrentCoding({...currentCoding, initialCode: e.target.value})}
-                      className="w-full px-4 py-3 bg-gray-900 text-green-400 border border-gray-800 rounded-custom outline-none font-mono text-sm resize-none h-32"
-                    />
-                  </div>
-                  <Button onClick={addCoding} variant="outline" className="w-full flex items-center justify-center gap-2">
-                    <Code size={16} /> Add Coding Problem to List
-                  </Button>
-               </div>
-             )}
-          </Card>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Right: Question List Preview */}
-        <div className="space-y-8">
-           <Card className="p-8 bg-white border-none shadow-xl h-full flex flex-col">
-              <div className="flex justify-between items-center mb-6 border-b pb-4">
-                <h3 className="text-lg font-bold text-secondary">3. Question Queue</h3>
-                <Badge variant="primary" className="px-4">{formData.questions.length} / 21 Items</Badge>
-              </div>
-
-              <div className="flex-grow space-y-4 overflow-y-auto max-h-[600px] pr-2 custom-scrollbar">
-                {formData.questions.length === 0 ? (
-                  <div className="text-center py-20">
-                    <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
-                      <Plus size={32} />
-                    </div>
-                    <p className="text-gray-400 font-medium italic">Your question queue is empty.</p>
-                  </div>
-                ) : (
-                  formData.questions.map((q, idx) => (
-                    <div key={idx} className="bg-gray-50 p-4 rounded-custom border border-gray-200 group relative">
-                       <button 
-                        onClick={() => removeQuestion(idx)}
-                        className="absolute top-4 right-4 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
-                       >
-                         <Plus size={16} className="rotate-45" />
-                       </button>
-                       <div className="flex gap-3 mb-2">
-                          <Badge variant={q.type === 'mcq' ? 'neutral' : 'warning'} className="text-[9px] uppercase tracking-tighter">
-                            {q.type}
-                          </Badge>
-                          <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Question {idx + 1}</span>
-                       </div>
-                       <p className="text-sm font-bold text-secondary line-clamp-2">{q.question}</p>
-                    </div>
-                  ))
-                )}
-              </div>
-
-              <div className="pt-8 mt-auto">
-                <Button 
-                  onClick={handleSubmit} 
-                  disabled={isSaving || formData.questions.length === 0}
-                  className="w-full h-16 text-lg shadow-2xl shadow-primary/30 group"
-                >
-                  {isSaving ? <Loader2 className="animate-spin" /> : (
-                    <span className="flex items-center justify-center gap-3">
-                      Finalize & Publish Assessment <ArrowRight className="group-hover:translate-x-2 transition-transform" />
-                    </span>
-                  )}
-                </Button>
-              </div>
-           </Card>
+        <div className="pt-12 border-t border-white/10 flex justify-end gap-8">
+           <button 
+             type="button"
+             onClick={() => navigate('/dashboard/admin')}
+             className="px-10 py-5 border border-white/10 text-white/40 font-black uppercase tracking-[0.3em] text-[10px] hover:text-white transition-all"
+           >
+             ABORT_DEPLOYMENT
+           </button>
+           <button 
+             type="submit" 
+             disabled={isLoading}
+             className="px-20 py-5 bg-white text-black font-black uppercase tracking-[0.3em] text-[10px] hover:bg-white/90 transition-all flex items-center gap-4"
+           >
+             {isLoading ? <Loader2 className="animate-spin" size={16} /> : 'AUTHORIZE_BROADCAST'}
+           </button>
         </div>
-      </div>
+      </form>
     </DashboardLayout>
   );
 }
 
-function StatCard({ label, value, icon: Icon, color }) {
+function StatCard({ label, value, icon: Icon }) {
   return (
-    <Card className="p-6 border-none shadow-sm flex items-center justify-between bg-white">
-      <div>
-        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{label}</p>
-        <p className="text-2xl font-bold text-secondary">{value}</p>
+    <div className="p-10 border border-white/10 bg-white/5 hover:border-white transition-all group">
+      <div className="flex justify-between items-start mb-10">
+        <div className="w-12 h-12 border border-white/10 flex items-center justify-center text-white/20 group-hover:bg-white group-hover:text-black transition-all">
+          <Icon size={24} />
+        </div>
       </div>
-      <div className={`w-12 h-12 bg-gray-50 ${color} rounded-custom flex items-center justify-center`}>
-        <Icon size={24} />
-      </div>
-    </Card>
+      <p className="text-[9px] font-black text-white/30 uppercase tracking-[0.4em] mb-3">{label}</p>
+      <p className="text-4xl font-black italic tracking-tighter text-white">{value}</p>
+    </div>
   );
 }

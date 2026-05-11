@@ -4,17 +4,17 @@ import { twMerge } from 'tailwind-merge';
 
 export function Button({ className, variant = 'primary', ...props }) {
   const variants = {
-    primary: 'bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/20',
-    secondary: 'bg-secondary text-white hover:bg-secondary/90 shadow-lg shadow-secondary/20',
-    outline: 'border-2 border-primary text-primary hover:bg-primary hover:text-white',
-    ghost: 'text-primary hover:bg-primary/10',
-    danger: 'bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-500/20',
+    primary: 'bg-white text-black hover:bg-white/90 border border-white uppercase tracking-widest text-[10px] font-black',
+    secondary: 'bg-black text-white hover:bg-white hover:text-black border border-white/20 hover:border-white uppercase tracking-widest text-[10px] font-black',
+    outline: 'border border-white/20 text-white hover:border-white hover:bg-white hover:text-black uppercase tracking-widest text-[10px] font-black',
+    ghost: 'text-white/50 hover:text-white uppercase tracking-widest text-[10px] font-black',
+    danger: 'bg-white text-black hover:bg-white/90 border border-white uppercase tracking-widest text-[10px] font-black',
   };
 
   return (
     <button
       className={twMerge(
-        'inline-flex items-center justify-center rounded-custom px-6 py-2.5 text-sm font-semibold transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none',
+        'inline-flex items-center justify-center rounded-none px-8 py-3.5 transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none',
         variants[variant],
         className
       )}
@@ -27,7 +27,7 @@ export function Card({ className, children, ...props }) {
   return (
     <div
       className={twMerge(
-        'bg-white border border-border rounded-custom p-6 shadow-sm overflow-hidden',
+        'bg-white/5 border border-white/10 rounded-none p-8 overflow-hidden',
         className
       )}
       {...props}
@@ -41,7 +41,7 @@ export function GlassContainer({ className, children, ...props }) {
   return (
     <div
       className={twMerge(
-        'bg-white/70 backdrop-blur-md border border-white/20 rounded-custom shadow-xl',
+        'bg-white/5 backdrop-blur-xl border border-white/10 rounded-none shadow-2xl',
         className
       )}
       {...props}
@@ -53,17 +53,17 @@ export function GlassContainer({ className, children, ...props }) {
 
 export function Badge({ className, variant = 'primary', children, ...props }) {
   const variants = {
-    primary: 'bg-primary/10 text-primary border-primary/20',
-    success: 'bg-green-100 text-green-700 border-green-200',
-    warning: 'bg-yellow-100 text-yellow-700 border-yellow-200',
-    error: 'bg-red-100 text-red-700 border-red-200',
-    neutral: 'bg-gray-100 text-gray-700 border-gray-200',
+    primary: 'bg-white/10 text-white border-white/20',
+    success: 'bg-white/20 text-white border-white/40',
+    warning: 'bg-white/10 text-white border-white/10',
+    error: 'bg-white/10 text-white border-white/10',
+    neutral: 'bg-white/5 text-white/50 border-white/5',
   };
 
   return (
     <span
       className={twMerge(
-        'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium border',
+        'inline-flex items-center rounded-none px-3 py-1 text-[9px] font-black uppercase tracking-widest border',
         variants[variant],
         className
       )}

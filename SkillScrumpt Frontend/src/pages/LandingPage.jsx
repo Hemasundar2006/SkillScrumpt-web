@@ -1,543 +1,555 @@
-import React, { useState, useEffect } from 'react';
-import api from '../utils/api';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import { Shield, CheckCircle, BadgeCheck, Globe, Zap, Users, ArrowRight, Play, Star, Monitor, Clock, Mail, Lock, Target, GraduationCap } from 'lucide-react';
-import { Button, Card, Badge, GlassContainer } from '../components/UI';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { ArrowRight, Star, Plus, Shield, ShieldCheck, Zap, Monitor, Lock, Target, ExternalLink, Mail, Instagram, Linkedin, Twitter, Menu, X, ChevronRight, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { ParticleBackground } from '../components/ParticleBackground';
-import RazorpayPayment from '../components/RazorpayPayment';
 
-const UpgradeModal = ({ onClose, pricing }) => (
-  <motion.div 
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0 }}
-    className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-secondary/80 backdrop-blur-md"
+const Asterisk = ({ className }) => (
+  <svg viewBox="0 0 100 100" className={`asterisk-spin ${className}`} fill="currentColor">
+    <path d="M50 0L54.3 35.7L85.4 14.6L64.3 45.7L100 50L64.3 54.3L85.4 85.4L54.3 64.3L50 100L45.7 64.3L14.6 85.4L35.7 54.3L0 50L35.7 45.7L14.6 14.6L45.7 35.7L50 0Z" />
+  </svg>
+);
+
+const SectionReveal = ({ children, className, id }) => (
+  <motion.div
+    id={id}
+    initial={{ opacity: 0, y: 50 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: "-100px" }}
+    transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+    className={className}
   >
-    <motion.div 
-      initial={{ scale: 0.9, y: 20 }}
-      animate={{ scale: 1, y: 0 }}
-      exit={{ scale: 0.9, y: 20 }}
-      className="max-w-md w-full bg-white rounded-[2rem] p-10 shadow-2xl relative overflow-hidden"
-    >
-      <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary to-blue-400" />
-      
-      <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-6 mx-auto">
-        <Zap size={32} />
-      </div>
-      
-      <div className="text-center mb-8">
-        <h3 className="text-2xl font-black text-secondary mb-2">Upgrade to Pro</h3>
-        {pricing.isPromoActive ? (
-          <div className="inline-block px-4 py-1 bg-green-100 text-green-700 text-[10px] font-black uppercase tracking-widest rounded-full mb-4 animate-pulse">
-            Early Bird Offer: ₹1 for first 200 users! ({pricing.remainingPromoSpots} spots left)
-          </div>
-        ) : null}
-        <p className="text-gray-500 font-medium text-sm text-secondary">
-          Join the elite 1% of talent. Get verified, get noticed, and get paid.
-        </p>
-      </div>
-      
-      <div className="space-y-3 mb-8">
-        {[
-          'Priority Assessment Access',
-          'Exclusive Pro Badge',
-          'Zero Commission Projects',
-          'Premium Support'
-        ].map((feature, i) => (
-          <div key={i} className="flex items-center gap-3 text-sm font-bold text-gray-700">
-            <CheckCircle size={16} className="text-green-500" />
-            {feature}
-          </div>
-        ))}
-      </div>
-      
-      <div className="flex flex-col gap-3">
-        <RazorpayPayment 
-          amount={pricing.currentPrice} 
-          buttonText={`Pay ₹${pricing.currentPrice} & Upgrade`}
-          className="w-full h-14 shadow-xl shadow-primary/20 flex items-center justify-center font-bold"
-          onSuccess={(data) => {
-            alert('Payment Successful! Please log in to see your Pro status.');
-            onClose();
-          }}
-          onError={(error) => {
-            alert('Payment Failed: ' + error);
-          }}
-        />
-        <button 
-          onClick={onClose}
-          className="w-full h-12 text-gray-400 font-bold hover:text-secondary transition-colors"
-        >
-          Maybe Later
-        </button>
-      </div>
-    </motion.div>
+    {children}
   </motion.div>
 );
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.2 }
-  }
-};
-
-const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: { y: 0, opacity: 1 }
-};
-
-const StatItem = ({ label, value }) => (
-  <div className="text-center">
-    <div className="text-3xl font-black text-secondary mb-1">{value}</div>
-    <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{label}</div>
+const Marquee = ({ children, reverse = false, speed = 30 }) => (
+  <div className="overflow-hidden whitespace-nowrap py-10 border-y border-white/10">
+    <div 
+      className={reverse ? "marquee-content-reverse" : "marquee-content"}
+      style={{ animationDuration: `${speed}s` }}
+    >
+      {children}
+      {children}
+    </div>
   </div>
 );
 
-export function LandingPage() {
-  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
-  const [pricing, setPricing] = useState({ currentPrice: 49, isPromoActive: false, remainingPromoSpots: 0 });
+const Loader = ({ onFinish }) => {
+  const [count, setCount] = useState(0);
 
   useEffect(() => {
-    const fetchPricing = async () => {
-      try {
-        const { data } = await api.get('/payments/pricing-info');
-        if (data.success) setPricing(data);
-      } catch (err) {
-        console.error('Error fetching pricing:', err);
-      }
-    };
-    
-    fetchPricing();
-    const interval = setInterval(fetchPricing, 30000); // Poll every 30s for real-time slot updates
-    
-    return () => clearInterval(interval);
-  }, []);
-
-  const { scrollYProgress } = useScroll();
-  const rotateX = useTransform(scrollYProgress, [0, 0.2], [0, 5]);
-  const scale = useTransform(scrollYProgress, [0, 0.2], [1, 0.95]);
-  const opacity = useTransform(scrollYProgress, [0, 0.1], [1, 0.8]);
-  const uspRotateX = useTransform(scrollYProgress, [0.1, 0.3], [5, 0]);
-  const uspScale = useTransform(scrollYProgress, [0.1, 0.3], [0.9, 1]);
+    const timer = setInterval(() => {
+      setCount(prev => {
+        if (prev >= 100) {
+          clearInterval(timer);
+          setTimeout(onFinish, 500);
+          return 100;
+        }
+        return prev + 1;
+      });
+    }, 15);
+    return () => clearInterval(timer);
+  }, [onFinish]);
 
   return (
-    <div className="pt-20 overflow-x-hidden bg-white perspective-1000 relative mesh-gradient">
-      {/* Background Aura */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[120px] pulse-slow" />
-        <div className="absolute bottom-[20%] right-[-5%] w-[30%] h-[30%] bg-blue-600/5 rounded-full blur-[100px] pulse-slow" style={{ animationDelay: '2s' }} />
-      </div>
+    <motion.div 
+      exit={{ opacity: 0, y: -100 }}
+      transition={{ duration: 0.8, ease: "easeInOut" }}
+      className="loader-container"
+    >
+      <div className="loader-counter">{count}%</div>
+    </motion.div>
+  );
+};
 
-      {/* Hero Section */}
-      <motion.section 
-        style={{ rotateX, scale, opacity, transformStyle: 'preserve-3d' }}
-        className="relative py-20 lg:py-32 px-4 overflow-hidden min-h-[90vh] flex items-center bg-transparent"
-      >
-        <div className="max-w-7xl mx-auto relative z-10 grid lg:grid-cols-2 gap-12 items-center">
-          <div className="text-left">
-            <motion.div
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.5 }}
-            >
-              <Badge variant="primary" className="mb-8 px-6 py-2 uppercase tracking-[0.4em] font-black text-[10px] bg-white border border-gray-100 text-secondary shadow-sm rounded-full">
-                The New Standard of Trust
-              </Badge>
-            </motion.div>
-            
-            <h1 className="text-7xl lg:text-[10rem] font-black tracking-tighter text-secondary mb-6 leading-[0.8]">
-              Verify <br />
-              <span className="text-primary tracking-[-0.05em]">Talent.</span>
-            </h1>
-            
-            <p className="text-2xl text-gray-400 max-w-xl mb-12 leading-relaxed font-medium tracking-tight">
-              A decentralized talent ecosystem powered by <span className="text-secondary font-black">Live AI Proctoring</span>. Stop guessing and start hiring verified expertise.
-            </p>
+export function LandingPage() {
+  const [loading, setLoading] = useState(true);
+  const [scrolled, setScrolled] = useState(false);
   
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="/register?role=professional">
-                <Button className="h-16 px-10 text-lg shadow-2xl shadow-primary/30 font-black rounded-2xl group">
-                  Get Verified <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </Link>
-              <Link to="/register?role=client">
-                <Button variant="outline" className="h-16 px-10 text-lg font-black rounded-2xl bg-white/50 backdrop-blur-sm">
-                  Hire Elite Talent
-                </Button>
-              </Link>
-            </div>
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
-            <div className="mt-16 flex items-center gap-8">
+  if (loading) return <Loader onFinish={() => setLoading(false)} />;
+
+  return (
+    <div className="bg-black text-white selection:bg-white selection:text-black">
+      {/* NAVIGATION */}
+      <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${scrolled ? 'nav-blur py-4 border-b border-white/10' : 'py-8'}`}>
+        <div className="max-w-[1400px] mx-auto px-6 flex items-center justify-between">
+          <Link to="/" className="text-2xl font-black tracking-tighter uppercase italic">SkillScrumpt.in</Link>
+          
+          <div className="hidden md:flex items-center gap-10 text-[11px] font-bold uppercase tracking-[0.2em]">
+            <Link to="/about" className="hover:text-muted transition-colors">About</Link>
+            <Link to="/proctoring" className="hover:text-muted transition-colors">Proctoring</Link>
+            <Link to="/marketplace" className="hover:text-muted transition-colors">Marketplace</Link>
+            <Link to="/pricing" className="hover:text-muted transition-colors">Pricing</Link>
+          </div>
+
+          <div className="flex items-center gap-6">
+            <Link to="/login" className="hidden sm:block text-[11px] font-bold uppercase tracking-widest hover:text-muted transition-colors">Login</Link>
+            <Link to="/register" className="px-6 py-2 border border-white text-white hover:bg-white hover:text-black transition-all duration-300 text-[11px] font-bold uppercase tracking-widest">
+              Join Now
+            </Link>
+          </div>
+        </div>
+      </nav>
+
+      {/* HERO SECTION */}
+      <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
+        <div className="max-w-[1400px] mx-auto px-6 w-full grid lg:grid-cols-2 items-center gap-20">
+          <div className="relative z-10">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              className="text-[10px] font-black uppercase tracking-[0.4em] text-muted mb-6"
+            >
+              The New Standard of Trust
+            </motion.div>
+            <motion.h1 
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              className="text-[12vw] lg:text-[8rem] font-black leading-[0.85] tracking-tighter mb-10"
+            >
+              VERIFY <br />TALENT.
+            </motion.h1>
+            
+            <motion.p 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5, duration: 1 }}
+              className="text-xl text-muted max-w-md mb-12 leading-relaxed"
+            >
+              A decentralized talent ecosystem powered by <span className="text-white font-bold italic">Live AI Proctoring</span>. Stop guessing and start hiring verified expertise.
+            </motion.p>
+
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
+              className="flex flex-col sm:flex-row items-center gap-6"
+            >
+              <Link to="/register?role=professional" className="w-full sm:w-auto">
+                <button className="w-full px-10 py-5 bg-white text-black font-black uppercase tracking-widest text-xs hover:bg-muted transition-all rounded-full">
+                  Get Verified
+                </button>
+              </Link>
+              <Link to="/register?role=client" className="w-full sm:w-auto">
+                <button className="w-full px-10 py-5 border border-white text-white font-black uppercase tracking-widest text-xs hover:bg-white/10 transition-all flex items-center justify-center gap-2 rounded-full">
+                  Hire Elite Talent <ArrowRight size={16} />
+                </button>
+              </Link>
+            </motion.div>
+
+            <div className="mt-16 flex items-center gap-12">
                <div>
-                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">Platform Volume</p>
-                 <p className="text-2xl font-black text-secondary">₹12.4Cr+</p>
+                 <p className="text-[10px] font-black text-muted uppercase tracking-[0.2em] mb-2">Volume</p>
+                 <p className="text-2xl font-black">₹12.4Cr+</p>
                </div>
-               <div className="w-px h-10 bg-gray-100" />
+               <div className="w-px h-10 bg-white/10" />
                <div>
-                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">Integrity Rate</p>
-                 <p className="text-2xl font-black text-primary">99.9%</p>
+                 <p className="text-[10px] font-black text-muted uppercase tracking-[0.2em] mb-2">Integrity</p>
+                 <p className="text-2xl font-black">99.9%</p>
                </div>
             </div>
           </div>
 
-          <motion.div 
-            initial={{ scale: 0.8, opacity: 0, rotate: 5 }}
-            animate={{ scale: 1, opacity: 1, rotate: 0 }}
-            transition={{ duration: 1, ease: "easeOut" }}
-            className="relative hidden lg:block"
-          >
-            <div className="absolute inset-0 bg-primary/20 blur-[150px] rounded-full animate-pulse" />
-            <img 
-              src="/verified_elite_badge_hologram_1778417747836.png" 
-              alt="Verified Elite Hologram" 
-              className="w-full h-auto relative z-10 floating drop-shadow-[0_0_50px_rgba(20,110,245,0.3)]"
-            />
-            
-            {/* Stats Overlay Card */}
-            <motion.div 
-              initial={{ x: 100, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="absolute -bottom-10 -right-10 bg-white/80 backdrop-blur-xl border border-white p-8 rounded-[2.5rem] shadow-2xl z-20 max-w-[280px]"
-            >
-               <div className="flex items-center gap-4 mb-6">
-                 <div className="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-green-500/20">
-                   <Shield size={24} />
-                 </div>
-                 <div>
-                   <p className="text-sm font-black text-secondary">AI Proctored</p>
-                   <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Active Protection</p>
-                 </div>
-               </div>
-               <div className="space-y-4">
-                 <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                   <motion.div 
-                     initial={{ width: 0 }}
-                     animate={{ width: '92%' }}
-                     transition={{ duration: 1.5, delay: 1 }}
-                     className="bg-primary h-full" 
-                   />
-                 </div>
-                 <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
-                   <span className="text-gray-400">Integrity Score</span>
-                   <span className="text-primary">92% Match</span>
-                 </div>
-               </div>
-            </motion.div>
-          </motion.div>
-        </div>
-      </motion.section>
-
-      {/* Feature Section: High-Integrity Talent Ecosystem */}
-      <motion.section 
-        style={{ rotateX: uspRotateX, scale: uspScale, transformStyle: 'preserve-3d' }}
-        className="py-24 bg-secondary text-white relative"
-      >
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <div className="relative flex justify-center lg:justify-end">
             <motion.div
-              initial={{ x: -50, opacity: 0 }}
-              whileInView={{ x: 0, opacity: 1 }}
-              viewport={{ once: true }}
+              initial={{ opacity: 0, scale: 0.8, rotate: 10 }}
+              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+              className="relative w-full max-w-[600px] radius-design p-4 bg-white/5 border border-white/10"
             >
-              <Badge variant="primary" className="mb-6 bg-primary/20 text-blue-300 border-none">
-                How it works
-              </Badge>
-              <h2 className="text-4xl lg:text-5xl font-bold mb-8 leading-tight">
-                AI Proctoring: The New Standard for <span className="text-primary">Trust</span>
-              </h2>
-              <div className="space-y-6">
-                {[
-                  { title: 'Dynamic Skill Testing', desc: 'Real-time coding and problem-solving challenges that adapt to the user\'s level.', icon: Zap },
-                  { title: 'Secure Proctored Environment', desc: 'Advanced AI monitoring ensures the integrity of every assessment.', icon: Shield },
-                  { title: 'Verified Badge System', desc: 'Successful assessments earn unique digital credentials verifiable on the blockchain.', icon: CheckCircle }
-                ].map((item, i) => (
-                  <div key={i} className="flex gap-4 group">
-                    <div className="flex-shrink-0 w-12 h-12 bg-primary/20 rounded-custom flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                      <item.icon size={24} />
-                    </div>
+              <img 
+                src="/hero_mineral_3d_1778513348174.png" 
+                alt="SkillScrumpt.in Core" 
+                className="w-full drop-shadow-[0_0_100px_rgba(255,255,255,0.1)] rounded-[20px]"
+              />
+              <Asterisk className="absolute -top-6 -right-6 w-24 h-24 text-white/20" />
+            </motion.div>
+          </div>
+        </div>
+        
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4">
+          <div className="text-[10px] font-bold uppercase tracking-[0.4em] text-muted">Discover</div>
+          <div className="w-px h-20 bg-gradient-to-b from-white/20 to-transparent" />
+        </div>
+      </section>
+
+      {/* STUDIO/INTRO SECTION */}
+      <SectionReveal className="py-40 border-t border-white/10">
+        <div className="max-w-[1400px] mx-auto px-6 grid md:grid-cols-[200px_1fr] gap-20">
+          <div className="text-[11px] font-black uppercase tracking-[0.3em] text-muted">Our Vision</div>
+          <div className="border-l border-white/20 pl-10 md:pl-20">
+            <h2 className="text-4xl md:text-7xl font-bold leading-[1.1] tracking-tight mb-12">
+              We've built an ecosystem where <br /> 
+              trust is the primary currency.
+            </h2>
+            <Link to="/about" className="inline-flex items-center gap-4 text-[11px] font-black uppercase tracking-[0.4em] text-white/40 hover:text-white transition-colors group">
+              Exploration Directive <ArrowRight size={14} className="group-hover:translate-x-2 transition-transform" />
+            </Link>
+          </div>
+        </div>
+      </SectionReveal>
+
+      {/* STATS MARQUEE */}
+      <section className="py-20">
+        <Marquee speed={20}>
+          {[
+            "150k+ VERIFIED TALENT", "850k+ ASSESSMENTS", "98.5% SUCCESS RATE", 
+            "120+ COUNTRIES", "₹12.4Cr+ VOLUME", "ZERO BROKERAGE"
+          ].map((stat, i) => (
+            <div key={i} className="mx-20 flex items-center gap-10 text-5xl font-black italic text-outline hover:text-white transition-all cursor-default">
+              <span>{stat}</span>
+              <span className="text-white/20">✳</span>
+            </div>
+          ))}
+        </Marquee>
+      </section>
+
+      {/* PROCTORING SECTION */}
+      <SectionReveal className="py-40" id="proctoring">
+        <div className="max-w-[1400px] mx-auto px-6 grid lg:grid-cols-2 gap-20 items-center">
+          <div>
+            <div className="text-[11px] font-black uppercase tracking-[0.3em] text-muted mb-10">AI Proctoring</div>
+            <h2 className="text-6xl md:text-8xl font-black tracking-tighter mb-20 leading-[0.9]">
+              The Standard <br />of Integrity.
+            </h2>
+            
+            <div className="grid gap-0 border-t border-white/10">
+              {[
+                { title: "Live Webcam Monitoring", desc: "Real-time visual verification during every assessment.", icon: Shield },
+                { title: "Tab-Switch Detection", desc: "Strict anti-cheat environment to ensure original work.", icon: Monitor },
+                { title: "Skill-Matched Feed", desc: "Verified talent only sees projects matching their badge level.", icon: Target }
+              ].map((service, i) => (
+                <div key={i} className="py-10 border-b border-white/10 flex items-center justify-between group hover:pl-4 transition-all">
+                  <div className="flex gap-6 items-center">
+                    <service.icon className="text-white/30 group-hover:text-white transition-colors" size={24} />
                     <div>
-                      <h4 className="font-bold text-lg mb-1">{item.title}</h4>
-                      <p className="text-gray-400 text-sm">{item.desc}</p>
+                      <h4 className="text-2xl font-bold mb-2">{service.title}</h4>
+                      <p className="text-muted text-sm">{service.desc}</p>
+                    </div>
+                  </div>
+                  <Plus className="text-white/30 group-hover:text-white transition-colors" />
+                </div>
+              ))}
+            </div>
+
+            <Link to="/proctoring">
+              <button className="mt-20 flex items-center gap-4 text-sm font-black uppercase tracking-widest group">
+                Full Security Protocol <ArrowRight className="group-hover:translate-x-2 transition-transform" />
+              </button>
+            </Link>
+          </div>
+
+          <div className="relative">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              className="radius-design p-4 bg-white/5 border border-white/10"
+            >
+              <img 
+                src="/proctoring_system_3d_1778513881929.png" 
+                alt="AI Proctoring System" 
+                className="w-full drop-shadow-[0_0_80px_rgba(255,255,255,0.05)] rounded-[20px]"
+              />
+            </motion.div>
+          </div>
+        </div>
+      </SectionReveal>
+
+      {/* CASE STUDIES / MARKETPLACE */}
+      <section className="py-40 bg-white text-black" id="work">
+        <div className="max-w-[1400px] mx-auto px-6 mb-20 flex justify-between items-end">
+          <div>
+            <div className="text-[11px] font-black uppercase tracking-[0.3em] text-black/50 mb-4">Marketplace</div>
+            <h2 className="text-6xl md:text-8xl font-black tracking-tighter">Elite Talent.</h2>
+          </div>
+          <Link to="/marketplace" className="hidden md:block mb-4 text-xs font-black uppercase tracking-widest border-b border-black">
+            Enter Marketplace Hub →
+          </Link>
+        </div>
+
+        <div className="border-t border-black/10">
+          {[
+            { client: "Fullstack Engineering", desc: "Verified experts in React, Node, and Cloud architecture.", img: "/talent_marketplace_3d_1778513912255.png" },
+            { client: "AI & Data Science", desc: "Proctored talent capable of building production-grade models.", img: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2000&auto=format&fit=crop" },
+            { client: "UI/UX Architecture", desc: "Designers who understand depth, motion, and conversion.", img: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2000&auto=format&fit=crop" }
+          ].map((project, i) => (
+            <SectionReveal key={i} className={`flex flex-col lg:flex-row border-b border-black/10 ${i % 2 === 0 ? '' : 'lg:flex-row-reverse'}`}>
+              <div className="flex-1 p-10 md:p-20 flex flex-col justify-center">
+                <h3 className="text-4xl md:text-6xl font-black mb-6">{project.client}</h3>
+                <p className="text-xl text-black/60 mb-10 max-w-md">{project.desc}</p>
+                <Link to="/register" className="flex items-center gap-4 font-black uppercase tracking-widest text-[11px]">
+                  Hire Now <ChevronRight size={16} />
+                </Link>
+              </div>
+              <div className="flex-1 overflow-hidden h-[400px] lg:h-auto m-6 radius-design border border-white/10">
+                <img 
+                  src={project.img} 
+                  alt={project.client} 
+                  className="w-full h-full object-cover grayscale hover:grayscale-0 hover:scale-105 transition-all duration-1000"
+                />
+              </div>
+            </SectionReveal>
+          ))}
+        </div>
+      </section>
+
+      {/* APPROACH SECTION (BENTO) */}
+      <section className="py-40">
+        <div className="max-w-[1400px] mx-auto px-6">
+          <div className="text-[11px] font-black uppercase tracking-[0.3em] text-muted mb-4">The Advantage</div>
+          <h2 className="text-5xl md:text-7xl font-black tracking-tighter mb-20 leading-[0.9]">
+            Where integrity <br />meets velocity.
+          </h2>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              { title: "48h Cooling Period", desc: "Forced improvement periods between test attempts." },
+              { title: "Verified Elite Badge", desc: "Earned only after scoring 70%+ on proctored tests.", large: true, img: "/verified_badge_3d_1778513897472.png" },
+              { title: "College Verification", desc: "Mandatory .edu or college-domain email validation." },
+              { title: "Post-Payment Chat", desc: "Secure interaction unlocked after milestone funding." },
+              { title: "Zero Brokerage", desc: "Keep 100% of your earnings. No hidden service fees." },
+              { title: "Resume Builder", desc: "Free premium access to ATS-friendly resume templates.", img: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1000&auto=format&fit=crop" }
+            ].map((card, i) => (
+              <div key={i} className={`p-10 border border-white/10 relative overflow-hidden group hover:border-white/40 transition-colors radius-design ${card.large ? 'lg:col-span-2' : ''}`}>
+                {card.img && <img src={card.img} className={`absolute inset-0 w-full h-full object-cover ${card.large ? 'opacity-40 group-hover:opacity-60' : 'opacity-20 group-hover:opacity-40'} transition-opacity`} alt="" />}
+                <div className="relative z-10 h-full flex flex-col justify-between">
+                  <h4 className="text-2xl font-bold mb-4 italic uppercase">{card.title}</h4>
+                  <p className="text-muted text-sm leading-relaxed uppercase tracking-widest font-black text-[10px]">{card.desc}</p>
+                </div>
+                <Asterisk className="absolute -bottom-4 -right-4 w-12 h-12 text-white/5 group-hover:text-white/20 transition-all" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* HOW IT WORKS */}
+      <section className="py-40 border-t border-white/10">
+        <div className="max-w-[1400px] mx-auto px-6">
+          <div className="grid lg:grid-cols-2 gap-20 items-center">
+            <div>
+              <div className="text-[11px] font-black uppercase tracking-[0.3em] text-muted mb-4">How it works</div>
+              <h2 className="text-5xl font-black mb-10 leading-tight">Your journey to <br />Verified Elite.</h2>
+              
+              <div className="space-y-16">
+                {[
+                  { step: "01", title: "Verify Identity", desc: "Sign up using your college email or professional ID for immediate validation." },
+                  { step: "02", title: "Take Assessment", desc: "Perform a live-proctored skill test to prove your technical expertise." },
+                  { step: "03", title: "Earn Badge", desc: "Score 70%+ to unlock your 'Verified Elite' badge and appear in top search results." },
+                  { step: "04", title: "Get Hired", desc: "Apply to premium projects with 100% earnings and direct client access." }
+                ].map((item, i) => (
+                  <div key={i} className="flex gap-10">
+                    <div className="text-3xl font-black text-muted/30">{item.step}</div>
+                    <div>
+                      <h4 className="text-2xl font-bold mb-4 flex items-center gap-4">
+                        <Star size={16} className="text-white" /> {item.title}
+                      </h4>
+                      <p className="text-muted leading-relaxed">{item.desc}</p>
                     </div>
                   </div>
                 ))}
               </div>
-            </motion.div>
-            
-            <motion.div
-              initial={{ x: 50, opacity: 0 }}
-              whileInView={{ x: 0, opacity: 1 }}
-              viewport={{ once: true }}
-              className="relative"
-            >
-              <div className="aspect-square bg-primary/10 rounded-[3rem] border border-primary/20 flex items-center justify-center overflow-hidden">
-                <Monitor size={200} className="text-primary opacity-20" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-64 h-64 bg-primary/20 rounded-full blur-[100px] animate-pulse" />
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </motion.section>
 
-      {/* Free Career Tools Section */}
-      <section className="py-24 bg-white relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="bg-gradient-to-r from-secondary to-gray-800 rounded-[2.5rem] p-8 lg:p-16 text-white relative overflow-hidden shadow-2xl">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-[100px] -mr-48 -mt-48" />
+              <Link to="/register">
+                <button className="mt-16 px-10 py-5 bg-white text-black font-black uppercase tracking-widest text-xs hover:bg-muted transition-all">
+                  Start Verification
+                </button>
+              </Link>
+            </div>
             
-            <div className="grid lg:grid-cols-2 gap-12 items-center relative z-10">
-              <div>
-                <Badge variant="primary" className="mb-6 bg-primary/20 text-primary border-none font-black text-[10px] py-2 px-6 rounded-full uppercase tracking-widest">
-                  Student Exclusive
-                </Badge>
-                <h2 className="text-4xl lg:text-5xl font-black mb-6 leading-tight">
-                  Free Resume Builder <br />
-                  <span className="text-primary">Powered by Resusolve.</span>
-                </h2>
-                <p className="text-lg text-gray-400 mb-10 leading-relaxed max-w-xl font-medium">
-                  We've partnered with <strong>Resusolve</strong> to give our students free access to premium, ATS-friendly resume templates. Build a profile that gets you noticed by the top 1% of employers.
-                </p>
-                <div className="flex flex-wrap gap-4">
-                  <a 
-                    href="https://resusolve.vercel.app" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                  >
-                    <Button className="h-14 px-10 text-lg shadow-xl shadow-primary/20">
-                      Build My Resume Now
-                    </Button>
-                  </a>
-                  <div className="flex -space-x-3 items-center">
-                    {[1, 2, 3].map(i => (
-                      <div key={i} className="w-10 h-10 rounded-full border-2 border-secondary bg-gray-700 overflow-hidden" />
-                    ))}
-                    <span className="ml-6 text-xs font-bold text-gray-400 uppercase tracking-widest">+5,000 resumes built today</span>
-                  </div>
-                </div>
-              </div>
+            <div className="relative">
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 1 }}
+                className="relative p-1 border border-white/10 bg-white/5"
+              >
+                <img 
+                  src="/system_workflow_3d_1778514263388.png" 
+                  alt="SkillScrumpt Workflow" 
+                  className="w-full grayscale hover:grayscale-0 transition-all duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
+              </motion.div>
               
-              <div className="relative group">
-                <div className="rounded-2xl border border-white/10 overflow-hidden shadow-2xl rotate-2 group-hover:rotate-0 transition-transform duration-700">
-                  <img 
-                    src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?auto=format&fit=crop&q=80&w=1200" 
-                    alt="Resume Builder Preview" 
-                    className="w-full grayscale hover:grayscale-0 transition-all duration-700"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-secondary via-transparent to-transparent opacity-60" />
-                </div>
-                {/* Float Badge */}
-                <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-2xl shadow-2xl text-secondary animate-bounce">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center">
-                      <CheckCircle size={20} />
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Status</p>
-                      <p className="text-sm font-bold">100% Free Access</p>
-                    </div>
-                  </div>
-                </div>
+              {/* Decorative text overlay */}
+              <div className="absolute -bottom-10 -right-10 text-[120px] font-black text-white/5 tracking-tighter italic select-none">
+                PROCESS
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <motion.div 
-            className="grid grid-cols-2 lg:grid-cols-4 gap-8"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-          >
-            {[
-              { label: 'Verified Talent', value: '150k+' },
-              { label: 'Assessments Passed', value: '850k+' },
-              { label: 'Success Rate', value: '98.5%' },
-              { label: 'Countries', value: '120+' }
-            ].map((stat, i) => (
-              <motion.div key={i} variants={itemVariants} className="text-center">
-                <div className="text-4xl lg:text-5xl font-black text-secondary mb-2">{stat.value}</div>
-                <div className="text-sm font-bold text-gray-400 uppercase tracking-widest">{stat.label}</div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Why SkillScrumpt - Core USPs */}
-      <section className="py-32 bg-[#0a0e1a] text-white relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary rounded-full blur-[120px]" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-600 rounded-full blur-[120px]" />
+      {/* TESTIMONIALS */}
+      <section className="py-40">
+        <div className="max-w-[1400px] mx-auto px-6 text-center mb-20">
+          <div className="text-[11px] font-black uppercase tracking-[0.3em] text-muted mb-4">Testimonials</div>
+          <h2 className="text-4xl md:text-6xl font-black">Trusted by Professionals.</h2>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 relative z-10">
-          <div className="text-center mb-20">
-            <Badge variant="primary" className="mb-6 bg-primary/20 text-blue-300 border-none uppercase tracking-widest font-black text-[10px] py-2 px-6 rounded-full">
-              The Standard of Integrity
-            </Badge>
-            <h2 className="text-5xl lg:text-6xl font-black mb-6 tracking-tight">
-              Why SkillScrumpt?
-            </h2>
-            <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-              We've built a ecosystem focused on trust, transparency, and top-tier talent.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <USPCard icon={Shield} title="AI Proctoring" desc="Desktop-only assessments with webcam feed and tab-switch detection for 100% integrity." badge="Security" />
-            <USPCard icon={Clock} title="48h Cooling Period" desc="Forced improvement periods between test attempts to prevent brute-force retrying." badge="Quality" />
-            <USPCard icon={Mail} title="College Verification" desc="Mandatory .edu or college-domain email verification for all student accounts." badge="Authenticity" />
-            <USPCard icon={BadgeCheck} title="Verified Badges" desc="Earned only after scoring 70%+ on proctored tests. Displayed everywhere." badge="Reputation" />
-            <USPCard icon={Lock} title="Post-Payment Chat" desc="Chat unlocks only after payment, preventing off-platform hiring and protecting the model." badge="Business" />
-            <USPCard icon={Target} title="Skill-Matched Feed" desc="Students see projects matching their verified skills, improving bid quality and results." badge="Efficiency" />
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="py-24 bg-[#f8f9fb]">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-secondary mb-4">What Our Users Say</h2>
-            <p className="text-gray-500 max-w-2xl mx-auto">Join thousands of students and clients who have found success on SkillScrumpt.</p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            <TestimonialCard text="SkillScrumpt helped me land a high-paying freelance gig at a top tech company. The verification process is tough, but it really sets you apart." author="Sarah Jenkins" role="Fullstack Developer" />
-            <TestimonialCard text="As a client, I love the peace of mind knowing that the talent I hire is actually as good as they say they are. The proctored test results don't lie." author="Michael Chen" role="Startup Founder" />
-            <TestimonialCard text="The zero brokerage model is a game-changer. I get to keep 100% of what I earn, which is a huge motivator." author="David Miller" role="UI/UX Designer" />
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing/Upgrade Section */}
-      <section className="py-24 bg-white relative">
-        <AnimatePresence>
-          {showUpgradeModal && <UpgradeModal onClose={() => setShowUpgradeModal(false)} pricing={pricing} />}
-        </AnimatePresence>
-
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <Badge variant="primary" className="mb-4 bg-primary/10 text-primary border-none">Limited Time Offer</Badge>
-            <h2 className="text-4xl lg:text-5xl font-black text-secondary mb-4 tracking-tight">Become a Pro Member</h2>
-            <p className="text-gray-500 max-w-2xl mx-auto font-medium">Join the next generation of verified talent and unlock high-paying global opportunities.</p>
-          </div>
-
-          <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
-             {/* Student Pro Card */}
-             <Card className="p-8 border-2 border-primary/20 bg-white shadow-2xl rounded-[3rem] relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full blur-3xl -mr-24 -mt-24 group-hover:scale-150 transition-transform duration-1000" />
-                <div className="relative z-10">
-                   <div className="flex items-center gap-3 mb-6">
-                     <div className="w-12 h-12 bg-primary/10 text-primary rounded-2xl flex items-center justify-center"><Zap size={24} /></div>
-                     <h3 className="text-2xl font-black text-secondary">Student Pro</h3>
-                   </div>
-                   <ul className="space-y-4 mb-8">
-                     {['Verified Elite Status', 'AI Proctoring Priority', 'Apply to Premium Projects', 'Zero Service Fees'].map((feature, i) => (
-                       <li key={i} className="flex items-center gap-3 text-sm font-bold text-gray-600">
-                         <CheckCircle size={18} className="text-green-500" /> {feature}
-                       </li>
-                     ))}
-                   </ul>
-                   <div className="bg-gray-50 p-6 rounded-[2rem] text-center border border-gray-100">
-                      <div className="flex items-baseline justify-center gap-2 mb-2">
-                        <span className="text-4xl font-black text-secondary">₹{pricing.professionalPrice || pricing.currentPrice}</span>
-                        {pricing.isPromoActive && <span className="text-lg text-gray-400 line-through font-bold">₹69</span>}
-                      </div>
-                      {pricing.isPromoActive && <p className="text-[10px] font-black text-green-600 uppercase tracking-widest mb-4">{pricing.remainingPromoSpots} Spots Left!</p>}
-                      <Link to={`/register?role=professional&upgrade=true`} className="block">
-                        <Button className="w-full h-12 text-sm shadow-xl shadow-primary/20 font-black">Get Student Pro</Button>
-                      </Link>
-                   </div>
+        <div className="flex gap-6 overflow-x-auto px-6 pb-20 no-scrollbar">
+          {[
+            { name: "Sarah Jenkins", role: "Fullstack Developer", text: "SkillScrumpt.in helped me land a high-paying freelance gig at a top tech company. The verification process is tough, but it really sets you apart." },
+            { name: "Michael Chen", role: "Startup Founder", text: "As a client, I love the peace of mind knowing that the talent I hire is actually as good as they say they are. The proctored test results don't lie." },
+            { name: "David Miller", role: "UI/UX Designer", text: "The zero brokerage model is a game-changer. I get to keep 100% of what I earn, which is a huge motivator." },
+            { name: "Aria Gupta", role: "Backend Architect", text: "Finally a platform that values actual skills over bidding wars. The proctoring system ensures only the best rise to the top." }
+          ].map((item, i) => (
+            <div key={i} className="min-w-[400px] p-10 border border-white/10 flex flex-col justify-between hover:border-white/40 transition-colors bg-white/5">
+              <p className="text-lg italic text-muted mb-10 leading-relaxed">
+                "{item.text}"
+              </p>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center font-bold text-xl">
+                  {item.name[0]}
                 </div>
-             </Card>
-
-             {/* Client Pro Card */}
-             <Card className="p-8 border-2 border-secondary/20 bg-white shadow-2xl rounded-[3rem] relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-48 h-48 bg-secondary/5 rounded-full blur-3xl -mr-24 -mt-24 group-hover:scale-150 transition-transform duration-1000" />
-                <div className="relative z-10">
-                   <div className="flex items-center gap-3 mb-6">
-                     <div className="w-12 h-12 bg-secondary/10 text-secondary rounded-2xl flex items-center justify-center"><Shield size={24} /></div>
-                     <h3 className="text-2xl font-black text-secondary">Client Pro</h3>
-                   </div>
-                   <ul className="space-y-4 mb-8">
-                     {['Elite Verified Talent', 'Priority Project Promotion', 'Direct Chat Access', 'Dedicated Support'].map((feature, i) => (
-                       <li key={i} className="flex items-center gap-3 text-sm font-bold text-gray-600">
-                         <CheckCircle size={18} className="text-blue-500" /> {feature}
-                       </li>
-                     ))}
-                   </ul>
-                   <div className="bg-gray-50 p-6 rounded-[2rem] text-center border border-gray-100">
-                      <div className="flex items-baseline justify-center gap-2 mb-2">
-                        <span className="text-4xl font-black text-secondary">₹{pricing.clientPrice || pricing.currentPrice}</span>
-                        {pricing.isPromoActive && <span className="text-lg text-gray-400 line-through font-bold">₹49</span>}
-                      </div>
-                      {pricing.isPromoActive && <p className="text-[10px] font-black text-green-600 uppercase tracking-widest mb-4">{pricing.remainingPromoSpots} Spots Left!</p>}
-                      <Link to={`/register?role=client&upgrade=true`} className="block">
-                        <Button variant="secondary" className="w-full h-12 text-sm shadow-xl shadow-secondary/20 font-black">Get Client Pro</Button>
-                      </Link>
-                   </div>
+                <div>
+                  <div className="font-bold text-sm">{item.name}</div>
+                  <div className="text-[10px] text-muted uppercase tracking-widest">{item.role}</div>
                 </div>
-             </Card>
-          </div>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
+
+      {/* PRICING SECTION */}
+      <section className="py-40 bg-white text-black">
+        <div className="max-w-[1400px] mx-auto px-6 text-center mb-20">
+          <div className="text-[11px] font-black uppercase tracking-[0.3em] text-black/50 mb-4">Pricing Model</div>
+          <h2 className="text-5xl md:text-7xl font-black tracking-tighter mb-10">Access for ₹1.</h2>
+          <Link to="/pricing" className="inline-flex items-center gap-4 text-[11px] font-black uppercase tracking-[0.4em] text-black/40 hover:text-black transition-colors group">
+            View Full Tiers <ArrowRight size={14} className="group-hover:translate-x-2 transition-transform" />
+          </Link>
+        </div>
+
+        <div className="max-w-[1200px] mx-auto px-6 grid md:grid-cols-2 gap-10">
+          {[
+            { 
+              name: "Student Pro", 
+              price: "1", 
+              originalPrice: "69",
+              tag: "FOR TALENT",
+              spots: "198 Spots Left!",
+              features: [
+                "Verified Elite Status",
+                "AI Proctoring Priority",
+                "Apply to Premium Projects",
+                "Zero Service Fees"
+              ]
+            },
+            { 
+              name: "Client Pro", 
+              price: "1", 
+              originalPrice: "49",
+              tag: "FOR HIRERS",
+              spots: "198 Spots Left!",
+              features: [
+                "Elite Verified Talent",
+                "Priority Project Promotion",
+                "Direct Chat Access",
+                "Dedicated Support"
+              ]
+            }
+          ].map((tier, i) => (
+            <div key={i} className="p-12 border border-black/10 flex flex-col justify-between hover:border-black transition-all group relative overflow-hidden">
+              <div className="absolute top-6 right-6 text-[10px] font-black bg-black text-white px-3 py-1 uppercase tracking-widest animate-pulse">
+                {tier.spots}
+              </div>
+              
+              <div>
+                <div className="text-[10px] font-black uppercase tracking-widest text-black/40 mb-6">{tier.tag}</div>
+                <h3 className="text-4xl font-black mb-4">{tier.name}</h3>
+                
+                <div className="flex items-end gap-4 mb-10">
+                  <div className="text-6xl font-black italic">₹{tier.price}</div>
+                  <div className="text-2xl font-bold text-black/30 line-through mb-1">₹{tier.originalPrice}</div>
+                </div>
+
+                <ul className="space-y-4 mb-10">
+                  {tier.features.map((f, j) => (
+                    <li key={j} className="flex items-center gap-3 text-sm font-bold text-black/60">
+                      <CheckCircle size={16} className="text-black" /> {f}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <Link to="/register?upgrade=true" className="w-full">
+                <button className="w-full py-5 bg-black text-white font-black uppercase tracking-widest text-[10px] group-hover:scale-105 transition-transform">
+                  Get {tier.name}
+                </button>
+              </Link>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* FINAL CTA */}
+      <section className="py-60 text-center relative overflow-hidden">
+        <Asterisk className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] text-white/5 pointer-events-none" />
+        <div className="max-w-4xl mx-auto px-6 relative z-10">
+          <h2 className="text-6xl md:text-9xl font-black tracking-tighter mb-10 leading-[0.8]">READY TO <br />JOIN THE <br />ELITE?</h2>
+          <Link to="/register">
+            <button className="px-16 py-8 bg-white text-black font-black uppercase tracking-[0.3em] text-sm hover:scale-105 transition-transform flex items-center gap-4 mx-auto group">
+              Start Verification <ArrowRight className="group-hover:translate-x-2 transition-transform" />
+            </button>
+          </Link>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="py-20 border-t border-white/10">
+        <div className="max-w-[1400px] mx-auto px-6">
+          <div className="grid md:grid-cols-[1fr_2fr_1fr] gap-20 mb-20">
+            <div>
+              <div className="text-2xl font-black tracking-tighter uppercase italic mb-6">SkillScrumpt.in</div>
+              <p className="text-muted text-sm leading-relaxed max-w-xs">
+                The world's first AI-proctored skill verification and freelance marketplace. Bridging the gap between verified talent and global opportunities.
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-10">
+              <div className="space-y-4 flex flex-col">
+                <div className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2">Platform</div>
+                <Link to="/projects" className="text-sm font-bold hover:text-white transition-colors">Browse Jobs</Link>
+                <Link to="/talent" className="text-sm font-bold hover:text-white transition-colors">Find Talent</Link>
+                <Link to="/assessments" className="text-sm font-bold hover:text-white transition-colors">Assessments</Link>
+              </div>
+              <div className="space-y-4 flex flex-col">
+                <div className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2">Legal</div>
+                <Link to="/terms" className="text-sm font-bold hover:text-white transition-colors">Terms</Link>
+                <Link to="/privacy" className="text-sm font-bold hover:text-white transition-colors">Privacy</Link>
+                <Link to="/help" className="text-sm font-bold hover:text-white transition-colors">Support</Link>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              <div className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2">Social</div>
+              <div className="flex gap-6">
+                <Twitter size={20} className="text-muted hover:text-white transition-colors" />
+                <Instagram size={20} className="text-muted hover:text-white transition-colors" />
+                <Linkedin size={20} className="text-muted hover:text-white transition-colors" />
+              </div>
+              <div className="text-sm font-bold border-b border-white/10 pb-2 inline-block">hello@skillscrumpt.in</div>
+            </div>
+          </div>
+
+          <div className="pt-10 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] font-bold uppercase tracking-widest text-muted">
+            <div>© 2026 SkillScrumpt.in All Rights Reserved.</div>
+            <div>Made with ❤️ for verified talent.</div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
 
-function TestimonialCard({ text, author, role }) {
-  return (
-    <Card className="p-8 border-none shadow-xl bg-white hover:-translate-y-2 transition-all">
-       <div className="flex gap-1 text-yellow-400 mb-6">
-         {[1, 2, 3, 4, 5].map(i => <Star key={i} size={16} fill="currentColor" />)}
-       </div>
-       <p className="text-gray-600 mb-8 italic leading-relaxed">"{text}"</p>
-       <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold">
-            {author[0]}
-          </div>
-          <div>
-             <h4 className="font-bold text-secondary">{author}</h4>
-             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{role}</p>
-          </div>
-       </div>
-    </Card>
-  );
-}
-
-function USPCard({ icon: Icon, title, desc, badge }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-    >
-      <Card className="p-8 bg-white/5 border-white/10 hover:border-primary/50 transition-all duration-500 h-full group relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-1000" />
-        <div className="relative z-10">
-          <div className="flex justify-between items-start mb-6">
-            <div className="w-14 h-14 bg-primary/20 text-primary rounded-custom flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all shadow-lg shadow-primary/10">
-              <Icon size={28} />
-            </div>
-            <Badge variant="neutral" className="bg-white/5 text-[10px] text-gray-400 border-none uppercase tracking-widest font-black">{badge}</Badge>
-          </div>
-          <h4 className="text-xl font-bold mb-4 group-hover:text-primary transition-colors">{title}</h4>
-          <p className="text-gray-400 text-sm leading-relaxed font-medium">
-            {desc}
-          </p>
-        </div>
-      </Card>
-    </motion.div>
-  );
-}

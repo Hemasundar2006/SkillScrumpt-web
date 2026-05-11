@@ -8,7 +8,7 @@ import { StudentDashboard } from './pages/StudentDashboard';
 import { StudentProfile } from './pages/StudentProfile';
 import { ClientDashboard } from './pages/ClientDashboard';
 import { ProjectWorkspace } from './pages/ProjectWorkspace';
-import { AboutPage, PricingPage } from './pages/InfoPages';
+import { AboutPage, PricingPage, ProctoringPage, MarketplacePage } from './pages/InfoPages';
 import { AIProctoringInterface } from './pages/ProctoringInterface';
 import { AssessmentResult } from './pages/AssessmentResult';
 import { PostNewProject, HelpCenter } from './pages/UtilityPages';
@@ -16,9 +16,7 @@ import { StudentEarnings } from './pages/EarningsPage';
 import { SharedSettingsPage } from './pages/SharedSettingsPage';
 import { 
   StudentProjects, 
-  StudentSkills, 
-  StudentSettings, 
-  AddAssessment 
+  StudentSkills 
 } from './pages/StudentExperiencePages';
 import { 
   ViewBids, 
@@ -43,14 +41,15 @@ function AppLayout({ children }) {
   const location = useLocation();
   const isDashboard = location.pathname.includes('/dashboard') || location.pathname.includes('/workspace');
   const isAuth = location.pathname === '/login' || location.pathname === '/register';
+  const isHome = location.pathname === '/';
 
   return (
     <div className="min-h-screen flex flex-col">
-      {!isDashboard && <Navbar />}
+      {!isDashboard && !isHome && <Navbar />}
       <main className="flex-grow">
         {children}
       </main>
-      {!isDashboard && !isAuth && <Footer />}
+      {!isDashboard && !isAuth && !isHome && <Footer />}
     </div>
   );
 }
@@ -170,6 +169,16 @@ function App() {
           <Route path="/pricing" element={
             <PageWrapper>
               <PricingPage />
+            </PageWrapper>
+          } />
+          <Route path="/proctoring" element={
+            <PageWrapper>
+              <ProctoringPage />
+            </PageWrapper>
+          } />
+          <Route path="/marketplace" element={
+            <PageWrapper>
+              <MarketplacePage />
             </PageWrapper>
           } />
           <Route path="/settings" element={

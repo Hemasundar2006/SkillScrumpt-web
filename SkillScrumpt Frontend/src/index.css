@@ -1,75 +1,136 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #146ef5;
+  --color-primary: #ffffff;
   --color-secondary: #000000;
-  --color-background: #f5f5f5;
-  --color-foreground: #1a1a1a;
-  --color-surface: #ffffff;
-  --color-border: #d1d5db;
+  --color-background: #000000;
+  --color-foreground: #ffffff;
+  --color-muted: rgba(255, 255, 255, 0.5);
+  --color-border: rgba(255, 255, 255, 0.15);
   
   --font-inter: "Inter", sans-serif;
-  
-  --radius-custom: 16px;
-  --radius-large: 32px;
+  --font-editorial: "Clash Display", "Inter", sans-serif;
 }
 
 @layer base {
+  :root {
+    --bg-color: #000000;
+    --text-color: #ffffff;
+    --border-color: rgba(255, 255, 255, 0.15);
+  }
+
   body {
-    @apply bg-background text-foreground font-inter antialiased overflow-x-hidden;
+    @apply bg-black text-white font-inter antialiased overflow-x-hidden;
     margin: 0;
+    scroll-behavior: smooth;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-editorial font-bold;
   }
 }
 
 @layer components {
-  .mesh-gradient {
-    background: radial-gradient(at 0% 0%, hsla(217, 100%, 50%, 0.05) 0px, transparent 50%),
-                radial-gradient(at 100% 0%, hsla(217, 100%, 50%, 0.03) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, hsla(217, 100%, 50%, 0.02) 0px, transparent 50%),
-                radial-gradient(at 0% 100%, hsla(217, 100%, 50%, 0.03) 0px, transparent 50%);
+  .nav-blur {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background: rgba(0, 0, 0, 0.8);
   }
 
-  .floating {
-    animation: floating 3s ease-in-out infinite;
+  .marquee-content {
+    display: flex;
+    animation: marquee 30s linear infinite;
   }
 
-  @keyframes floating {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0px); }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
   }
 
-  .pulse-slow {
-    animation: pulse-slow 8s ease-in-out infinite;
+  .marquee-content-reverse {
+    display: flex;
+    animation: marquee-reverse 30s linear infinite;
   }
 
-  @keyframes pulse-slow {
-    0%, 100% { opacity: 0.3; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(1.1); }
+  @keyframes marquee-reverse {
+    from { transform: translateX(-50%); }
+    to { transform: translateX(0); }
   }
 
-  .glass {
-    @apply bg-white/70 backdrop-blur-md border border-white/20 rounded-custom;
+  .text-outline {
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.3);
+    color: transparent;
   }
 
-  .perspective-1000 {
-    perspective: 1000px;
+  .bento-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: 200px;
+    gap: 1rem;
   }
 
-  .rotateX-2 {
-    transform: rotateX(2deg);
+  .card-border {
+    border: 0.5px solid var(--border-color);
   }
 
-  .rotateY-2 {
-    transform: rotateY(2deg);
+  .hover-scale {
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .hover-3d {
-    transition: transform 0.5s ease;
-    transform-style: preserve-3d;
+  .hover-scale:hover {
+    transform: scale(1.02);
   }
 
-  .hover-3d:hover {
-    transform: rotateX(5deg) rotateY(5deg);
+  .asterisk-spin {
+    animation: spin 10s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Page Loader */
+  .loader-container {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .radius-design {
+    border-radius: 32px;
+    overflow: hidden;
+  }
+
+  .radius-design-sm {
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .rounded-full {
+    border-radius: 9999px;
+  }
+
+  .loader-counter {
+    font-size: 10vw;
+    font-weight: 900;
+    color: #fff;
+    font-family: var(--font-editorial);
   }
 }
+
+.reveal-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal-up.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+

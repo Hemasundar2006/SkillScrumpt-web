@@ -1,5 +1,5 @@
 // src/hooks/useProctoring.js
-// Drop into your SkillScrumpt React project.
+// Drop into your SkillScrumpt.in React project.
 // Usage:  const proctoring = useProctoring({ userId, examId, onAlert });
 
 import { useCallback, useEffect, useRef, useState } from "react";

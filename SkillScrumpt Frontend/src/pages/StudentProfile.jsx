@@ -106,7 +106,7 @@ export function StudentProfile() {
                 With over 12 years of experience building scalable web applications, I specialize in architecting high-performance systems using modern tech stacks. I have a deep passion for clean code, performance optimization, and mentoring next-gen developers.
               </p>
               <p className="text-gray-600 leading-relaxed">
-                My work at Stripe and Coinbase involved scaling checkout systems to handle millions of transactions per second, ensuring 99.99% uptime and radical security.
+                My work at Stripe and Coinbase involved scaling checkout systems to handle millions of transactions per second, ensuring 99.99% uptime and radical security on SkillScrumpt.in.
               </p>
             </Card>
 

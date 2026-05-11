@@ -57,8 +57,8 @@ const RazorpayPayment = ({
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: orderAmount,
         currency: orderCurrency,
-        name: 'SkillScrumpt',
-        description: 'Payment for SkillScrumpt Services',
+        name: 'SkillScrumpt.in',
+        description: 'Authorized Global Transaction - SkillScrumpt.in',
         image: '/logo.png', // Update with actual logo if available
         order_id: order_id,
         handler: async (response) => {
@@ -87,10 +87,10 @@ const RazorpayPayment = ({
           contact: ''
         },
         notes: {
-          address: 'SkillScrumpt Corporate Office'
+          address: 'SkillScrumpt.in Corporate Office'
         },
         theme: {
-          color: '#146ef5' // Matching SkillScrumpt Primary Blue
+          color: '#000000' // Monochromatic Black
         },
         // UPI Specific Configuration
         config: {

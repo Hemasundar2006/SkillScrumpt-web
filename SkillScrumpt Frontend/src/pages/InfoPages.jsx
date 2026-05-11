@@ -1,43 +1,57 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, Shield, Globe, Award, Zap, Users, MessageSquare, DollarSign, CheckCircle, MinusCircle } from 'lucide-react';
-import { Button, Card, Badge, GlassContainer } from '../components/UI';
-import { Link } from 'react-router-dom';
+import { Check, Shield, Globe, Award, Zap, Users, MessageSquare, DollarSign, CheckCircle, MinusCircle, Star, Cpu, Lock, Monitor, Target, ArrowRight, User } from 'lucide-react';
+import { Button, Card, Badge } from '../components/UI';
+import { Link, useNavigate } from 'react-router-dom';
 
 export function AboutPage() {
   return (
-    <div className="pt-20">
+    <div className="pt-20 bg-black text-white selection:bg-white selection:text-black">
       {/* Hero */}
-      <section className="bg-secondary text-white py-24 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl -mr-48 -mt-48" />
-        <div className="max-w-7xl mx-auto px-4 relative z-10">
-          <div className="max-w-3xl">
-            <Badge variant="primary" className="mb-6 bg-primary/20 text-blue-300 border-none uppercase tracking-widest">Our Vision</Badge>
-            <h1 className="text-5xl lg:text-7xl font-bold mb-8 leading-tight">Eliminating the Guesswork in Hiring.</h1>
-            <p className="text-xl text-gray-400 leading-relaxed">
-              SkillScrumpt was founded in 2024 with a simple mission: to create a world where talent is recognized by what they can do, not where they come from or what's on their resume.
+      <section className="py-32 lg:py-48 relative overflow-hidden border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="flex items-center gap-4 mb-8">
+               <div className="w-12 h-[1px] bg-white" />
+               <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">The Institutional Vision</span>
+            </div>
+            <h1 className="text-6xl lg:text-[8rem] font-black mb-12 leading-[0.85] tracking-tighter">
+              ELIMINATE <br />
+              <span className="text-white/30 italic">GUESSWORK.</span>
+            </h1>
+            <p className="text-xl text-white/40 max-w-3xl leading-relaxed font-bold uppercase tracking-widest">
+              SkillScrumpt.in was founded in 2024 with a simple mission: to create a world where talent is recognized by what they can do, not where they come from or what's on their resume.
             </p>
-          </div>
+          </motion.div>
+        </div>
+        
+        {/* Abstract Background */}
+        <div className="absolute top-1/2 right-0 -translate-y-1/2 opacity-5 pointer-events-none">
+           <Star className="w-[600px] h-[600px] animate-spin-slow" />
         </div>
       </section>
 
       {/* Core Values */}
-      <section className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-12">
+      <section className="py-40">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid md:grid-cols-3 gap-16">
             <ValueCard 
               icon={Shield} 
-              title="Radical Transparency" 
+              title="RADICAL TRANSPARENCY" 
               desc="Every skill badge on our platform is backed by a live-proctored assessment. We provide the data, you make the decision."
             />
             <ValueCard 
               icon={Zap} 
-              title="AI-Powered Precision" 
+              title="AI_PRECISION" 
               desc="Our adaptive testing algorithms ensure that candidates are challenged at exactly the right level, revealing true expert potential."
             />
             <ValueCard 
               icon={Globe} 
-              title="Global Equity" 
+              title="GLOBAL_EQUITY" 
               desc="We believe in a borderless talent economy. Verified skills speak a universal language that transcends geography."
             />
           </div>
@@ -45,17 +59,23 @@ export function AboutPage() {
       </section>
 
       {/* Team/Company Info Placeholder */}
-      <section className="py-24 bg-[#f8f9fb]">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-16">The Minds Behind the Shield</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+      <section className="py-40 border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-24 gap-12">
+            <h2 className="text-5xl font-black tracking-tighter uppercase italic">CORE <br />OPERATIVES.</h2>
+            <div className="h-[1px] bg-white/10 flex-1 mx-12 hidden md:block" />
+            <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em]">Establishing a New Standard</p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-1">
             {[1, 2, 3, 4].map(i => (
-              <div key={i} className="group">
-                <div className="aspect-square bg-gray-200 rounded-custom mb-4 overflow-hidden grayscale group-hover:grayscale-0 transition-all">
-                  {/* Team member image placeholder */}
+              <div key={i} className="group border border-white/10 p-1 bg-white/5 hover:bg-white transition-all">
+                <div className="p-10 bg-black border border-white/10 group-hover:border-black group-hover:bg-white transition-all">
+                  <div className="aspect-square bg-white/5 border border-white/10 mb-8 overflow-hidden group-hover:border-black/10 transition-all flex items-center justify-center">
+                    <User className="text-white/10 group-hover:text-black/20" size={64} />
+                  </div>
+                  <h4 className="font-black text-xl italic group-hover:text-black transition-colors">OPERATIVE_{i}</h4>
+                  <p className="text-[10px] text-white/30 font-black uppercase tracking-widest group-hover:text-black/40 transition-colors">SYSTEMS_ARCHITECT</p>
                 </div>
-                <h4 className="font-bold text-lg">Member Name</h4>
-                <p className="text-sm text-gray-500 font-medium">Designation</p>
               </div>
             ))}
           </div>
@@ -69,205 +89,205 @@ export function PricingPage() {
   const [role, setRole] = React.useState('student');
 
   return (
-    <div className="pt-24 pb-20 bg-[#f8f9fb] min-h-screen">
-      <div className="max-w-7xl mx-auto px-4">
+    <div className="pt-24 pb-20 bg-black text-white selection:bg-white selection:text-black min-h-screen">
+      <div className="max-w-7xl mx-auto px-6">
         {/* Header Section */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-32">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-block mb-4"
           >
-            <Badge variant="primary" className="bg-primary/10 text-primary border-none px-6 py-2 rounded-full font-black uppercase tracking-widest text-[10px]">
-              Simple, Transparent Pricing
-            </Badge>
+            <div className="inline-block px-8 py-2 border border-white/10 text-[10px] font-black uppercase tracking-[0.4em] text-white/40 mb-12">TRANSPARENT_PRICING_PROTOCOL</div>
+            <h2 className="text-7xl lg:text-[10rem] font-black mb-12 leading-[0.8] tracking-tighter uppercase italic">
+              FLAT FEE. <br />
+              <span className="text-white/30">ZERO BROKERAGE.</span>
+            </h2>
+            <p className="text-xl text-white/40 font-bold uppercase tracking-widest max-w-3xl mx-auto leading-relaxed">
+              CHOOSE YOUR PATH AND START YOUR JOURNEY WITH A SINGLE SUBSCRIPTION. NO COMMISSION, NO HIDDEN FEES, JUST PURE GROWTH.
+            </p>
           </motion.div>
-          <h2 className="text-5xl lg:text-7xl font-black text-secondary mb-6 tracking-tight">
-            One Flat Fee. <span className="text-primary">Zero Brokerage.</span>
-          </h2>
-          <p className="text-xl text-gray-500 font-medium max-w-2xl mx-auto leading-relaxed">
-            Choose your path and start your journey with a single subscription. No commission, no hidden fees, just pure growth.
-          </p>
         </div>
 
         {/* Role Toggle */}
-        <div className="flex justify-center mb-16">
-          <div className="bg-white p-1.5 rounded-full shadow-xl border border-border flex gap-1 relative overflow-hidden">
+        <div className="flex justify-center mb-24">
+          <div className="p-1 border border-white/10 bg-white/5 flex">
             <button 
               onClick={() => setRole('student')}
-              className={`relative z-10 px-8 py-3 rounded-full text-sm font-black transition-all duration-300 ${role === 'student' ? 'text-white' : 'text-gray-500 hover:text-secondary'}`}
+              className={`px-12 py-5 text-[10px] font-black uppercase tracking-widest transition-all ${role === 'student' ? 'bg-white text-black' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
             >
-              I'm a Professional
+              PROFESSIONAL
             </button>
             <button 
               onClick={() => setRole('client')}
-              className={`relative z-10 px-8 py-3 rounded-full text-sm font-black transition-all duration-300 ${role === 'client' ? 'text-white' : 'text-gray-500 hover:text-secondary'}`}
+              className={`px-12 py-5 text-[10px] font-black uppercase tracking-widest transition-all ${role === 'client' ? 'bg-white text-black' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
             >
-              I'm a Client
+              CLIENT
             </button>
-            <motion.div 
-              className="absolute inset-y-1.5 bg-secondary rounded-full shadow-lg shadow-secondary/20"
-              initial={false}
-              animate={{ 
-                x: role === 'student' ? 0 : '100%',
-                width: role === 'student' ? '50%' : '50%'
-              }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              style={{ left: 6, width: 'calc(50% - 6px)' }}
-            />
           </div>
         </div>
 
         {/* Dynamic Pricing Layout */}
-        <div className="grid lg:grid-cols-12 gap-8 mb-24">
+        <div className="grid lg:grid-cols-12 gap-1 mb-32">
           {/* Main Card */}
-          <div className="lg:col-span-8">
+          <div className="lg:col-span-8 p-1 border border-white/10 bg-white/5">
             <AnimatePresence mode="wait">
               <motion.div
                 key={role}
-                initial={{ opacity: 0, x: role === 'student' ? -20 : 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: role === 'student' ? 20 : -20 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
                 transition={{ duration: 0.4 }}
+                className="bg-black border border-white/10 p-12 md:p-20 relative overflow-hidden h-full"
               >
-                <Card className="p-12 border-none shadow-2xl bg-white relative overflow-hidden h-full">
-                  <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-32 -mt-32" />
-                  
-                  <div className="relative z-10">
-                    <div className="flex justify-between items-start mb-10">
-                      <div>
-                        <h3 className="text-3xl font-black text-secondary mb-2">
-                          {role === 'student' ? 'Professional Elite' : 'Employer Plus'}
-                        </h3>
-                        <p className="text-gray-500 font-medium">Everything you need to {role === 'student' ? 'get hired' : 'find talent'}.</p>
-                      </div>
-                      <div className="text-right">
-                        <div className="flex items-baseline gap-1">
-                          <span className="text-5xl font-black text-primary">₹{role === 'student' ? '69' : '49'}</span>
-                          <span className="text-gray-400 font-bold">/mo</span>
-                        </div>
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Billed Monthly</p>
-                      </div>
+                <div className="absolute top-0 right-0 w-64 h-64 border border-white/5 -mr-32 -mt-32 rotate-45 pointer-events-none" />
+                
+                <div className="relative z-10">
+                  <div className="flex flex-col md:flex-row justify-between items-start mb-16 gap-12">
+                    <div>
+                      <h3 className="text-4xl font-black text-white mb-4 italic tracking-tight uppercase">
+                        {role === 'student' ? 'STUDENT PRO.' : 'CLIENT PRO.'}
+                      </h3>
+                      <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em]">ALL_CORE_FEATURES_UNLOCKED</p>
                     </div>
-
-                    <div className="grid md:grid-cols-2 gap-x-12 gap-y-6 mb-12">
-                      {role === 'student' ? (
-                        <>
-                          <PricingFeature label="Infinite AI Skill Assessments" />
-                          <PricingFeature label="Verified Talent Badges" />
-                          <PricingFeature label="Direct Client Communication" />
-                          <PricingFeature label="100% Payout Retention" />
-                          <PricingFeature label="Premium Profile Customization" />
-                          <PricingFeature label="Priority Application Ranking" />
-                        </>
-                      ) : (
-                        <>
-                          <PricingFeature label="Unlimited Project Postings" />
-                          <PricingFeature label="AI Talent Matchmaking" />
-                          <PricingFeature label="Direct Peer-to-Peer Payments" />
-                          <PricingFeature label="Zero Brokerage Fees" />
-                          <PricingFeature label="Verified Student Access" />
-                          <PricingFeature label="Escrow-Protected Transfers" />
-                        </>
-                      )}
-                    </div>
-
-                    <div className="pt-10 border-t border-border flex flex-col sm:flex-row gap-4 items-center">
-                      {(() => {
-                        const userStr = localStorage.getItem('user');
-                        const user = userStr ? JSON.parse(userStr) : null;
-                        const isAlreadyPro = user?.isPro === true;
-
-                        if (isAlreadyPro) {
-                          return (
-                            <Button disabled className="h-14 px-12 text-lg shadow-xl bg-green-500/10 text-green-600 border-green-500/20 w-full sm:w-auto">
-                              Already Upgraded to Pro
-                            </Button>
-                          );
-                        }
-
-                        return (
-                          <Link to="/checkout" className="w-full sm:w-auto">
-                            <Button className="h-14 px-12 text-lg shadow-xl shadow-primary/20 w-full">
-                              Get Started Now
-                            </Button>
-                          </Link>
-                        );
-                      })()}
-                      <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">No Commitment, Cancel Anytime</p>
+                    <div className="text-right">
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-6xl font-black italic tracking-tighter text-white">₹1</span>
+                        <span className="text-white/20 font-black uppercase tracking-widest text-xs">/cycle</span>
+                      </div>
+                      <p className="text-[8px] font-black text-white/20 uppercase tracking-widest mt-2">Billed per Cycle</p>
                     </div>
                   </div>
-                </Card>
+
+                  <div className="grid md:grid-cols-2 gap-x-12 gap-y-10 mb-20 border-y border-white/10 py-16">
+                    {role === 'student' ? (
+                      <>
+                        <PricingFeature label="Infinite AI Skill Assessments" />
+                        <PricingFeature label="Verified Talent Badges" />
+                        <PricingFeature label="Direct Client Communication" />
+                        <PricingFeature label="100% Payout Retention" />
+                        <PricingFeature label="Premium Profile Customization" />
+                        <PricingFeature label="Priority Application Ranking" />
+                      </>
+                    ) : (
+                      <>
+                        <PricingFeature label="Unlimited Project Postings" />
+                        <PricingFeature label="AI Talent Matchmaking" />
+                        <PricingFeature label="Direct Peer-to-Peer Payments" />
+                        <PricingFeature label="Zero Brokerage Fees" />
+                        <PricingFeature label="Verified Student Access" />
+                        <PricingFeature label="Escrow-Protected Transfers" />
+                      </>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-10 items-center">
+                    {(() => {
+                      const userStr = localStorage.getItem('user');
+                      const user = userStr ? JSON.parse(userStr) : null;
+                      const isAlreadyPro = user?.isPro === true;
+
+                      if (isAlreadyPro) {
+                        return (
+                          <button disabled className="px-12 py-6 border border-white/20 text-white/20 text-[10px] font-black uppercase tracking-[0.4em] w-full sm:w-auto italic">
+                            IDENTITY_PRO_ESTABLISHED
+                          </button>
+                        );
+                      }
+
+                      return (
+                        <Link to="/checkout" className="w-full sm:w-auto">
+                          <button className="px-16 py-6 bg-white text-black font-black uppercase tracking-[0.4em] text-xs hover:bg-white/90 transition-all w-full">
+                            AUTHORIZE_UPGRADE
+                          </button>
+                        </Link>
+                      );
+                    })()}
+                    <p className="text-[8px] text-white/20 font-black uppercase tracking-[0.4em] mt-4">ZERO_BROKERAGE_PROTOCOL_ACTIVE // SKILLSCRUMPT.IN</p>
+                  </div>
+                </div>
               </motion.div>
             </AnimatePresence>
           </div>
 
           {/* Bento Stats Sidebar */}
-          <div className="lg:col-span-4 space-y-6">
-            <Card className="p-8 border-none bg-secondary text-white shadow-xl relative overflow-hidden group">
-               <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-3xl -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-1000" />
-               <div className="relative z-10">
-                 <h4 className="text-sm font-black uppercase tracking-widest text-primary mb-4">Zero Brokerage</h4>
-                 <p className="text-2xl font-bold leading-tight mb-4">Save up to 20% compared to Upwork or Fiverr.</p>
-                 <div className="h-1 w-full bg-white/10 rounded-full overflow-hidden">
-                   <div className="bg-primary h-full w-[80%] animate-pulse" />
+          <div className="lg:col-span-4 flex flex-col gap-1">
+            <div className="p-1 border border-white/10 bg-white/5 flex-1">
+              <div className="bg-black border border-white/10 p-10 h-full relative overflow-hidden group">
+                 <div className="relative z-10">
+                   <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20 mb-6 italic">YIELD_MAXIMIZATION</h4>
+                   <p className="text-3xl font-black italic tracking-tighter leading-tight mb-8">SAVE UP TO 20% VS TRADITIONAL PLATFORMS.</p>
+                   <div className="h-[1px] w-full bg-white/10">
+                     <div className="bg-white h-full w-[80%] animate-pulse" />
+                   </div>
                  </div>
-               </div>
-            </Card>
+              </div>
+            </div>
 
-            <Card className="p-8 border-none shadow-xl bg-white">
-               <h4 className="text-sm font-black uppercase tracking-widest text-gray-400 mb-6">Built-in Trust</h4>
-               <div className="space-y-4">
-                  <TrustItem icon={Shield} label="AI-Verified Identity" />
-                  <TrustItem icon={Award} label="Proctored Certifications" />
-                  <TrustItem icon={CheckCircle} label="Instant Payouts" />
-               </div>
-            </Card>
+            <div className="p-1 border border-white/10 bg-white/5 flex-1">
+              <div className="bg-black border border-white/10 p-10 h-full">
+                 <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20 mb-8 italic">BUILT_IN_TRUST</h4>
+                 <div className="space-y-6">
+                    <TrustItem icon={Shield} label="AI_VERIFIED_IDENTITY" />
+                    <TrustItem icon={Award} label="PROCTORED_BADGES" />
+                    <TrustItem icon={CheckCircle} label="INSTANT_RELAYS" />
+                 </div>
+              </div>
+            </div>
 
-            <Card className="p-8 border-none bg-primary/5 shadow-inner">
-               <p className="text-xs font-bold text-gray-500 leading-relaxed italic text-center">
-                 "Switching to SkillScrumpt's flat-fee model saved me over $2,400 in commissions last year."
-               </p>
-               <div className="mt-4 flex items-center justify-center gap-2">
-                 <div className="w-6 h-6 rounded-full bg-gray-200" />
-                 <span className="text-[10px] font-black uppercase tracking-widest">Marcus T.</span>
-               </div>
-            </Card>
+            <div className="p-1 border border-white/10 bg-white/5">
+              <div className="bg-white/5 border border-white/10 p-8">
+                 <p className="text-[11px] font-bold text-white/40 leading-relaxed uppercase tracking-widest italic text-center mb-6">
+                   "SWITCHING TO THE FLAT-FEE MODEL SAVED ME $2.4K IN COMMISSIONS THIS CYCLE."
+                 </p>
+                 <div className="flex items-center justify-center gap-4">
+                   <div className="w-8 h-8 border border-white/10 bg-white text-black flex items-center justify-center font-black italic">M</div>
+                   <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40">OPERATIVE_MARCUS</span>
+                 </div>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Feature Comparison Table */}
-        <section className="bg-white rounded-[2rem] border border-border overflow-hidden shadow-2xl">
-          <div className="p-10 bg-gray-50/50 border-b border-border flex justify-between items-center">
-            <h3 className="text-2xl font-bold text-secondary">Full Feature Breakdown</h3>
-            <div className="flex gap-4">
-               <div className="flex items-center gap-2">
-                 <div className="w-3 h-3 rounded-full bg-primary" />
-                 <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Student</span>
-               </div>
-               <div className="flex items-center gap-2">
-                 <div className="w-3 h-3 rounded-full bg-secondary" />
-                 <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Client</span>
-               </div>
+        <section className="p-1 border border-white/10 bg-white/5">
+          <div className="bg-black border border-white/10 overflow-hidden">
+            <div className="p-12 border-b border-white/10 flex flex-col md:flex-row justify-between items-center gap-8">
+              <h3 className="text-3xl font-black tracking-tighter uppercase italic">FULL_PROTOCOL_BREAKDOWN.</h3>
+              <div className="flex gap-10">
+                 <div className="flex items-center gap-3">
+                   <div className="w-2 h-2 bg-white" />
+                   <span className="text-[10px] font-black uppercase tracking-widest text-white/40">PROFESSIONAL</span>
+                 </div>
+                 <div className="flex items-center gap-3">
+                   <div className="w-2 h-2 border border-white/40" />
+                   <span className="text-[10px] font-black uppercase tracking-widest text-white/40">CLIENT</span>
+                 </div>
+              </div>
+            </div>
+            
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <tbody className="divide-y divide-white/10">
+                  <ComparisonRow label="AI_ADAPTIVE_SKILL_SEQUENCES" student={true} client={false} />
+                  <ComparisonRow label="VERIFIED_OPERATIVE_PROFILE" student={true} client={false} />
+                  <ComparisonRow label="DIRECT_PROJECT_BIDS" student={true} client={false} />
+                  <ComparisonRow label="POST_UNLIMITED_DIRECTIVES" student={false} client={true} />
+                  <ComparisonRow label="ACCESS_PROCTORED_DATA" student={false} client={true} />
+                  <ComparisonRow label="P2P_DIRECT_FINANCIAL_RELAY" student={true} client={true} />
+                  <ComparisonRow label="ZERO_PLATFORM_COMMISSION" student="0%" client="0%" />
+                  <ComparisonRow label="ENCRYPTED_COLLABORATION" student={true} client={true} />
+                  <ComparisonRow label="ESCROW_LOCKED_PAYOUTS" student={true} client={true} />
+                </tbody>
+              </table>
             </div>
           </div>
-          
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <tbody className="divide-y divide-border">
-                <ComparisonRow label="AI Adaptive Skill Tests" student={true} client={false} />
-                <ComparisonRow label="Verified Talent Profile" student={true} client={false} />
-                <ComparisonRow label="Direct Project Bidding" student={true} client={false} />
-                <ComparisonRow label="Post Unlimited Projects" student={false} client={true} />
-                <ComparisonRow label="Access Proctored Data" student={false} client={true} />
-                <ComparisonRow label="Peer-to-Peer Direct Pay" student={true} client={true} />
-                <ComparisonRow label="Zero Platform Commission" student="0%" client="0%" />
-                <ComparisonRow label="Live Chat & Collaboration" student={true} client={true} />
-                <ComparisonRow label="Escrow-Backed Payouts" student={true} client={true} />
-              </tbody>
-            </table>
-          </div>
         </section>
+
+        <div className="mt-32 flex justify-center items-center gap-10 text-[9px] font-black uppercase tracking-[0.4em] text-white/10">
+           <div className="flex items-center gap-2"><Lock size={12}/> DATA_SECURED</div>
+           <div className="flex items-center gap-2"><Cpu size={12}/> CORE_VERIFIED</div>
+           <div className="flex items-center gap-2"><Zap size={12}/> SkillScrumpt.in</div>
+        </div>
       </div>
     </div>
   );
@@ -275,36 +295,36 @@ export function PricingPage() {
 
 function PricingFeature({ label }) {
   return (
-    <div className="flex items-center gap-3 group">
-      <div className="w-5 h-5 rounded-full bg-green-500/10 text-green-500 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-        <Check size={12} strokeWidth={4} />
+    <div className="flex items-center gap-6 group">
+      <div className="w-6 h-6 border border-white text-white flex items-center justify-center flex-shrink-0 group-hover:bg-white group-hover:text-black transition-all">
+        <Check size={14} strokeWidth={4} />
       </div>
-      <span className="text-sm font-bold text-gray-600">{label}</span>
+      <span className="text-[11px] font-black uppercase tracking-widest text-white/60 group-hover:text-white transition-colors">{label}</span>
     </div>
   );
 }
 
 function TrustItem({ icon: Icon, label }) {
   return (
-    <div className="flex items-center gap-4">
-      <Icon size={18} className="text-primary" />
-      <span className="text-xs font-bold text-secondary uppercase tracking-widest">{label}</span>
+    <div className="flex items-center gap-6">
+      <Icon size={20} className="text-white/40" />
+      <span className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em]">{label}</span>
     </div>
   );
 }
 
 function ComparisonRow({ label, student, client }) {
   const renderValue = (val) => {
-    if (val === true) return <CheckCircle className="text-primary mx-auto" size={22} />;
-    if (val === false) return <div className="w-1.5 h-1.5 bg-gray-200 rounded-full mx-auto" />;
-    return <span className="text-primary font-black text-xs uppercase tracking-widest">{val}</span>;
+    if (val === true) return <div className="w-8 h-8 bg-white flex items-center justify-center mx-auto"><CheckCircle className="text-black" size={18} /></div>;
+    if (val === false) return <div className="w-2 h-2 border border-white/10 mx-auto" />;
+    return <span className="text-white font-black italic text-xs uppercase tracking-widest">{val}</span>;
   };
 
   return (
-    <tr className="hover:bg-gray-50/50 transition-colors">
-      <td className="px-10 py-6 text-sm font-black text-gray-600 uppercase tracking-widest">{label}</td>
-      <td className="px-10 py-6 text-center w-40">{renderValue(student)}</td>
-      <td className="px-10 py-6 text-center w-40">{renderValue(client)}</td>
+    <tr className="hover:bg-white/5 transition-colors group">
+      <td className="px-12 py-8 text-[11px] font-black text-white/40 group-hover:text-white uppercase tracking-[0.3em] transition-colors italic">{label}</td>
+      <td className="px-12 py-8 text-center w-48">{renderValue(student)}</td>
+      <td className="px-12 py-8 text-center w-48">{renderValue(client)}</td>
     </tr>
   );
 }
@@ -312,11 +332,169 @@ function ComparisonRow({ label, student, client }) {
 function ValueCard({ icon: Icon, title, desc }) {
   return (
     <div className="group">
-      <div className="w-16 h-16 bg-primary/10 text-primary rounded-custom flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+      <div className="w-20 h-20 border border-white/10 text-white/40 flex items-center justify-center mb-10 group-hover:bg-white group-hover:text-black group-hover:border-white transition-all italic">
         <Icon size={32} />
       </div>
-      <h3 className="text-2xl font-bold mb-4">{title}</h3>
-      <p className="text-gray-500 leading-relaxed">{desc}</p>
+      <h3 className="text-2xl font-black mb-6 italic uppercase tracking-tight group-hover:text-white transition-colors">{title}</h3>
+      <p className="text-[11px] font-bold text-white/30 uppercase tracking-widest leading-relaxed group-hover:text-white/50 transition-colors">{desc}</p>
     </div>
   );
 }
+
+export function ProctoringPage() {
+  return (
+    <div className="pt-24 pb-20 bg-black text-white selection:bg-white selection:text-black min-h-screen">
+      <div className="max-w-7xl mx-auto px-6">
+        <header className="mb-32">
+          <div className="flex items-center gap-4 mb-8">
+            <div className="w-12 h-[1px] bg-white" />
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">The Gold Standard</span>
+          </div>
+          <h1 className="text-7xl lg:text-[10rem] font-black mb-12 leading-[0.8] tracking-tighter uppercase italic">
+            RADICAL <br />
+            <span className="text-white/30">INTEGRITY.</span>
+          </h1>
+          <p className="text-xl text-white/40 font-bold uppercase tracking-widest max-w-3xl leading-relaxed">
+            OUR AI-DRIVEN PROCTORING ENGINE ENSURES THAT EVERY BADGE EARNED ON SKILLSCRUMPT.IN IS A TESTAMENT TO GENUINE EXPERTISE.
+          </p>
+        </header>
+
+        <div className="grid lg:grid-cols-2 gap-20 items-center mb-40">
+          <div className="space-y-12">
+            <div className="grid gap-1 border border-white/10 p-1 bg-white/5">
+              <ProctoringFeature 
+                icon={Monitor} 
+                title="Visual Surveillance" 
+                desc="Continuous biometric validation via live camera feed ensures the candidate's presence throughout the assessment." 
+              />
+              <ProctoringFeature 
+                icon={Lock} 
+                title="Environment Lock" 
+                desc="Strict browser restrictions and tab-switch detection prevent external assistance and unauthorized resource access." 
+              />
+              <ProctoringFeature 
+                icon={Cpu} 
+                title="AI Behavior Audit" 
+                desc="Machine learning models analyze behavior patterns to flag suspicious activities in real-time." 
+              />
+            </div>
+            
+            <Link to="/register?role=professional">
+              <button className="px-12 py-6 bg-white text-black font-black uppercase tracking-[0.4em] text-xs hover:bg-white/90 transition-all flex items-center gap-4">
+                INITIATE VERIFICATION <ArrowRight size={16} />
+              </button>
+            </Link>
+          </div>
+          
+          <div className="relative">
+            <div className="aspect-square border border-white/10 bg-white/5 flex items-center justify-center relative overflow-hidden group radius-design">
+               <Shield size={200} className="text-white relative z-10 opacity-20 group-hover:scale-110 transition-transform duration-1000" />
+               <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-60" />
+               <div className="absolute bottom-10 left-10 text-[10px] font-black uppercase tracking-[0.5em] text-white/20 italic z-20">
+                 SECURE_RELAY_ACTIVE // SS.PROCTOR.V4
+               </div>
+            </div>
+          </div>
+        </div>
+
+        <section className="py-40 border-t border-white/10">
+           <h2 className="text-3xl font-black mb-16 tracking-tighter uppercase italic">TRUST_PROTOCOL_DYNAMICS</h2>
+           <div className="grid md:grid-cols-3 gap-12">
+              <TrustStat label="ACCURACY" value="99.9%" />
+              <TrustStat label="LATENCY" value="<200MS" />
+              <TrustStat label="SESSIONS" value="850K+" />
+           </div>
+        </section>
+      </div>
+    </div>
+  );
+}
+
+export function MarketplacePage() {
+  const navigate = useNavigate();
+  return (
+    <div className="pt-24 pb-20 bg-black text-white selection:bg-white selection:text-black min-h-screen">
+      <div className="max-w-7xl mx-auto px-6">
+        <header className="mb-32">
+          <div className="flex items-center gap-4 mb-8">
+            <div className="w-12 h-[1px] bg-white" />
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">Access Elite Talent</span>
+          </div>
+          <h1 className="text-7xl lg:text-[10rem] font-black mb-12 leading-[0.8] tracking-tighter uppercase italic">
+            THE <br />
+            <span className="text-white/30">MARKETPLACE.</span>
+          </h1>
+          <p className="text-xl text-white/40 font-bold uppercase tracking-widest max-w-3xl leading-relaxed">
+            ELIMINATE THE MIDDLEMAN. CONNECT DIRECTLY WITH VERIFIED PROFESSIONALS WHO HAVE PASSED OUR RIGOROUS AI PROCTORING PROTOCOLS.
+          </p>
+        </header>
+
+        <div className="grid md:grid-cols-3 gap-8 mb-40">
+           <CategoryCard 
+             title="ENGINEERING" 
+             desc="Experts in React, Node.js, and Cloud Infrastructure."
+             img="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2000&auto=format&fit=crop"
+           />
+           <CategoryCard 
+             title="AI & DATA" 
+             desc="Verified practitioners building production-grade models."
+             img="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2000&auto=format&fit=crop"
+           />
+           <CategoryCard 
+             title="DESIGN" 
+             desc="UI/UX architects specializing in high-fidelity motion."
+             img="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1000&auto=format&fit=crop"
+           />
+        </div>
+
+        <section className="p-1 border border-white/10 bg-white/5 mb-40 radius-design">
+          <div className="bg-black border border-white/10 p-12 md:p-20 text-center radius-design">
+             <h2 className="text-4xl md:text-6xl font-black mb-10 tracking-tighter uppercase italic">READY TO DEPLOY?</h2>
+             <p className="text-white/40 font-black text-[11px] uppercase tracking-[0.4em] mb-12 italic">JOIN 1200+ ENTERPRISE OPERATIVES USING SkillScrumpt.in</p>
+             <div className="flex flex-col sm:flex-row justify-center gap-8">
+               <button onClick={() => navigate('/register?role=client')} className="px-16 py-6 bg-white text-black font-black uppercase tracking-[0.4em] text-xs hover:bg-white/90 transition-all">POST_DIRECTIVE</button>
+               <button onClick={() => navigate('/register?role=professional')} className="px-16 py-6 border border-white text-white font-black uppercase tracking-[0.4em] text-xs hover:bg-white/10 transition-all">BECOME_OPERATIVE</button>
+             </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}
+
+function ProctoringFeature({ icon: Icon, title, desc }) {
+  return (
+    <div className="bg-black border border-white/10 p-10 flex gap-8 group hover:bg-white/5 transition-all">
+      <div className="w-12 h-12 border border-white/10 text-white/20 flex items-center justify-center flex-shrink-0 group-hover:text-white transition-colors italic">
+        <Icon size={24} />
+      </div>
+      <div>
+        <h4 className="text-xl font-black uppercase italic mb-3">{title}</h4>
+        <p className="text-[11px] font-bold text-white/30 uppercase tracking-widest leading-relaxed group-hover:text-white/50 transition-colors">{desc}</p>
+      </div>
+    </div>
+  );
+}
+
+function TrustStat({ label, value }) {
+  return (
+    <div className="p-10 border border-white/10 bg-white/5">
+       <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.5em] mb-4">{label}</p>
+       <p className="text-5xl font-black italic tracking-tighter">{value}</p>
+    </div>
+  );
+}
+
+function CategoryCard({ title, desc, img }) {
+  return (
+    <div className="group relative aspect-[3/4] overflow-hidden radius-design border border-white/10">
+       <img src={img} className="absolute inset-0 w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000 hover:scale-110" alt={title} />
+       <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-80" />
+       <div className="absolute bottom-10 left-10 right-10">
+          <h3 className="text-3xl font-black italic mb-4 uppercase tracking-tight">{title}</h3>
+          <p className="text-[10px] font-black text-white/40 uppercase tracking-widest leading-relaxed">{desc}</p>
+       </div>
+    </div>
+  );
+}
+

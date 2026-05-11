@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/UI';
-import { Menu, X, Shield, Search, User } from 'lucide-react';
+import { Menu, X, Shield, Search, User, ArrowRight } from 'lucide-react';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -13,7 +13,7 @@ export function Navbar() {
     if (!user || !token) {
       return [
         { label: 'Marketplace', path: '/marketplace' },
-        { label: 'Assessments', path: '/assessments' },
+        { label: 'Proctoring', path: '/proctoring' },
         { label: 'Pricing', path: '/pricing' },
         { label: 'About', path: '/about' },
       ];
@@ -49,56 +49,51 @@ export function Navbar() {
   const navLinks = getNavLinks();
 
   return (
-    <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
+    <nav className="fixed top-0 w-full z-50 bg-black/90 backdrop-blur-xl border-b border-white/10 selection:bg-white selection:text-black">
+      <div className="max-w-[1400px] mx-auto px-6">
+        <div className="flex justify-between h-20">
           {/* Logo and Desktop Links */}
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center gap-3 group">
-              <img src="/logo.png" alt="SkillScrumpt" className="h-10 w-auto group-hover:scale-105 transition-transform" />
+          <div className="flex items-center gap-12">
+            <Link to="/" className="text-2xl font-black italic tracking-tighter uppercase">
+              SkillScrumpt.in
             </Link>
             
-            <div className="hidden md:ml-8 md:flex md:space-x-8">
+            <div className="hidden md:flex space-x-10">
               {navLinks.map((link) => (
-                <Link key={link.path} to={link.path} className="text-gray-600 hover:text-primary px-3 py-2 text-sm font-bold transition-colors">
+                <Link key={link.path} to={link.path} className="text-[10px] font-black uppercase tracking-[0.3em] text-white/50 hover:text-white transition-all">
                   {link.label}
                 </Link>
               ))}
             </div>
           </div>
 
-          {/* Desktop Search and Auth */}
-          <div className="hidden md:flex items-center gap-4">
-            <div className="relative group">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary" size={18} />
-              <input 
-                type="text" 
-                placeholder="Search..." 
-                className="pl-10 pr-4 py-2 bg-gray-100 border-transparent focus:bg-white focus:border-primary border rounded-custom text-sm outline-none transition-all w-48 focus:w-64"
-              />
-            </div>
+          {/* Desktop Auth */}
+          <div className="hidden md:flex items-center gap-8">
             {token ? (
-              <Link to="/dashboard" className="flex items-center gap-3">
+              <Link to="/dashboard" className="flex items-center gap-6">
                  {user?.isPro && (
-                   <span className="px-2.5 py-1 bg-gradient-to-r from-amber-300 via-yellow-500 to-amber-600 text-secondary text-[10px] font-black rounded-lg shadow-[0_0_15px_rgba(245,158,11,0.3)] animate-pulse border border-white/20">PRO</span>
+                   <span className="text-[9px] font-black uppercase tracking-widest px-3 py-1 bg-white text-black">PRO</span>
                  )}
-                 <Button className="flex items-center gap-2 h-10 px-6 font-bold shadow-lg shadow-primary/20">
-                    <User size={18} /> {user.role === 'admin' ? 'Admin Panel' : 'Dashboard'}
-                 </Button>
+                 <button className="text-[10px] font-black uppercase tracking-widest flex items-center gap-3 group">
+                   {user.role === 'admin' ? 'System Control' : 'Secure Dashboard'}
+                   <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                 </button>
               </Link>
             ) : (
               <>
-                <Link to="/login" className="text-gray-600 hover:text-primary text-sm font-bold">Login</Link>
+                <Link to="/login" className="text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-white transition-colors">Login</Link>
                 <Link to="/register">
-                  <Button className="h-10 px-6 font-bold shadow-lg shadow-primary/20">Join Now</Button>
+                  <button className="px-8 py-3 bg-white text-black text-[10px] font-black uppercase tracking-widest hover:bg-white/90 transition-all">
+                    Establish Identity
+                  </button>
                 </Link>
               </>
             )}
           </div>
 
           <div className="flex md:hidden items-center">
-            <button onClick={() => setIsOpen(!isOpen)} className="text-gray-600 hover:text-primary">
-              {isOpen ? <X size={28} /> : <Menu size={28} />}
+            <button onClick={() => setIsOpen(!isOpen)} className="text-white">
+              {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
@@ -106,23 +101,26 @@ export function Navbar() {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden bg-white border-b border-border animate-in slide-in-from-top duration-300">
-          <div className="px-2 pt-2 pb-3 space-y-1">
+        <div className="md:hidden bg-black border-b border-white/10 p-6 space-y-6 animate-in slide-in-from-top duration-300">
+          <div className="space-y-4">
             {navLinks.map((link) => (
-              <Link key={link.path} to={link.path} className="block px-3 py-2 text-base font-bold text-gray-700 hover:bg-gray-50">
+              <Link key={link.path} to={link.path} className="block text-xl font-black uppercase tracking-tighter" onClick={() => setIsOpen(false)}>
                 {link.label}
               </Link>
             ))}
           </div>
-          <div className="pt-4 pb-3 border-t border-gray-200 px-4">
+          <div className="pt-6 border-t border-white/10 space-y-4">
             {token ? (
-              <Link to="/dashboard" className="block w-full">
-                <Button className="w-full h-12 font-bold">Go to Dashboard</Button>
+              <Link to="/dashboard" onClick={() => setIsOpen(false)}>
+                <button className="w-full py-4 bg-white text-black font-black uppercase tracking-widest text-xs">Dashboard</button>
               </Link>
             ) : (
-              <Link to="/register" className="block w-full text-center">
-                <Button className="w-full h-12 font-bold">Join Now</Button>
-              </Link>
+              <>
+                <Link to="/login" className="block text-center text-xs font-black uppercase tracking-widest" onClick={() => setIsOpen(false)}>Login</Link>
+                <Link to="/register" onClick={() => setIsOpen(false)}>
+                  <button className="w-full py-4 bg-white text-black font-black uppercase tracking-widest text-xs">Join Now</button>
+                </Link>
+              </>
             )}
           </div>
         </div>
@@ -133,55 +131,55 @@ export function Navbar() {
 
 export function Footer() {
   return (
-    <footer className="bg-white border-t border-border py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+    <footer className="bg-black text-white border-t border-white/10 py-24 selection:bg-white selection:text-black">
+      <div className="max-w-[1400px] mx-auto px-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-16 md:gap-8">
           <div className="col-span-1 md:col-span-1">
-            <Link to="/" className="flex items-center gap-3 mb-4">
-              <img src="/logo.png" alt="SkillScrumpt" className="h-8 w-auto" />
+            <Link to="/" className="text-3xl font-black italic tracking-tighter uppercase mb-8 block">
+              SkillScrumpt.in
             </Link>
-            <p className="text-gray-500 text-sm leading-relaxed">
-              The world's first AI-proctored skill verification and freelance marketplace. Bridging the gap between verified talent and global opportunities.
+            <p className="text-white/40 text-[11px] font-bold uppercase tracking-widest leading-relaxed">
+              AI-Proctored Skill Verification <br />& Global Freelance Marketplace. <br />Bridging the gap between verified <br />talent and dominant opportunities.
             </p>
           </div>
           
           <div>
-            <h4 className="font-bold mb-4">Platform</h4>
-            <ul className="space-y-2 text-sm text-gray-600">
-              <li><Link to="/marketplace" className="hover:text-primary">Talent Marketplace</Link></li>
-              <li><Link to="/assessments" className="hover:text-primary">Skill Assessments</Link></li>
-              <li><Link to="/pricing" className="hover:text-primary">Pricing Plans</Link></li>
-              <li><Link to="/security" className="hover:text-primary">AI Proctoring</Link></li>
+            <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 mb-8">Platform</h4>
+            <ul className="space-y-4 text-[11px] font-black uppercase tracking-widest">
+              <li><Link to="/marketplace" className="hover:text-white transition-colors">Marketplace</Link></li>
+              <li><Link to="/proctoring" className="hover:text-white transition-colors">Proctoring</Link></li>
+              <li><Link to="/pricing" className="hover:text-white transition-colors">Pricing</Link></li>
+              <li><Link to="/security" className="hover:text-white transition-colors">Security</Link></li>
             </ul>
           </div>
 
           <div>
-            <h4 className="font-bold mb-4">Company</h4>
-            <ul className="space-y-2 text-sm text-gray-600">
-              <li><Link to="/about" className="hover:text-primary">About Us</Link></li>
-              <li><Link to="/careers" className="hover:text-primary">Careers</Link></li>
-              <li><Link to="/blog" className="hover:text-primary">Blog</Link></li>
-              <li><Link to="/contact" className="hover:text-primary">Contact</Link></li>
+            <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 mb-8">Company</h4>
+            <ul className="space-y-4 text-[11px] font-black uppercase tracking-widest">
+              <li><Link to="/about" className="hover:text-white transition-colors">About Us</Link></li>
+              <li><Link to="/careers" className="hover:text-white transition-colors">Careers</Link></li>
+              <li><Link to="/blog" className="hover:text-white transition-colors">Blog</Link></li>
+              <li><Link to="/contact" className="hover:text-white transition-colors">Contact</Link></li>
             </ul>
           </div>
 
           <div>
-            <h4 className="font-bold mb-4">Support</h4>
-            <ul className="space-y-2 text-sm text-gray-600">
-              <li><Link to="/help" className="hover:text-primary">Help Center</Link></li>
-              <li><Link to="/terms" className="hover:text-primary">Terms of Service</Link></li>
-              <li><Link to="/privacy" className="hover:text-primary">Privacy Policy</Link></li>
-              <li><Link to="/safety" className="hover:text-primary">Safety Center</Link></li>
+            <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 mb-8">Legal</h4>
+            <ul className="space-y-4 text-[11px] font-black uppercase tracking-widest">
+              <li><Link to="/help" className="hover:text-white transition-colors">Help Center</Link></li>
+              <li><Link to="/terms" className="hover:text-white transition-colors">Terms</Link></li>
+              <li><Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link></li>
+              <li><Link to="/safety" className="hover:text-white transition-colors">Safety</Link></li>
             </ul>
           </div>
         </div>
         
-        <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-gray-500 text-xs">© 2026 SkillScrumpt. All rights reserved.</p>
-          <div className="flex gap-6">
-            <div className="w-5 h-5 bg-gray-200 rounded-full hover:bg-primary transition-colors cursor-pointer" />
-            <div className="w-5 h-5 bg-gray-200 rounded-full hover:bg-primary transition-colors cursor-pointer" />
-            <div className="w-5 h-5 bg-gray-200 rounded-full hover:bg-primary transition-colors cursor-pointer" />
+        <div className="mt-24 pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
+          <p className="text-white/20 text-[10px] font-black uppercase tracking-[0.3em]">© 2026 SkillScrumpt.in Authorized Global Operation.</p>
+          <div className="flex gap-12 text-white/40">
+            <div className="text-[10px] font-black uppercase tracking-widest hover:text-white cursor-pointer transition-colors">Twitter</div>
+            <div className="text-[10px] font-black uppercase tracking-widest hover:text-white cursor-pointer transition-colors">Discord</div>
+            <div className="text-[10px] font-black uppercase tracking-widest hover:text-white cursor-pointer transition-colors">LinkedIn</div>
           </div>
         </div>
       </div>

@@ -13,7 +13,11 @@ import {
   Settings,
   Download,
   Eye,
-  Loader2
+  Loader2,
+  Cpu,
+  Zap,
+  Lock,
+  User
 } from 'lucide-react';
 import { Card, Badge, Button } from '../components/UI';
 import { Link, useParams, useNavigate } from 'react-router-dom';
@@ -45,136 +49,139 @@ export function ProjectWorkspace() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <Loader2 className="animate-spin text-primary" size={48} />
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <Loader2 className="animate-spin text-white" size={48} />
       </div>
     );
   }
 
   if (!project) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-white p-4 text-center">
-        <h2 className="text-2xl font-bold text-secondary mb-4">Project Not Found</h2>
-        <Button onClick={() => navigate('/dashboard')}>Back to Dashboard</Button>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-black p-4 text-center">
+        <h2 className="text-2xl font-black text-white uppercase italic mb-8">DIRECTIVE_NOT_FOUND.</h2>
+        <button onClick={() => navigate('/dashboard')} className="px-10 py-4 border border-white text-white font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all">RETURN_TO_COMMAND</button>
       </div>
     );
   }
 
   return (
-    <div className="flex h-screen bg-white overflow-hidden pt-16">
+    <div className="flex h-screen bg-black text-white selection:bg-white selection:text-black overflow-hidden pt-16">
       {/* Side Details Panel */}
-      <aside className="w-80 border-r border-border bg-[#fbf9f8] hidden xl:flex flex-col">
-        <div className="p-6 border-b border-border">
-          <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-gray-500 hover:text-primary mb-4 transition-colors">
-            <ChevronLeft size={16} /> <span className="text-xs font-bold uppercase tracking-widest">Go Back</span>
+      <aside className="w-80 border-r border-white/10 bg-black hidden xl:flex flex-col">
+        <div className="p-8 border-b border-white/10">
+          <button onClick={() => navigate(-1)} className="flex items-center gap-3 text-white/30 hover:text-white mb-8 transition-all group">
+            <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> 
+            <span className="text-[10px] font-black uppercase tracking-[0.3em]">Bypass</span>
           </button>
-          <h2 className="text-xl font-bold text-secondary mb-2">{project.title}</h2>
-          <Badge variant={project.status === 'Completed' ? 'success' : 'primary'} className="mb-4">{project.status}</Badge>
-          <div className="flex -space-x-2">
-            <div className="w-8 h-8 rounded-full bg-primary border-2 border-white flex items-center justify-center text-[10px] font-bold text-white">
-              {project.client?.firstName?.[0] || 'C'}
-            </div>
-            {project.assignedTo && (
-              <div className="w-8 h-8 rounded-full bg-blue-600 border-2 border-white flex items-center justify-center text-[10px] font-bold text-white">
-                {project.assignedTo.firstName?.[0] || 'P'}
-              </div>
-            )}
+          <h2 className="text-2xl font-black tracking-tight uppercase italic mb-6 leading-tight">{project.title}</h2>
+          <div className="flex items-center gap-4 mb-8">
+             <div className="px-4 py-1 border border-white/10 text-[9px] font-black uppercase tracking-widest">{project.status.toUpperCase()}</div>
+             <div className="flex -space-x-3">
+                <div className="w-8 h-8 border border-white bg-white text-black flex items-center justify-center text-[10px] font-black italic">
+                  {project.client?.firstName?.[0] || 'C'}
+                </div>
+                {project.assignedTo && (
+                  <div className="w-8 h-8 border border-white bg-black text-white flex items-center justify-center text-[10px] font-black italic">
+                    {project.assignedTo.firstName?.[0] || 'P'}
+                  </div>
+                )}
+             </div>
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-8">
+        <div className="flex-1 overflow-y-auto p-8 space-y-12">
           <section>
-            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Project Summary</h4>
-            <p className="text-sm text-gray-600 leading-relaxed">
-              {project.description || 'No description provided for this project.'}
+            <h4 className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em] mb-6">DIRECTIVE_SCOPE</h4>
+            <p className="text-[11px] font-bold text-white/40 leading-relaxed uppercase tracking-widest italic">
+              {project.description || 'NO_DESCRIPTION_SIGNAL_DETECTED.'}
             </p>
           </section>
 
           <section>
-            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Budget & Deadline</h4>
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <DollarSign size={16} className="text-green-500" />
-                <span className="text-sm font-bold text-secondary">${project.budget?.toLocaleString()}</span>
+            <h4 className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em] mb-6">VALUATION_&_TIME</h4>
+            <div className="space-y-6">
+              <div className="flex items-center gap-4">
+                <DollarSign size={16} className="text-white/40" />
+                <span className="text-sm font-black italic tracking-tighter">${project.budget?.toLocaleString()}</span>
               </div>
-              <div className="flex items-center gap-3">
-                <Clock size={16} className="text-primary" />
-                <span className="text-sm font-semibold text-gray-600">{new Date(project.deadline).toLocaleDateString()}</span>
+              <div className="flex items-center gap-4">
+                <Clock size={16} className="text-white/40" />
+                <span className="text-[10px] font-black uppercase tracking-widest">{new Date(project.deadline).toLocaleDateString().toUpperCase()}</span>
               </div>
             </div>
           </section>
 
           <section>
-            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Required Skills</h4>
+            <h4 className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em] mb-6">PROTOCOL_BADGES</h4>
             <div className="flex flex-wrap gap-2">
               {project.skills?.map((skill, i) => (
-                <Badge key={i} variant="neutral" className="text-[10px]">{skill}</Badge>
+                <div key={i} className="px-3 py-1 border border-white/10 text-[8px] font-black uppercase tracking-widest">{skill}</div>
               ))}
             </div>
           </section>
         </div>
 
-        <div className="p-6 border-t border-border">
-          <Button variant="outline" className="w-full text-xs py-2 flex items-center gap-2">
-            <Settings size={14} /> Project Settings
-          </Button>
+        <div className="p-8 border-t border-white/10">
+          <button className="w-full py-4 border border-white/10 text-[10px] font-black uppercase tracking-widest hover:border-white transition-all flex items-center justify-center gap-3">
+            <Settings size={14} /> SYSTEM_CONFIG
+          </button>
         </div>
       </aside>
 
       {/* Main Workspace Area */}
-      <main className="flex-1 flex flex-col min-w-0">
-        <div className="flex items-center justify-between px-8 py-4 border-b border-border bg-white z-20">
-          <div className="flex gap-8">
-            <TabButton active={activeTab === 'chat'} onClick={() => setActiveTab('chat')} label="Workspace Chat" />
-            <TabButton active={activeTab === 'files'} onClick={() => setActiveTab('files')} label="Project Files" />
-            <TabButton active={activeTab === 'contract'} onClick={() => setActiveTab('contract')} label="Contract & Payments" />
+      <main className="flex-1 flex flex-col min-w-0 bg-black">
+        <div className="flex flex-col md:flex-row items-center justify-between px-10 py-6 border-b border-white/10 bg-black z-20 gap-8">
+          <div className="flex gap-12">
+            <TabItem active={activeTab === 'chat'} onClick={() => setActiveTab('chat')} label="ENCRYPTED_RELAY" />
+            <TabItem active={activeTab === 'files'} onClick={() => setActiveTab('files')} label="DATA_VAULT" />
+            <TabItem active={activeTab === 'contract'} onClick={() => setActiveTab('contract')} label="ESCROW_LEDGER" />
           </div>
-          <div className="flex items-center gap-3">
-            <Badge variant="success" className="bg-green-50 text-green-600 border-green-100 flex items-center gap-1">
-              <CheckCircle size={12} /> AI-Secured Transaction
-            </Badge>
-            <Button size="sm">Submit Milestone</Button>
+          <div className="flex items-center gap-6">
+            <div className="px-4 py-1 border border-white text-black bg-white text-[9px] font-black uppercase tracking-widest flex items-center gap-2">
+              <Shield size={12} /> AI_SECURED
+            </div>
+            <button className="px-8 py-3 bg-white text-black font-black uppercase tracking-widest text-[10px] hover:bg-white/90 transition-all">SUBMIT_MILESTONE</button>
           </div>
         </div>
 
         {/* Content Area */}
         <div className="flex-1 flex overflow-hidden">
           {activeTab === 'chat' ? (
-            <div className="flex-1 flex flex-col bg-white">
+            <div className="flex-1 flex flex-col">
               {/* Chat Messages */}
-              <div className="flex-1 overflow-y-auto p-8 space-y-6">
-                <div className="flex justify-center my-8 text-center">
+              <div className="flex-1 overflow-y-auto p-12 space-y-10">
+                <div className="flex justify-center my-12 text-center">
                   <div>
-                    <div className="bg-gray-100 px-4 py-1 rounded-full text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
-                      Secure Workspace Initialized
+                    <div className="px-6 py-2 border border-white/10 text-[9px] font-black text-white/30 uppercase tracking-[0.5em] mb-4 italic">
+                      SECURE_WORKSPACE_INITIALIZED
                     </div>
-                    <p className="text-xs text-gray-400">All messages are encrypted and monitored by SkillScrumpt AI.</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20">ALL_MESSAGES_ENCRYPTED_VIA_SKILLSCRUMPT.IN_AI_CORE</p>
                   </div>
                 </div>
                 
-                <ChatMessage 
-                  user={`${project.client?.firstName || 'Client'} (Client)`} 
-                  time="Recently" 
-                  message={`Welcome to the workspace for "${project.title}". I'm looking forward to working with you!`}
+                <RelayMessage 
+                  user={`${project.client?.firstName || 'CLIENT'} (COMMAND)`} 
+                  time="0X_NOMINAL" 
+                  message={`Welcome to the workspace for "${project.title}". Directives are locked and secure. I'm looking forward to the execution phase.`}
                   isClient
                 />
               </div>
 
               {/* Chat Input */}
-              <div className="p-6 border-t border-border">
-                <div className="max-w-4xl mx-auto relative">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                    <button className="text-gray-400 hover:text-primary transition-colors">
+              <div className="p-10 border-t border-white/10">
+                <div className="max-w-5xl mx-auto relative group">
+                  <div className="absolute left-6 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                    <button className="text-white/20 hover:text-white transition-colors">
                       <Paperclip size={20} />
                     </button>
                   </div>
                   <input 
                     type="text" 
-                    placeholder="Type your message..." 
-                    className="w-full pl-14 pr-16 py-4 bg-gray-50 border border-gray-200 rounded-custom outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all font-medium"
+                    placeholder="ENTER_DATA_RELAY..." 
+                    className="w-full pl-16 pr-20 py-6 bg-white/[0.02] border border-white/10 focus:border-white outline-none transition-all font-black uppercase tracking-widest text-xs"
                   />
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                    <button className="p-2 bg-primary text-white rounded-custom hover:opacity-90 active:scale-95 transition-all">
+                  <div className="absolute right-6 top-1/2 -translate-y-1/2">
+                    <button className="p-3 bg-white text-black hover:bg-white/90 transition-all">
                       <Send size={18} />
                     </button>
                   </div>
@@ -182,22 +189,26 @@ export function ProjectWorkspace() {
               </div>
             </div>
           ) : (
-            <div className="flex-1 p-8 bg-[#f8f9fb] flex items-center justify-center text-gray-400 font-bold uppercase tracking-widest">
-              Section under development
+            <div className="flex-1 p-12 flex items-center justify-center text-white/20 font-black uppercase tracking-[0.5em] text-xs italic">
+              SECTION_UNDER_DEVELOPMENT // ACCESS_RESTRICTED
             </div>
           )}
 
-          <aside className="w-72 border-l border-border bg-white hidden lg:flex flex-col">
-            <div className="p-6">
-              <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6 text-center">Project Activity</h4>
-              <div className="space-y-6">
-                <ActivityItem user="System" action="Project workspace created" time="Just now" icon={Shield} color="text-primary" />
-                <ActivityItem user={project.client?.firstName || 'Client'} action="is online" time="Now" icon={Eye} />
+          <aside className="w-80 border-l border-white/10 bg-black hidden lg:flex flex-col">
+            <div className="p-10">
+              <h4 className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em] mb-10 text-center">ACTIVITY_LOG</h4>
+              <div className="space-y-10">
+                <ActivityRow user="SYSTEM" action="WORKSPACE_ENCRYPTED" time="NOW" icon={Shield} color="text-white" />
+                <ActivityRow user={project.client?.firstName || 'CLIENT'} action="RELAY_ACTIVE" time="ACTIVE" icon={Eye} color="text-white/40" />
               </div>
             </div>
           </aside>
         </div>
       </main>
+      
+      <div className="fixed bottom-8 right-8 z-[100] pointer-events-none opacity-20">
+         <Cpu className="w-32 h-32 animate-spin-slow" />
+      </div>
     </div>
   );
 }
@@ -211,12 +222,12 @@ function DollarSign({ size, className }) {
   );
 }
 
-function TabButton({ active, onClick, label }) {
+function TabItem({ active, onClick, label }) {
   return (
     <button 
       onClick={onClick}
-      className={`py-4 text-sm font-bold tracking-tight border-b-2 transition-all ${
-        active ? 'border-primary text-primary' : 'border-transparent text-gray-400 hover:text-secondary'
+      className={`py-4 text-[10px] font-black uppercase tracking-[0.3em] border-b-2 transition-all ${
+        active ? 'border-white text-white' : 'border-transparent text-white/20 hover:text-white'
       }`}
     >
       {label}
@@ -224,21 +235,21 @@ function TabButton({ active, onClick, label }) {
   );
 }
 
-function ChatMessage({ user, time, message, isClient = false }) {
+function RelayMessage({ user, time, message, isClient = false }) {
   return (
-    <div className={`flex gap-4 ${isClient ? '' : 'flex-row-reverse text-right'}`}>
-      <div className={`flex-shrink-0 w-10 h-10 rounded-custom flex items-center justify-center font-bold text-white ${
-        isClient ? 'bg-blue-600' : 'bg-primary'
+    <div className={`flex gap-6 ${isClient ? '' : 'flex-row-reverse text-right'}`}>
+      <div className={`flex-shrink-0 w-12 h-12 border flex items-center justify-center font-black text-xl italic ${
+        isClient ? 'border-white bg-white text-black' : 'border-white/10 text-white'
       }`}>
         {user[0]}
       </div>
-      <div className="max-w-lg">
-        <div className={`flex items-center gap-2 mb-1 ${isClient ? '' : 'justify-end'}`}>
-          <span className="text-sm font-bold text-secondary">{user}</span>
-          <span className="text-[10px] text-gray-400 font-bold">{time}</span>
+      <div className="max-w-xl">
+        <div className={`flex items-center gap-4 mb-3 ${isClient ? '' : 'justify-end'}`}>
+          <span className="text-[11px] font-black uppercase tracking-widest">{user}</span>
+          <span className="text-[9px] text-white/20 font-black uppercase tracking-widest">{time}</span>
         </div>
-        <div className={`p-4 rounded-custom text-sm leading-relaxed ${
-          isClient ? 'bg-gray-100 text-secondary rounded-tl-none' : 'bg-primary text-white rounded-tr-none'
+        <div className={`p-6 border text-[11px] font-bold leading-relaxed uppercase tracking-widest italic ${
+          isClient ? 'border-white/10 bg-white/5 text-white/80' : 'border-white bg-black text-white'
         }`}>
           {message}
         </div>
@@ -247,17 +258,17 @@ function ChatMessage({ user, time, message, isClient = false }) {
   );
 }
 
-function ActivityItem({ user, action, time, icon: Icon, color = 'text-gray-400' }) {
+function ActivityRow({ user, action, time, icon: Icon, color = 'text-white/20' }) {
   return (
-    <div className="flex gap-3">
+    <div className="flex gap-4">
       <div className={`flex-shrink-0 mt-1 ${color}`}>
-        <Icon size={14} />
+        <Icon size={16} />
       </div>
       <div>
-        <p className="text-[11px] text-gray-600 font-medium">
-          <span className="font-bold text-secondary">{user}</span> {action}
+        <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest leading-relaxed">
+          <span className="font-black text-white">{user}</span> {action}
         </p>
-        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{time}</p>
+        <p className="text-[8px] text-white/20 font-black uppercase tracking-[0.3em] mt-1">{time}</p>
       </div>
     </div>
   );

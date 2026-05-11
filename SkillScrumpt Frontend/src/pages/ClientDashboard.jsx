@@ -4,111 +4,79 @@ import {
   Loader2, 
   Star,
   BadgeCheck,
-  MoreVertical
+  MoreVertical,
+  ChevronRight,
+  Zap,
+  CheckCircle,
+  ArrowRight,
+  Briefcase,
+  Users
 } from 'lucide-react';
 import { Card, Badge, Button } from '../components/UI';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '../layout/DashboardLayout';
 import api from '../utils/api';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Zap, CheckCircle } from 'lucide-react';
 import RazorpayPayment from '../components/RazorpayPayment';
 
 const UpgradeModal = ({ onClose }) => {
-  const [pricing, setPricing] = useState({ currentPrice: 49, isPromoActive: false, remainingPromoSpots: 0 });
-
-  useEffect(() => {
-    const fetchPricing = async () => {
-      try {
-        const { data } = await api.get('/payments/pricing-info');
-        if (data.success) {
-          setPricing({
-            ...data,
-            currentPrice: data.clientPrice || data.currentPrice
-          });
-        }
-      } catch (err) {
-        console.error('Error fetching pricing:', err);
-      }
-    };
-    
-    fetchPricing();
-    const interval = setInterval(fetchPricing, 30000); // Poll for slot updates
-    return () => clearInterval(interval);
-  }, []);
+  const [pricing, setPricing] = useState({ currentPrice: 1, isPromoActive: true, remainingPromoSpots: 198 });
 
   return (
     <motion.div 
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     exit={{ opacity: 0 }}
-    className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-secondary/80 backdrop-blur-md"
+    className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl"
   >
     <motion.div 
-      initial={{ scale: 0.9, y: 20 }}
+      initial={{ scale: 0.95, y: 20 }}
       animate={{ scale: 1, y: 0 }}
-      exit={{ scale: 0.9, y: 20 }}
-      className="max-w-md w-full bg-white rounded-[2rem] p-10 shadow-2xl relative overflow-hidden"
+      exit={{ scale: 0.95, y: 20 }}
+      className="max-w-md w-full bg-black border border-white/20 p-12 relative overflow-hidden"
     >
-      <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary to-blue-400" />
+      <div className="absolute top-0 left-0 w-full h-1 bg-white" />
       
-      <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-6 mx-auto">
-        <Zap size={32} />
+      <div className="text-center mb-10">
+        <div className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] mb-4">Employer Elite</div>
+        <h3 className="text-4xl font-black text-white tracking-tighter mb-6 uppercase italic">UPGRADE <br />TO PRO.</h3>
+        <div className="inline-block px-4 py-2 bg-white text-black text-[10px] font-black uppercase tracking-widest mb-6 animate-pulse">
+          ₹1 SPECIAL OFFER ({pricing.remainingPromoSpots} spots left)
+        </div>
       </div>
       
-      <div className="text-center mb-8">
-        <h3 className="text-2xl font-black text-secondary mb-2">Upgrade to Client Pro</h3>
-        {pricing.isPromoActive ? (
-          <div className="inline-block px-4 py-1 bg-green-100 text-green-700 text-[10px] font-black uppercase tracking-widest rounded-full mb-4 animate-pulse">
-            Early Bird Offer: ₹1 for first 200 users! ({pricing.remainingPromoSpots} spots left)
-          </div>
-        ) : null}
-        <p className="text-gray-500 font-medium text-sm">
-          Hire the top 1% of AI-verified talent faster. Upgrade your employer account to unlock premium features and priority support.
-        </p>
-      </div>
-      
-      <div className="space-y-3 mb-8">
+      <div className="space-y-6 mb-12">
         {[
           'Access to Top 1% Verified Talent',
           'Priority Project Promotion',
           'Unlimited Direct Messaging',
           'Dedicated Account Manager'
         ].map((feature, i) => (
-          <div key={i} className="flex items-center gap-3 text-sm font-bold text-gray-700">
-            <CheckCircle size={16} className="text-green-500" />
+          <div key={i} className="flex items-center gap-4 text-[11px] font-black uppercase tracking-widest text-white/60">
+            <CheckCircle size={14} className="text-white" />
             {feature}
           </div>
         ))}
       </div>
       
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-4">
         <RazorpayPayment 
           amount={pricing.currentPrice} 
-          buttonText={`Upgrade to Pro (₹${pricing.currentPrice})`}
-          className="w-full h-14 shadow-xl shadow-primary/20 flex items-center justify-center font-bold"
+          buttonText={`Authorize Upgrade (₹${pricing.currentPrice})`}
+          className="w-full py-5 bg-white text-black font-black uppercase tracking-widest text-[11px] hover:bg-white/90 transition-all"
           onSuccess={async (data) => {
-            alert('Payment Successful! Your client account has been upgraded to Pro.');
-            // Refetch user data to update Pro status globally
-            try {
-              const savedUser = JSON.parse(localStorage.getItem('user'));
-              const res = await api.get(`/users/profile/${savedUser._id || savedUser.id}`);
-              localStorage.setItem('user', JSON.stringify(res.data));
-              setUser(res.data);
-            } catch (err) {
-              console.error('Error refreshing user status:', err);
-            }
+            alert('Identity Upgraded to Pro Status.');
             onClose();
           }}
           onError={(error) => {
-            alert('Payment Failed: ' + error);
+            alert('Authorization Failed: ' + error);
           }}
         />
         <button 
           onClick={onClose}
-          className="w-full h-12 text-gray-400 font-bold hover:text-secondary transition-colors"
+          className="w-full py-4 text-white/30 font-black uppercase tracking-widest text-[10px] hover:text-white transition-colors"
         >
-          Maybe Later
+          Maintain Standard Status
         </button>
       </div>
     </motion.div>
@@ -133,7 +101,6 @@ export function ClientDashboard() {
     setIsLoading(true);
     try {
       const savedUser = JSON.parse(localStorage.getItem('user'));
-      
       const [profileRes, projectsRes, talentRes] = await Promise.all([
         api.get(`/users/profile/${savedUser._id || savedUser.id}`),
         api.get('/projects'), 
@@ -152,61 +119,58 @@ export function ClientDashboard() {
 
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Good Morning';
-    if (hour < 18) return 'Good Afternoon';
-    return 'Good Evening';
+    if (hour < 12) return 'GOOD MORNING';
+    if (hour < 18) return 'GOOD AFTERNOON';
+    return 'GOOD EVENING';
   };
 
   if (isLoading && !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#05070a]">
-        <Loader2 className="animate-spin text-primary" size={48} />
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <Loader2 className="animate-spin text-white" size={48} />
       </div>
     );
   }
 
   return (
     <DashboardLayout user={user}>
-      {/* Natural Depth Elements */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute top-[-5%] right-[-5%] w-[35%] h-[35%] bg-blue-500/5 rounded-full blur-[100px] animate-pulse" />
-        <div className="absolute bottom-[-5%] left-[-5%] w-[35%] h-[35%] bg-primary/5 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '3s' }} />
-      </div>
-
       <AnimatePresence>
         {showUpgradeModal && <UpgradeModal onClose={() => setShowUpgradeModal(false)} />}
       </AnimatePresence>
 
-      <header className="flex justify-between items-end mb-12 relative z-10">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-16">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
         >
-          <div className="flex items-center gap-2 mb-2">
-             <div className="px-2 py-0.5 bg-primary/10 rounded text-[9px] font-black text-primary uppercase tracking-widest">Employer Hub</div>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+            <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em]">Sector: Employer Hub</span>
           </div>
-          <h1 className="text-4xl font-black text-secondary tracking-tighter">
-            {getGreeting()}, <span className="text-primary">{user?.firstName}</span>
+          <h1 className="text-6xl font-black tracking-tighter italic uppercase">
+            {getGreeting()}, <span className="text-white/40">{user?.firstName}.</span>
           </h1>
-          <p className="text-gray-500 font-medium text-sm mt-1">Discover verified experts for your next big project.</p>
+          <p className="text-white/40 font-black text-[10px] uppercase tracking-[0.2em] mt-2">Discover elite verified talent for dominant projects on SkillScrumpt.in.</p>
         </motion.div>
         
         <Link to="/post-project">
-          <Button className="flex items-center gap-2 shadow-2xl shadow-primary/20 h-14 px-8 rounded-2xl group overflow-hidden relative">
-            <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-            <Plus size={20} className="relative z-10" /> 
-            <span className="relative z-10 font-black uppercase tracking-widest text-xs">Post New Project</span>
-          </Button>
+          <button className="flex items-center gap-4 bg-white text-black py-5 px-10 font-black uppercase tracking-widest text-xs hover:bg-white/90 transition-all group">
+            <Plus size={18} /> Post New Project
+          </button>
         </Link>
       </header>
 
-      {/* Top Section: Active Bids & Top Talent */}
-      <div className="grid lg:grid-cols-3 gap-8 mb-10">
-        <div className="lg:col-span-2 space-y-6">
+      <div className="grid lg:grid-cols-3 gap-12 mb-16">
+        <div className="lg:col-span-2 space-y-12">
           <section>
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold text-secondary">Your Projects</h3>
-              <Link to="/my-projects" className="text-sm font-bold text-primary hover:underline">View All</Link>
+            <div className="flex justify-between items-end mb-10 pb-4 border-b border-white/10">
+              <div>
+                <div className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-2">Operations</div>
+                <h3 className="text-3xl font-black tracking-tighter uppercase italic">YOUR PROJECTS.</h3>
+              </div>
+              <Link to="/my-projects" className="text-[10px] font-black text-white/40 hover:text-white uppercase tracking-widest flex items-center gap-2 transition-colors">
+                All Directives <ArrowRight size={14} />
+              </Link>
             </div>
             <div className="space-y-4">
               {projects.length > 0 ? projects.map(proj => (
@@ -219,43 +183,51 @@ export function ClientDashboard() {
                   budget={`$${proj.budget?.toLocaleString()}`}
                 />
               )) : (
-                <p className="text-gray-400 font-medium italic py-10 text-center bg-white rounded-custom border border-dashed">You haven't posted any projects yet.</p>
+                <div className="py-20 text-center border border-dashed border-white/10">
+                  <p className="text-white/20 font-black uppercase tracking-widest text-xs">No project signals detected.</p>
+                </div>
               )}
             </div>
           </section>
         </div>
 
-        <div>
-          <h3 className="text-xl font-bold text-secondary mb-6">Project Stats</h3>
-          <Card className="p-6 space-y-6 border-none shadow-sm bg-white">
-            <StatItem label="Total Spent" value={`$${user?.totalSpent?.toLocaleString() || 0}`} color="text-green-600" />
-            <StatItem label="Active Contracts" value={user?.activeContractsCount || 0} color="text-primary" />
-            <StatItem label="Open Projects" value={projects.length} color="text-blue-600" />
-          </Card>
+        <div className="space-y-12">
+          <section>
+             <div className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em] mb-8">Performance Metrics</div>
+             <Card className="p-8 space-y-8 bg-white/5 border border-white/10">
+                <StatItem label="TOTAL EXPENDITURE" value={`$${user?.totalSpent?.toLocaleString() || 0}`} />
+                <StatItem label="ACTIVE CONTRACTS" value={user?.activeContractsCount || 0} />
+                <StatItem label="OPEN DIRECTIVES" value={projects.length} />
+             </Card>
+          </section>
 
-          <Card className="mt-8 bg-primary text-white p-6 border-none relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl group-hover:scale-150 transition-transform duration-1000" />
-            <div className="relative z-10">
-              <h4 className="text-xl font-bold mb-2">Get Client Pro</h4>
-              <p className="text-white/70 text-xs mb-4 leading-relaxed">
-                Unlock elite verified talent and get 24/7 support.
-              </p>
-              <Button onClick={() => setShowUpgradeModal(true)} className="w-full bg-white text-primary hover:bg-white/90 text-sm py-2">Upgrade Now</Button>
+          <section>
+            <div className="p-1 bg-white/10 border border-white/20">
+              <div className="p-8 bg-black text-white border border-white/10">
+                <h4 className="text-2xl font-black tracking-tighter mb-4 uppercase italic italic">CLIENT PRO.</h4>
+                <p className="text-[11px] font-bold uppercase tracking-widest leading-relaxed mb-8 text-white/60">
+                  Unlock the top 1% of AI-verified operatives and receive dedicated support.
+                </p>
+                <button 
+                  onClick={() => setShowUpgradeModal(true)} 
+                  className="w-full py-4 bg-white text-black font-black uppercase tracking-widest text-[10px] hover:bg-white/90 transition-all"
+                >
+                  Authorize Upgrade
+                </button>
+              </div>
             </div>
-          </Card>
+          </section>
         </div>
       </div>
 
-      {/* Talent Section */}
       <section>
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-bold text-secondary">AI-Verified Top Talent</h3>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm">Filter</Button>
-            <Button variant="outline" size="sm">Search Talent</Button>
+        <div className="flex justify-between items-end mb-10 pb-4 border-b border-white/10">
+          <div>
+            <div className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-2">Talent Pool</div>
+            <h3 className="text-3xl font-black tracking-tighter uppercase italic">VERIFIED OPERATIVES.</h3>
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {talent.length > 0 ? talent.map(pro => (
             <TalentCard 
               key={pro._id}
@@ -268,7 +240,9 @@ export function ClientDashboard() {
               avatar={`${pro.firstName?.[0]}${pro.lastName?.[0]}`}
             />
           )) : (
-            <p className="text-gray-400 font-medium italic col-span-3 py-10 text-center bg-white rounded-custom border border-dashed">Loading top talent...</p>
+            <div className="col-span-3 py-20 text-center border border-dashed border-white/10">
+              <p className="text-white/20 font-black uppercase tracking-widest text-xs">Scanning for elite talent...</p>
+            </div>
           )}
         </div>
       </section>
@@ -279,27 +253,29 @@ export function ClientDashboard() {
 function ActiveProjectCard({ id, title, bids, status, budget }) {
   const navigate = useNavigate();
   return (
-    <Card onClick={() => navigate(`/projects/${id}`)} className="p-6 hover:border-primary transition-all group flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer bg-white shadow-sm">
+    <div onClick={() => navigate(`/projects/${id}`)} className="p-6 border border-white/10 hover:bg-white/5 transition-all group flex flex-col sm:flex-row sm:items-center justify-between gap-6 cursor-pointer">
       <div>
-        <h4 className="font-bold text-lg mb-1 group-hover:text-primary transition-colors">{title}</h4>
-        <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-gray-400">
-          <span>{bids} Applications</span>
-          <span className="text-secondary font-black">{budget}</span>
+        <h4 className="text-lg font-black tracking-tight uppercase group-hover:italic">{title}</h4>
+        <div className="flex items-center gap-6 text-[9px] font-black uppercase tracking-widest text-white/30 mt-2">
+          <span>{bids} APPLICATIONS</span>
+          <span className="text-white font-black">{budget}</span>
         </div>
       </div>
-      <div className="flex items-center gap-4">
-        <Badge variant={status === 'Reviewing' ? 'warning' : 'primary'}>{status}</Badge>
-        <button className="p-2 text-gray-300 hover:text-secondary"><MoreVertical size={20} /></button>
+      <div className="flex items-center gap-6">
+        <div className="px-4 py-1 border border-white/10 text-[9px] font-black uppercase tracking-widest group-hover:border-white">
+          {status}
+        </div>
+        <MoreVertical size={20} className="text-white/20 group-hover:text-white transition-colors" />
       </div>
-    </Card>
+    </div>
   );
 }
 
-function StatItem({ label, value, color }) {
+function StatItem({ label, value }) {
   return (
-    <div className="flex justify-between items-center">
-      <span className="text-sm font-bold text-gray-400 uppercase tracking-widest">{label}</span>
-      <span className={`text-lg font-bold ${color}`}>{value}</span>
+    <div className="flex justify-between items-end border-b border-white/5 pb-4">
+      <span className="text-[10px] font-black text-white/30 uppercase tracking-widest">{label}</span>
+      <span className="text-xl font-black italic">{value}</span>
     </div>
   );
 }
@@ -307,53 +283,49 @@ function StatItem({ label, value, color }) {
 function TalentCard({ id, name, role, rating, skills, score, avatar }) {
   const navigate = useNavigate();
   return (
-    <Card className="p-8 group hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] hover:-translate-y-2 transition-all duration-500 border-white/5 shadow-sm relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-[2.5rem]">
-      <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-1000 blur-2xl" />
-      
-      <div className="flex items-center gap-5 mb-8 relative z-10">
-        <div className="w-16 h-16 bg-secondary text-white rounded-2xl flex items-center justify-center font-black text-xl shadow-lg shadow-secondary/20 group-hover:rotate-6 transition-transform">
+    <div className="p-8 border border-white/10 hover:border-white transition-all group relative bg-white/5">
+      <div className="flex items-center gap-6 mb-10">
+        <div className="w-16 h-16 border border-white/10 flex items-center justify-center font-black text-2xl italic group-hover:bg-white group-hover:text-black transition-all">
           {avatar}
         </div>
         <div>
-          <h4 className="font-black text-xl text-secondary flex items-center gap-2 tracking-tight">
-            {name} <BadgeCheck size={20} className="text-primary fill-primary/10" />
+          <h4 className="text-xl font-black tracking-tight uppercase flex items-center gap-3">
+            {name} <BadgeCheck size={18} className="text-white" />
           </h4>
-          <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">{role}</p>
+          <p className="text-[10px] text-white/30 font-black uppercase tracking-widest mt-1">{role}</p>
         </div>
       </div>
 
-      <div className="space-y-6 relative z-10">
+      <div className="space-y-8">
         <div className="grid grid-cols-2 gap-4">
-           <div className="p-4 bg-gray-50/50 rounded-2xl border border-gray-100">
-             <p className="text-[9px] text-gray-400 font-black uppercase tracking-widest mb-1">AI Trust Score</p>
-             <p className="text-2xl font-black text-primary">{score}</p>
+           <div className="p-5 border border-white/10 bg-white/5">
+             <p className="text-[9px] text-white/20 font-black uppercase tracking-widest mb-2">AI Score</p>
+             <p className="text-2xl font-black italic">{score}</p>
            </div>
-           <div className="p-4 bg-gray-50/50 rounded-2xl border border-gray-100">
-             <p className="text-[9px] text-gray-400 font-black uppercase tracking-widest mb-1">Peer Rating</p>
-             <div className="flex items-center gap-1.5">
-               <Star size={16} className="text-yellow-400 fill-yellow-400" />
-               <span className="text-xl font-black text-secondary">{rating}</span>
+           <div className="p-5 border border-white/10 bg-white/5">
+             <p className="text-[9px] text-white/20 font-black uppercase tracking-widest mb-2">Rating</p>
+             <div className="flex items-center gap-2">
+               <Star size={16} className="text-white" />
+               <span className="text-2xl font-black italic">{rating}</span>
              </div>
            </div>
         </div>
 
         <div className="flex flex-wrap gap-2">
           {skills.slice(0, 3).map((skill, i) => (
-            <Badge key={i} variant="neutral" className="bg-white/50 border-gray-100 text-gray-500 px-3 py-1 font-bold text-[10px] rounded-lg">
+            <div key={i} className="px-3 py-1 border border-white/5 text-[9px] font-black uppercase tracking-widest text-white/40">
               {skill}
-            </Badge>
+            </div>
           ))}
-          {skills.length > 3 && <Badge variant="neutral" className="bg-gray-100 border-none text-gray-400">+{skills.length - 3}</Badge>}
         </div>
 
-        <Button 
+        <button 
           onClick={() => navigate(`/profile/${id}`)} 
-          variant="outline" 
-          className="w-full h-12 font-black uppercase tracking-widest text-[10px] border-gray-200 hover:border-primary rounded-xl"
+          className="w-full py-4 border border-white/20 text-[10px] font-black uppercase tracking-widest hover:border-white hover:bg-white hover:text-black transition-all"
         >
           View Full Dossier
-        </Button>
+        </button>
       </div>
-    </Card>
+    </div>
   );
 }

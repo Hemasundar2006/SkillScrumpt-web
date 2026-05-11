@@ -11,9 +11,12 @@ import {
   ArrowRight, 
   Info,
   Volume2,
-  XCircle
+  XCircle,
+  Zap,
+  Lock,
+  Cpu
 } from 'lucide-react';
-import { Button, Card, Badge } from '../components/UI';
+import { Button, Badge } from '../components/UI';
 import { DashboardLayout } from '../layout/DashboardLayout';
 import api from '../utils/api';
 
@@ -35,26 +38,23 @@ export function ProctoringSetup() {
     setUser(savedUser);
   }, []);
 
-  // Setup steps
   const steps = [
-    { title: 'Welcome', icon: Shield, desc: 'Let\'s get your environment ready for the assessment.' },
-    { title: 'Identity', icon: Camera, desc: 'Verify your face and allow camera access.' },
-    { title: 'Audio', icon: Mic, desc: 'Check your microphone and background noise.' },
-    { title: 'Screen', icon: Monitor, desc: 'Share your screen to prevent unauthorized tools.' },
-    { title: 'Ready', icon: CheckCircle, desc: 'All systems verified. Good luck!' }
+    { title: 'WELCOME', icon: Shield, desc: 'INITIALIZING SECURITY PARAMETERS.' },
+    { title: 'BIOMETRICS', icon: Camera, desc: 'ESTABLISHING VISUAL IDENTITY LOCK.' },
+    { icon: Mic, title: 'ACOUSTICS', desc: 'CALIBRATING AUDIO ENVIRONMENT.' },
+    { icon: Monitor, title: 'SYNC', desc: 'SYNCHRONIZING WORKSPACE TELEMETRY.' },
+    { icon: CheckCircle, title: 'READY', desc: 'ALL SYSTEMS NOMINAL.' }
   ];
 
   const [stream, setStream] = useState(null);
 
-  // Camera handling
   const startCamera = async () => {
     try {
       const s = await navigator.mediaDevices.getUserMedia({ video: true });
       setStream(s);
       setIsCameraActive(true);
     } catch (err) {
-      console.error('Camera error:', err);
-      alert('Could not access camera. Please check permissions.');
+      alert('PROTOCOL_ERROR: CAMERA_ACCESS_DENIED');
     }
   };
 
@@ -62,11 +62,8 @@ export function ProctoringSetup() {
     if (isCameraActive && stream && videoRef.current) {
       videoRef.current.srcObject = stream;
     }
-    
     return () => {
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-      }
+      if (stream) stream.getTracks().forEach(track => track.stop());
     };
   }, [isCameraActive, stream]);
 
@@ -80,7 +77,6 @@ export function ProctoringSetup() {
     }
   };
 
-  // Mic/Audio handling (Simulated noise level)
   useEffect(() => {
     if (step === 2) {
       const interval = setInterval(() => {
@@ -95,19 +91,16 @@ export function ProctoringSetup() {
       await navigator.mediaDevices.getUserMedia({ audio: true });
       setIsMicActive(true);
     } catch (err) {
-      console.error('Mic error:', err);
-      alert('Could not access microphone.');
+      alert('PROTOCOL_ERROR: AUDIO_ACCESS_DENIED');
     }
   };
 
-  // Screen share handling
   const startScreenShare = async () => {
     try {
       await navigator.mediaDevices.getDisplayMedia({ video: true });
       setIsScreenActive(true);
     } catch (err) {
-      console.error('Screen share error:', err);
-      alert('Screen share is required to continue.');
+      alert('PROTOCOL_ERROR: SCREEN_SYNC_REQUIRED');
     }
   };
 
@@ -118,23 +111,23 @@ export function ProctoringSetup() {
 
   return (
     <DashboardLayout user={user}>
-      <div className="pb-12 px-4 flex flex-col items-center">
+      <div className="pb-24 px-4 flex flex-col items-center min-h-[80vh] selection:bg-white selection:text-black">
         {/* Progress Stepper */}
-        <div className="max-w-3xl w-full mb-12">
+        <div className="max-w-4xl w-full mb-20">
           <div className="flex justify-between items-center relative">
-            <div className="absolute top-1/2 left-0 w-full h-1 bg-gray-200 -translate-y-1/2 z-0" />
+            <div className="absolute top-1/2 left-0 w-full h-[1px] bg-white/10 -translate-y-1/2 z-0" />
             <motion.div 
-              className="absolute top-1/2 left-0 h-1 bg-primary -translate-y-1/2 z-0 transition-all duration-500"
+              className="absolute top-1/2 left-0 h-[1px] bg-white -translate-y-1/2 z-0 transition-all duration-700"
               style={{ width: `${(step / (steps.length - 1)) * 100}%` }}
             />
             {steps.map((s, i) => (
               <div key={i} className="relative z-10 flex flex-col items-center">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center border-4 transition-all duration-300 ${
-                  i <= step ? 'bg-primary border-primary text-white shadow-lg shadow-primary/30' : 'bg-white border-gray-200 text-gray-400'
+                <div className={`w-12 h-12 flex items-center justify-center border transition-all duration-500 ${
+                  i <= step ? 'bg-white border-white text-black italic scale-110' : 'bg-black border-white/10 text-white/20'
                 }`}>
-                  {i < step ? <CheckCircle size={18} /> : <s.icon size={18} />}
+                  {i < step ? <CheckCircle size={20} /> : <s.icon size={20} />}
                 </div>
-                <span className={`text-[10px] font-black uppercase tracking-tighter mt-2 ${i <= step ? 'text-primary' : 'text-gray-400'}`}>
+                <span className={`text-[9px] font-black uppercase tracking-widest mt-4 ${i <= step ? 'text-white' : 'text-white/20'}`}>
                   {s.title}
                 </span>
               </div>
@@ -145,195 +138,220 @@ export function ProctoringSetup() {
         <AnimatePresence mode="wait">
           <motion.div
             key={step}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="max-w-2xl w-full"
+            exit={{ opacity: 0, y: -30 }}
+            className="max-w-3xl w-full"
           >
-            <Card className="p-10 border-none shadow-2xl bg-white overflow-hidden relative">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -mr-10 -mt-10" />
-              
-              <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 bg-primary/10 text-primary rounded-custom">
-                  {React.createElement(steps[step].icon, { size: 28 })}
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-secondary">{steps[step].title} Setup</h2>
-                  <p className="text-gray-500 text-sm font-medium">{steps[step].desc}</p>
-                </div>
-              </div>
-
-              {/* Step Content */}
-              <div className="min-h-[300px] flex flex-col">
-                {step === 0 && (
-                  <div className="space-y-6">
-                    <div className="bg-blue-50 p-6 rounded-custom border border-blue-100 flex gap-4">
-                      <Info className="text-primary shrink-0" />
-                      <p className="text-sm text-blue-900 font-medium leading-relaxed">
-                        This assessment is proctored by SkillScrumpt AI. To ensure integrity, we need to verify your hardware and environment before you start.
-                      </p>
-                    </div>
-                    <ul className="space-y-4">
-                      <li className="flex items-center gap-3 text-sm text-gray-600 font-medium">
-                        <div className="w-2 h-2 bg-primary rounded-full" /> Stable internet connection required
-                      </li>
-                      <li className="flex items-center gap-3 text-sm text-gray-600 font-medium">
-                        <div className="w-2 h-2 bg-primary rounded-full" /> A quiet room with good lighting
-                      </li>
-                      <li className="flex items-center gap-3 text-sm text-gray-600 font-medium">
-                        <div className="w-2 h-2 bg-primary rounded-full" /> No other windows or tabs open
-                      </li>
-                    </ul>
-                    <div className="pt-8 flex gap-4">
-                      <Button onClick={nextStep} className="flex-1 h-14">Get Started</Button>
-                      <button onClick={() => setStep(4)} className="text-gray-400 hover:text-secondary text-sm font-bold px-4">Skip Tour</button>
-                    </div>
-                  </div>
-                )}
-
-                {step === 1 && (
-                  <div className="space-y-6">
-                    <div className="relative aspect-video bg-gray-900 rounded-custom overflow-hidden border-2 border-gray-100 shadow-inner group">
-                      {!isCameraActive ? (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-8 text-center">
-                          <Camera size={48} className="mb-4 text-gray-600" />
-                          <p className="mb-6 font-medium text-gray-400">Camera access is required for verification</p>
-                          <Button onClick={startCamera}>Enable Camera</Button>
-                        </div>
-                      ) : (
-                        <>
-                          <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" />
-                          {capturedImage && (
-                            <div className="absolute inset-0 bg-black/60 flex items-center justify-center animate-in fade-in">
-                              <img src={capturedImage} className="max-h-[80%] rounded-lg border-4 border-white shadow-2xl" alt="Captured" />
-                              <button onClick={() => setCapturedImage(null)} className="absolute top-4 right-4 bg-white rounded-full p-2 text-red-500 shadow-xl">
-                                <XCircle size={24} />
-                              </button>
-                            </div>
-                          )}
-                          <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
-                            <button 
-                              onClick={capturePhoto}
-                              className="w-16 h-16 bg-white rounded-full border-4 border-primary/20 flex items-center justify-center shadow-2xl hover:scale-110 transition-transform active:scale-95"
-                            >
-                              <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white">
-                                 <Camera size={24} />
-                              </div>
-                            </button>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                    <canvas ref={canvasRef} className="hidden" />
-                    <Button disabled={!capturedImage} onClick={nextStep} className="w-full h-14">
-                      Verify Identity <ArrowRight className="ml-2" size={18} />
-                    </Button>
-                  </div>
-                )}
-
-                {step === 2 && (
-                  <div className="space-y-8">
-                    <div className="p-8 bg-gray-50 rounded-custom border border-gray-100 text-center">
-                      {!isMicActive ? (
-                        <div className="space-y-6">
-                          <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto shadow-sm border border-gray-100">
-                            <Mic size={32} className="text-gray-400" />
-                          </div>
-                          <p className="font-bold text-gray-600">Testing microphone levels...</p>
-                          <Button onClick={startMic}>Test Microphone</Button>
-                        </div>
-                      ) : (
-                        <div className="space-y-8">
-                           <div className="flex items-end justify-center gap-1 h-20 mb-4">
-                             {[...Array(20)].map((_, i) => (
-                               <motion.div 
-                                 key={i}
-                                 animate={{ height: `${Math.random() * noiseLevel + 5}%` }}
-                                 className={`w-2 bg-primary rounded-full ${noiseLevel > 60 ? 'bg-red-500' : 'bg-primary'}`}
-                               />
-                             ))}
-                           </div>
-                           <div className="flex items-center justify-center gap-2">
-                              <Volume2 className={noiseLevel > 60 ? 'text-red-500' : 'text-primary'} />
-                              <span className="text-sm font-bold text-gray-600">Background Noise: {noiseLevel > 60 ? 'Too High' : 'Good'}</span>
-                           </div>
-                           <Badge variant={noiseLevel > 60 ? 'warning' : 'success'} className="px-6 py-2">
-                             {noiseLevel > 60 ? 'Please move to a quieter room' : 'Audio Verified'}
-                           </Badge>
-                        </div>
-                      )}
-                    </div>
-                    <Button disabled={!isMicActive} onClick={nextStep} className="w-full h-14">
-                      Proceed to Screen Share <ArrowRight className="ml-2" size={18} />
-                    </Button>
-                  </div>
-                )}
-
-                {step === 3 && (
-                  <div className="space-y-8">
-                    <div className="p-10 border-2 border-dashed border-gray-200 rounded-custom text-center bg-gray-50/50">
-                      <Monitor size={48} className="text-gray-300 mx-auto mb-6" />
-                      <h4 className="text-lg font-bold text-secondary mb-2">Share Full Screen</h4>
-                      <p className="text-sm text-gray-500 font-medium mb-8 max-w-sm mx-auto">
-                        To prevent usage of unauthorized materials, you must share your entire screen.
-                      </p>
-                      <Button onClick={startScreenShare} variant={isScreenActive ? 'outline' : 'primary'} className="px-8">
-                        {isScreenActive ? 'Screen Sharing Active' : 'Start Screen Sharing'}
-                      </Button>
-                    </div>
-                    <div className="bg-amber-50 p-4 rounded-lg border border-amber-100 flex gap-3">
-                      <AlertCircle className="text-amber-500 shrink-0" size={18} />
-                      <p className="text-xs text-amber-900 font-medium">
-                        Stopping screen share during the test will result in immediate disqualification.
-                      </p>
-                    </div>
-                    <Button disabled={!isScreenActive} onClick={nextStep} className="w-full h-14">
-                      Final Check <ArrowRight className="ml-2" size={18} />
-                    </Button>
-                  </div>
-                )}
-
-                {step === 4 && (
-                  <div className="text-center space-y-8 animate-in zoom-in duration-500">
-                    <div className="w-32 h-32 bg-green-50 rounded-full flex items-center justify-center mx-auto border-4 border-white shadow-xl shadow-green-500/10">
-                      <CheckCircle size={64} className="text-green-500" />
+            <div className="border border-white/10 bg-white/5 p-1">
+              <div className="bg-black border border-white/10 p-12 md:p-16 relative overflow-hidden">
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 mb-16">
+                  <div className="flex items-center gap-6">
+                    <div className="w-16 h-16 border border-white/10 flex items-center justify-center text-white/40">
+                      {React.createElement(steps[step].icon, { size: 32 })}
                     </div>
                     <div>
-                      <h3 className="text-3xl font-bold text-secondary mb-2">You're All Set!</h3>
-                      <p className="text-gray-500 font-medium">Everything is verified and ready for the assessment.</p>
+                      <h2 className="text-4xl font-black tracking-tighter uppercase italic">{steps[step].title}</h2>
+                      <p className="text-white/30 text-[10px] font-black uppercase tracking-widest mt-2">{steps[step].desc}</p>
                     </div>
-                    <div className="grid grid-cols-2 gap-4 text-left max-w-md mx-auto">
-                      <div className="bg-gray-50 p-3 rounded-lg flex items-center gap-2 border border-gray-100">
-                        <Camera size={16} className="text-green-500" />
-                        <span className="text-xs font-bold text-gray-600">Camera Verified</span>
-                      </div>
-                      <div className="bg-gray-50 p-3 rounded-lg flex items-center gap-2 border border-gray-100">
-                        <Mic size={16} className="text-green-500" />
-                        <span className="text-xs font-bold text-gray-600">Audio Optimized</span>
-                      </div>
-                      <div className="bg-gray-50 p-3 rounded-lg flex items-center gap-2 border border-gray-100">
-                        <Monitor size={16} className="text-green-500" />
-                        <span className="text-xs font-bold text-gray-600">Screen Locked</span>
-                      </div>
-                      <div className="bg-gray-50 p-3 rounded-lg flex items-center gap-2 border border-gray-100">
-                        <Shield size={16} className="text-green-500" />
-                        <span className="text-xs font-bold text-gray-600">Proctoring Active</span>
-                      </div>
-                    </div>
-                    <Button onClick={nextStep} className="w-full h-16 text-lg shadow-2xl shadow-primary/30">
-                      Start Assessment Now
-                    </Button>
                   </div>
-                )}
+                  <div className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em]">Phase {step + 1} of 5</div>
+                </div>
+
+                <div className="min-h-[350px] flex flex-col">
+                  {step === 0 && (
+                    <div className="space-y-12">
+                      <div className="p-8 border border-white/10 bg-white/5 flex gap-6">
+                        <Shield className="text-white shrink-0" size={24} />
+                        <p className="text-[11px] font-bold uppercase tracking-widest leading-loose text-white/50">
+                          This assessment is proctored by SkillScrumpt.in AI. To ensure session integrity, we require synchronization of all biometric and environmental telemetry.
+                        </p>
+                      </div>
+                      <div className="grid md:grid-cols-3 gap-6">
+                         <InfoItem label="Latency" value="Optimum" />
+                         <InfoItem label="Security" value="AES-256" />
+                         <InfoItem label="Identity" value="Pending" />
+                      </div>
+                      <div className="pt-12 flex flex-col sm:flex-row gap-6">
+                        <button onClick={nextStep} className="flex-1 py-6 bg-white text-black font-black uppercase tracking-[0.4em] text-xs hover:bg-white/90 transition-all">
+                          Initiate Sequence
+                        </button>
+                        <button onClick={() => setStep(4)} className="text-white/20 hover:text-white text-[10px] font-black uppercase tracking-widest px-8 transition-colors">Bypass Tour</button>
+                      </div>
+                    </div>
+                  )}
+
+                  {step === 1 && (
+                    <div className="space-y-8">
+                      <div className="relative aspect-video border border-white/10 bg-black overflow-hidden group">
+                        {!isCameraActive ? (
+                          <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-12 text-center">
+                            <Camera size={48} className="mb-6 text-white/10" />
+                            <p className="mb-10 text-[10px] font-black uppercase tracking-widest text-white/30">Biometric Sensor Access Required</p>
+                            <button onClick={startCamera} className="px-10 py-4 border border-white text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all">Authorize Sensor</button>
+                          </div>
+                        ) : (
+                          <>
+                            <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover grayscale" />
+                            {capturedImage && (
+                              <div className="absolute inset-0 bg-black/90 flex items-center justify-center animate-in fade-in p-8">
+                                <img src={capturedImage} className="max-h-full border border-white/20 grayscale" alt="Captured" />
+                                <button onClick={() => setCapturedImage(null)} className="absolute top-8 right-8 text-white/20 hover:text-white transition-colors">
+                                  <XCircle size={32} />
+                                </button>
+                              </div>
+                            )}
+                            {!capturedImage && (
+                              <div className="absolute bottom-10 left-1/2 -translate-x-1/2">
+                                <button 
+                                  onClick={capturePhoto}
+                                  className="w-20 h-20 border border-white bg-black/50 backdrop-blur-md flex items-center justify-center group hover:bg-white transition-all"
+                                >
+                                   <Camera size={28} className="text-white group-hover:text-black" />
+                                </button>
+                              </div>
+                            )}
+                          </>
+                        )}
+                        <div className="absolute inset-0 pointer-events-none border-[20px] border-black/20" />
+                        <div className="absolute top-6 left-6 text-[9px] font-mono text-white/30 uppercase tracking-widest">Sensor_Ready: {isCameraActive ? 'True' : 'False'}</div>
+                      </div>
+                      <canvas ref={canvasRef} className="hidden" />
+                      <button 
+                        disabled={!capturedImage} 
+                        onClick={nextStep} 
+                        className="w-full py-6 bg-white text-black font-black uppercase tracking-[0.4em] text-xs hover:bg-white/90 transition-all disabled:opacity-20"
+                      >
+                        Confirm Biometric Lock
+                      </button>
+                    </div>
+                  )}
+
+                  {step === 2 && (
+                    <div className="space-y-12">
+                      <div className="p-12 border border-white/10 bg-white/5 text-center">
+                        {!isMicActive ? (
+                          <div className="space-y-10">
+                            <div className="w-24 h-24 border border-white/10 flex items-center justify-center mx-auto">
+                              <Mic size={40} className="text-white/10" />
+                            </div>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-white/30">Calibrating Acoustic Environment...</p>
+                            <button onClick={startMic} className="px-10 py-4 border border-white text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all">Authorize Mic</button>
+                          </div>
+                        ) : (
+                          <div className="space-y-12">
+                             <div className="flex items-end justify-center gap-2 h-24 mb-6">
+                               {[...Array(24)].map((_, i) => (
+                                 <motion.div 
+                                   key={i}
+                                   animate={{ height: `${Math.random() * noiseLevel + 5}%` }}
+                                   className={`w-1 bg-white transition-colors ${noiseLevel > 60 ? 'bg-white/20' : 'bg-white'}`}
+                                 />
+                               ))}
+                             </div>
+                             <div className="flex flex-col items-center gap-4">
+                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20">Environment Signature</span>
+                                <div className={`px-6 py-2 border text-[9px] font-black uppercase tracking-widest ${noiseLevel > 60 ? 'border-white/10 text-white/20' : 'border-white text-white italic'}`}>
+                                  {noiseLevel > 60 ? 'INTERFERENCE_DETECTED' : 'OPTIMAL_ACOUSTICS'}
+                                </div>
+                             </div>
+                          </div>
+                        )}
+                      </div>
+                      <button 
+                        disabled={!isMicActive} 
+                        onClick={nextStep} 
+                        className="w-full py-6 bg-white text-black font-black uppercase tracking-[0.4em] text-xs hover:bg-white/90 transition-all disabled:opacity-20"
+                      >
+                        Synchronize Workspace
+                      </button>
+                    </div>
+                  )}
+
+                  {step === 3 && (
+                    <div className="space-y-12">
+                      <div className="p-16 border border-white/10 border-dashed bg-white/5 text-center">
+                        <Monitor size={48} className="text-white/10 mx-auto mb-10" />
+                        <h4 className="text-xl font-black uppercase italic mb-4">Display Relay</h4>
+                        <p className="text-[10px] text-white/30 font-black uppercase tracking-widest mb-12 max-w-sm mx-auto leading-relaxed">
+                          Full display synchronization is required to secure the operative workspace environment.
+                        </p>
+                        <button 
+                          onClick={startScreenShare} 
+                          className={`px-10 py-5 border text-[10px] font-black uppercase tracking-widest transition-all ${isScreenActive ? 'bg-white text-black' : 'border-white hover:bg-white hover:text-black'}`}
+                        >
+                          {isScreenActive ? 'RELAY_STABLE' : 'ESTABLISH RELAY'}
+                        </button>
+                      </div>
+                      <div className="p-6 border border-white/10 flex gap-4">
+                        <AlertCircle className="text-white/20 shrink-0" size={18} />
+                        <p className="text-[9px] text-white/40 font-black uppercase tracking-widest leading-loose">
+                          DISCONNECTING DISPLAY RELAY DURING SESSION WILL RESULT IN IMMEDIATE PROTOCOL TERMINATION.
+                        </p>
+                      </div>
+                      <button 
+                        disabled={!isScreenActive} 
+                        onClick={nextStep} 
+                        className="w-full py-6 bg-white text-black font-black uppercase tracking-[0.4em] text-xs hover:bg-white/90 transition-all disabled:opacity-20"
+                      >
+                        Final Validation
+                      </button>
+                    </div>
+                  )}
+
+                  {step === 4 && (
+                    <div className="text-center space-y-16 py-8">
+                      <div className="w-32 h-32 border border-white flex items-center justify-center mx-auto italic font-black text-4xl">
+                        READY.
+                      </div>
+                      <div className="space-y-4">
+                        <h3 className="text-4xl font-black tracking-tighter uppercase italic">SYSTEMS NOMINAL.</h3>
+                        <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.3em]">All security protocols established and verified.</p>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 text-left max-w-md mx-auto">
+                        <StatusItem icon={Camera} label="Biometrics" />
+                        <StatusItem icon={Mic} label="Acoustics" />
+                        <StatusItem icon={Monitor} label="Relay" />
+                        <StatusItem icon={Shield} label="Proctoring" />
+                      </div>
+                      <button 
+                        onClick={nextStep} 
+                        className="w-full py-8 bg-white text-black font-black uppercase tracking-[0.5em] text-sm hover:bg-white/90 transition-all"
+                      >
+                        START ASSESSMENT
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
-            </Card>
+            </div>
           </motion.div>
         </AnimatePresence>
 
-        <p className="mt-8 text-gray-400 text-xs font-medium flex items-center gap-2">
-          <Shield size={12} /> Secure Proctoring Session • IP: Verified • Time: {new Date().toLocaleTimeString()}
-        </p>
+        <div className="mt-16 flex items-center gap-8 text-[9px] font-black uppercase tracking-[0.3em] text-white/20">
+           <div className="flex items-center gap-2"><Lock size={12}/> SECURE SESSION</div>
+           <div className="flex items-center gap-2"><Cpu size={12}/> AI_VERIFIED</div>
+           <div className="flex items-center gap-2"><Zap size={12}/> SkillScrumpt.in</div>
+        </div>
       </div>
     </DashboardLayout>
+  );
+}
+
+function InfoItem({ label, value }) {
+  return (
+    <div className="border border-white/10 p-5 bg-white/5">
+      <p className="text-[9px] font-black text-white/20 uppercase tracking-widest mb-2">{label}</p>
+      <p className="text-sm font-black italic uppercase text-white/80">{value}</p>
+    </div>
+  );
+}
+
+function StatusItem({ icon: Icon, label }) {
+  return (
+    <div className="border border-white/10 p-4 flex items-center gap-4 bg-white/5">
+      <Icon size={14} className="text-white" />
+      <span className="text-[9px] font-black uppercase tracking-widest text-white/50">{label} VERIFIED</span>
+    </div>
   );
 }

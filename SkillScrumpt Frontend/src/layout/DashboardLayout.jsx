@@ -12,7 +12,8 @@ import {
   BadgeCheck,
   Users,
   DollarSign,
-  Plus
+  Plus,
+  ArrowRight
 } from 'lucide-react';
 import { Badge } from '../components/UI';
 
@@ -62,75 +63,72 @@ export function DashboardLayout({ children, user }) {
   const navItems = getNavItems();
 
   return (
-    <div className="flex min-h-screen bg-[#f8f9fb]">
+    <div className="flex min-h-screen bg-black text-white selection:bg-white selection:text-black font-sans tracking-tight">
       {/* Sidebar */}
-      <aside className="w-64 bg-secondary text-white hidden lg:flex flex-col fixed h-full z-30">
-        <div className="p-6">
-          <Link to="/" className="flex items-center gap-3">
-            <img src="/logo.png" alt="SkillScrumpt" className="h-8 w-auto brightness-0 invert" />
+      <aside className="w-72 bg-black border-r border-white/10 hidden lg:flex flex-col fixed h-full z-30">
+        <div className="p-8">
+          <Link to="/" className="text-2xl font-black italic tracking-tighter uppercase hover:scale-105 transition-transform inline-block">
+            SkillScrumpt.in
           </Link>
         </div>
 
-        <nav className="flex-1 px-4 space-y-2 mt-4">
+        <nav className="flex-1 px-4 space-y-1 mt-4">
           {navItems.map((item) => (
             <button 
               key={item.path}
               onClick={() => navigate(item.path)}
-              className={`flex items-center gap-3 w-full px-4 py-3 rounded-custom transition-all font-semibold text-sm ${
-                location.pathname === item.path ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-gray-400 hover:text-white hover:bg-white/5'
+              className={`flex items-center gap-4 w-full px-6 py-4 transition-all ${
+                location.pathname === item.path ? 'bg-white text-black font-black italic' : 'text-white/40 hover:text-white hover:bg-white/5 font-bold'
               }`}
             >
-              <item.icon size={20} />
-              <span>{item.label}</span>
+              <item.icon size={18} />
+              <span className="text-[11px] uppercase tracking-[0.2em]">{item.label}</span>
             </button>
           ))}
         </nav>
 
-        <div className="p-4 mt-auto">
+        <div className="p-6 mt-auto">
           {user?.role === 'professional' && (
-            <div className="bg-white/5 rounded-custom p-4 mb-4 border border-white/10">
-              <p className="text-xs text-gray-400 font-bold mb-2 uppercase tracking-widest">Your AI Score</p>
-              <div className="flex items-center gap-2">
-                <div className="text-2xl font-bold text-primary">{user?.aiScore || 0}</div>
+            <div className="p-6 border border-white/10 mb-6 bg-white/5">
+              <p className="text-[9px] text-white/30 font-black mb-3 uppercase tracking-widest">AI Integrity Score</p>
+              <div className="flex items-center justify-between">
+                <div className="text-3xl font-black italic">{user?.aiScore || 0}</div>
                 {user?.aiScore > 500 && (
-                  <Badge variant="primary" className="bg-primary/20 text-blue-300 border-none text-[10px]">TOP {user?.aiScore > 800 ? '1%' : '5%'}</Badge>
+                  <Badge variant="primary" className="bg-white text-black border-none text-[8px]">ELITE</Badge>
                 )}
               </div>
             </div>
           )}
           <button 
             onClick={handleLogout}
-            className="flex items-center gap-3 w-full px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-custom transition-all"
+            className="flex items-center gap-4 w-full px-6 py-4 text-white/40 hover:text-white hover:bg-white/5 transition-all font-black uppercase tracking-[0.2em] text-[10px]"
           >
-            <LogOut size={18} />
-            <span className="text-sm font-semibold">Sign Out</span>
+            <LogOut size={16} />
+            <span>Sign Out</span>
           </button>
         </div>
       </aside>
 
       {/* Main Content Wrapper */}
-      <div className="flex-1 lg:ml-64 flex flex-col">
+      <div className="flex-1 lg:ml-72 flex flex-col">
         {/* Header */}
-        <header className="flex justify-between items-center p-8 bg-transparent">
-          <div className="flex items-center gap-4 ml-auto">
-            <button className="p-2 bg-white border border-border rounded-custom text-gray-500 hover:text-primary transition-all relative">
+        <header className="flex justify-between items-center p-8 bg-transparent sticky top-0 z-20 backdrop-blur-sm">
+          <div className="flex items-center gap-8 ml-auto">
+            <button className="p-2 text-white/40 hover:text-white transition-all relative">
               <Bell size={20} />
-              <div className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
+              <div className="absolute top-2 right-2 w-1.5 h-1.5 bg-white rounded-full" />
             </button>
-            <div className="flex items-center gap-3 pl-4 border-l border-border">
-              <div className="text-right hidden sm:block mr-3">
-                <p className="text-sm font-bold text-secondary flex items-center gap-2 justify-end">
+            <div className="flex items-center gap-5 pl-8 border-l border-white/10">
+              <div className="text-right hidden sm:block">
+                <p className="text-[11px] font-black uppercase tracking-widest flex items-center gap-3 justify-end">
                   {user?.firstName} {user?.lastName} 
-                  {user?.isPro && (
-                    <span className="px-2.5 py-1 bg-gradient-to-r from-amber-300 via-yellow-500 to-amber-600 text-secondary text-[10px] font-black rounded-lg shadow-[0_0_15px_rgba(245,158,11,0.3)] animate-pulse border border-white/20">PRO</span>
-                  )}
-                  {user?.isVerified && <BadgeCheck size={14} className="text-primary fill-primary/10" />}
+                  {user?.isVerified && <BadgeCheck size={14} className="text-white" />}
                 </p>
-                <p className="text-xs font-bold text-primary">
-                  {user?.role === 'admin' ? 'Super Admin' : (user?.isPro ? 'Pro Member' : (user?.isVerified ? 'Verified Expert' : 'Standard Account'))}
+                <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mt-1">
+                  {user?.role === 'admin' ? 'SYSTEM OVERSEER' : (user?.isPro ? 'PRO OPERATIVE' : (user?.isVerified ? 'VERIFIED TALENT' : 'STANDARD ASSET'))}
                 </p>
               </div>
-              <div className="w-10 h-10 bg-primary rounded-custom flex items-center justify-center text-white font-bold">
+              <div className="w-10 h-10 bg-white text-black flex items-center justify-center font-black italic text-lg">
                 {user?.firstName?.[0]}{user?.lastName?.[0]}
               </div>
             </div>
@@ -138,9 +136,9 @@ export function DashboardLayout({ children, user }) {
         </header>
 
         {/* Page Content */}
-        <div className="px-8 pb-8">
+        <main className="px-8 pb-12 relative z-10">
           {children}
-        </div>
+        </main>
       </div>
     </div>
   );

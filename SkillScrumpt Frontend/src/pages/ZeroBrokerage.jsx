@@ -9,49 +9,58 @@ import {
   Zap, 
   PieChart, 
   CheckCircle,
-  HelpCircle
+  HelpCircle,
+  Star,
+  Shield
 } from 'lucide-react';
-import { Card, Badge, Button, GlassContainer } from '../components/UI';
+import { Card, Badge, Button } from '../components/UI';
 import { Link } from 'react-router-dom';
 
 export function ZeroBrokeragePage() {
   return (
-    <div className="pt-20 bg-white">
+    <div className="pt-20 bg-black text-white selection:bg-white selection:text-black">
       {/* Hero Section */}
-      <section className="relative py-24 lg:py-32 overflow-hidden bg-secondary text-white">
-        <div className="absolute top-0 right-0 w-full h-full">
-           <div className="absolute top-1/4 right-10 w-96 h-96 bg-primary/20 rounded-full blur-[120px]" />
-           <div className="absolute bottom-1/4 left-10 w-64 h-64 bg-blue-500/10 rounded-full blur-[100px]" />
-        </div>
-        
-        <div className="max-w-7xl mx-auto px-4 relative z-10 text-center">
+      <section className="relative py-32 lg:py-48 overflow-hidden border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
           >
-            <Badge variant="primary" className="mb-6 bg-primary/20 text-blue-300 border-none uppercase tracking-widest font-bold">The Revolution</Badge>
-            <h1 className="text-5xl lg:text-7xl font-black mb-8 leading-tight">
-              Zero Brokerage. <br />
-              <span className="text-primary">100% Talent Earnings.</span>
+            <div className="flex items-center gap-4 mb-8">
+               <div className="w-12 h-[1px] bg-white" />
+               <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">The Economic Protocol</span>
+            </div>
+            <h1 className="text-6xl lg:text-[8rem] font-black mb-12 leading-[0.85] tracking-tighter">
+              ZERO <br />
+              <span className="text-white/30 italic">BROKERAGE.</span>
             </h1>
-            <p className="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
-              We've dismantled the traditional commission-based model. On SkillScrumpt, 100% of the project budget goes exactly where it belongs: to the professional who did the work.
+            <p className="text-xl text-white/40 max-w-2xl leading-relaxed font-bold uppercase tracking-widest">
+              We've dismantled the traditional commission-based model. On SkillScrumpt.in, 100% of the project budget goes exactly where it belongs: to the professional who did the work.
             </p>
           </motion.div>
+        </div>
+        
+        {/* Abstract Background */}
+        <div className="absolute top-1/2 right-0 -translate-y-1/2 opacity-5 pointer-events-none">
+           <Star className="w-[600px] h-[600px] animate-spin-slow" />
         </div>
       </section>
 
       {/* Comparison Grid */}
-      <section className="py-24">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl font-bold text-secondary mb-4">How we differ from traditional platforms</h2>
-            <p className="text-gray-500 font-medium">No hidden fees. No middleman cuts. Pure value.</p>
+      <section className="py-40">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid lg:grid-cols-2 gap-20 items-end mb-32">
+            <div>
+              <h2 className="text-5xl font-black tracking-tighter uppercase italic mb-8">Protocol <br />Differentiation.</h2>
+              <p className="text-white/30 font-black text-xs uppercase tracking-widest">No middleman cuts. No hidden fees. Pure value exchange.</p>
+            </div>
+            <div className="h-[1px] bg-white/10 w-full" />
           </div>
 
-          <div className="grid md:grid-cols-2 gap-12">
+          <div className="grid md:grid-cols-2 gap-10">
             <ComparisonCard 
-              title="Traditional Platforms" 
+              title="TRADITIONAL MODEL" 
               type="negative"
               items={[
                 "20% commission on every milestone",
@@ -62,7 +71,7 @@ export function ZeroBrokeragePage() {
               ]}
             />
             <ComparisonCard 
-              title="SkillScrumpt Model" 
+              title="SKILLSCRUMPT.IN MODEL" 
               type="positive"
               items={[
                 "0% brokerage fee on projects",
@@ -77,48 +86,59 @@ export function ZeroBrokeragePage() {
       </section>
 
       {/* The Math Section */}
-      <section className="py-24 bg-[#f8f9fb]">
-        <div className="max-w-7xl mx-auto px-4">
-           <div className="bg-white rounded-custom border border-border overflow-hidden shadow-2xl grid lg:grid-cols-2">
-              <div className="p-12 lg:p-20 border-b lg:border-b-0 lg:border-r border-border">
-                <h3 className="text-3xl font-bold mb-8">The Real Impact of 20%</h3>
-                <p className="text-gray-500 mb-10 leading-relaxed font-medium">
-                  On a $10,000 project, a traditional platform takes <strong>$2,000</strong>. Over a year of freelancing, that could be <strong>$20,000+</strong> lost to fees. 
-                  SkillScrumpt keeps that money in the pockets of the talent, driving a more sustainable and equitable global economy.
-                </p>
-                <div className="space-y-6">
-                   <MathRow label="Project Budget" value="$10,000" />
-                   <MathRow label="Traditional Platform Fee" value="-$2,000" negative />
-                   <div className="pt-6 border-t border-border">
-                      <MathRow label="SkillScrumpt Earnings" value="$10,000" highlight />
+      <section className="py-40 border-y border-white/10">
+        <div className="max-w-7xl mx-auto px-6">
+           <div className="border border-white/10 bg-white/5 p-1">
+              <div className="bg-black border border-white/10 overflow-hidden grid lg:grid-cols-2">
+                <div className="p-12 lg:p-20 border-b lg:border-b-0 lg:border-r border-white/10">
+                  <h3 className="text-4xl font-black tracking-tighter uppercase italic mb-10">THE IMPACT <br />OF 20%.</h3>
+                  <p className="text-white/40 mb-16 leading-relaxed font-bold uppercase tracking-widest text-xs">
+                    On a $10,000 project, a traditional platform takes <span className="text-white">$2,000</span>. Over a year of freelancing, that could be <span className="text-white">$20,000+</span> lost to fees. 
+                    SkillScrumpt.in keeps that money in the pockets of the talent.
+                  </p>
+                  <div className="space-y-8">
+                     <MathRow label="Project Budget" value="$10,000" />
+                     <MathRow label="Platform Fee" value="-$2,000" negative />
+                     <div className="pt-8 border-t border-white/10">
+                        <MathRow label="SkillScrumpt.in Earnings" value="$10,000" highlight />
+                     </div>
+                  </div>
+                </div>
+                <div className="p-12 lg:p-20 flex flex-col justify-center bg-white/5">
+                   <h3 className="text-4xl font-black tracking-tighter uppercase italic mb-10">WHY FLAT <br />FEE?</h3>
+                   <p className="text-white/30 mb-16 leading-relaxed font-bold uppercase tracking-widest text-xs">
+                     By charging a flat subscription, our interests are aligned with the success of the hire, not the size of the transaction. This encourages long-term partnerships and high-quality outcomes.
+                   </p>
+                   <div className="grid grid-cols-2 gap-4">
+                      <FeatureBox icon={TrendingUp} label="High Yield" />
+                      <FeatureBox icon={ShieldCheck} label="Escrow Lock" />
+                      <FeatureBox icon={Users} label="Direct Access" />
+                      <FeatureBox icon={PieChart} label="Full Audit" />
                    </div>
                 </div>
-              </div>
-              <div className="p-12 lg:p-20 flex flex-col justify-center bg-primary/5">
-                 <h3 className="text-3xl font-bold mb-8 text-primary">Why Subscription?</h3>
-                 <p className="text-gray-600 mb-8 leading-relaxed font-medium">
-                   By charging employers a flat subscription, our interests are aligned with the success of the hire, not the size of the transaction. This encourages long-term partnerships and high-quality outcomes.
-                 </p>
-                 <div className="grid grid-cols-2 gap-4">
-                    <FeatureBox icon={TrendingUp} label="Higher Earnings" />
-                    <FeatureBox icon={ShieldCheck} label="Secured Escrow" />
-                    <FeatureBox icon={Users} label="Better Partnerships" />
-                    <FeatureBox icon={PieChart} label="Full Transparency" />
-                 </div>
               </div>
            </div>
         </div>
       </section>
 
       {/* CTA */}
-      <section className="py-24 text-center">
-        <div className="max-w-3xl mx-auto px-4">
-          <h2 className="text-4xl font-bold mb-8">Ready to experience the future?</h2>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/register"><Button className="h-14 px-10">Start as Talent</Button></Link>
-            <Link to="/pricing"><Button variant="outline" className="h-14 px-10">Hire on Subscription</Button></Link>
+      <section className="py-60 text-center relative overflow-hidden">
+        <div className="max-w-4xl mx-auto px-6 relative z-10">
+          <h2 className="text-6xl md:text-9xl font-black tracking-tighter mb-16 leading-[0.8]">ESTABLISH <br />EQUITY.</h2>
+          <div className="flex flex-col sm:flex-row gap-8 justify-center">
+            <Link to="/register" className="flex-1 max-w-xs mx-auto sm:mx-0">
+              <button className="w-full py-6 bg-white text-black font-black uppercase tracking-[0.4em] text-xs hover:scale-105 transition-transform">
+                Start as Talent
+              </button>
+            </Link>
+            <Link to="/pricing" className="flex-1 max-w-xs mx-auto sm:mx-0">
+              <button className="w-full py-6 border border-white text-white font-black uppercase tracking-[0.4em] text-xs hover:bg-white/10 transition-all">
+                Hire Elite
+              </button>
+            </Link>
           </div>
         </div>
+        <Star className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] text-white/5 pointer-events-none" />
       </section>
     </div>
   );
@@ -127,36 +147,38 @@ export function ZeroBrokeragePage() {
 function ComparisonCard({ title, items, type }) {
   const isPositive = type === 'positive';
   return (
-    <Card className={`p-10 border-2 ${isPositive ? 'border-primary bg-primary/5' : 'border-gray-100 bg-white'}`}>
-      <h3 className={`text-2xl font-bold mb-8 ${isPositive ? 'text-primary' : 'text-secondary'}`}>{title}</h3>
-      <ul className="space-y-6">
-        {items.map((item, i) => (
-          <li key={i} className="flex items-center gap-4 text-sm font-bold text-gray-700">
-             <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${isPositive ? 'bg-primary/20 text-primary' : 'bg-red-100 text-red-500'}`}>
-                {isPositive ? <CheckCircle size={14} /> : <Zap size={14} />}
-             </div>
-             {item}
-          </li>
-        ))}
-      </ul>
-    </Card>
+    <div className={`p-1 border border-white/10 ${isPositive ? 'bg-white/10' : 'bg-white/5'}`}>
+      <div className="p-12 border border-white/10 h-full bg-black">
+        <h3 className={`text-2xl font-black tracking-tight mb-12 uppercase italic ${isPositive ? 'text-white' : 'text-white/30'}`}>{title}</h3>
+        <ul className="space-y-8">
+          {items.map((item, i) => (
+            <li key={i} className="flex items-center gap-6 text-[10px] font-black uppercase tracking-widest text-white/60">
+               <div className={`w-8 h-8 flex items-center justify-center border transition-all ${isPositive ? 'border-white bg-white text-black' : 'border-white/10 text-white/20'}`}>
+                  {isPositive ? <CheckCircle size={16} /> : <Zap size={16} />}
+               </div>
+               {item}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
   );
 }
 
 function MathRow({ label, value, negative = false, highlight = false }) {
   return (
     <div className="flex justify-between items-center">
-       <span className="text-sm font-bold text-gray-500 uppercase tracking-widest">{label}</span>
-       <span className={`text-xl font-black ${negative ? 'text-red-500' : highlight ? 'text-primary' : 'text-secondary'}`}>{value}</span>
+       <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em]">{label}</span>
+       <span className={`text-2xl font-black italic ${negative ? 'text-white/40 line-through' : highlight ? 'text-white' : 'text-white/60'}`}>{value}</span>
     </div>
   );
 }
 
 function FeatureBox({ icon: Icon, label }) {
   return (
-    <div className="bg-white p-4 rounded-custom border border-primary/10 flex flex-col items-center text-center shadow-sm">
-       <Icon className="text-primary mb-2" size={20} />
-       <span className="text-[10px] font-black uppercase tracking-widest text-secondary leading-tight">{label}</span>
+    <div className="border border-white/10 p-8 flex flex-col items-center text-center bg-black hover:bg-white hover:text-black transition-all group">
+       <Icon className="mb-4 group-hover:text-black transition-colors" size={24} />
+       <span className="text-[9px] font-black uppercase tracking-[0.2em]">{label}</span>
     </div>
   );
 }

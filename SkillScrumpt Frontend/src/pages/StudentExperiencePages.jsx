@@ -17,7 +17,9 @@ import {
   Bell,
   CreditCard,
   Target,
-  Loader2
+  Loader2,
+  Cpu,
+  Star
 } from 'lucide-react';
 import { Card, Badge, Button } from '../components/UI';
 import { Link, useNavigate } from 'react-router-dom';
@@ -45,38 +47,40 @@ export function StudentProjects() {
     }
   };
 
-  if (isLoading && !user) return <div className="flex justify-center py-40"><Loader2 className="animate-spin text-primary" size={48} /></div>;
+  if (isLoading && !user) return <div className="flex justify-center py-40 bg-black min-h-screen"><Loader2 className="animate-spin text-white" size={48} /></div>;
 
   return (
     <DashboardLayout user={user}>
-      <header className="mb-10">
-        <h1 className="text-3xl font-bold text-secondary mb-2">My Projects</h1>
-        <p className="text-gray-500 font-medium text-sm">Manage your active contracts and submitted proposals.</p>
+      <header className="mb-16">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+          <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em]">Sector: Operations Dashboard</span>
+        </div>
+        <h1 className="text-6xl font-black tracking-tighter uppercase italic">CONTRACT <br />MANIFEST.</h1>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-        <StatCard label="Active" value={user?.activeContractsCount || 0} color="text-primary" />
-        <StatCard label="Completed" value={user?.completedProjectsCount || 0} color="text-green-500" />
-        <StatCard label="Proposals" value={user?.proposalsCount || 0} color="text-yellow-500" />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-1 mb-16">
+        <StatItem label="ACTIVE_CONTRACTS" value={user?.activeContractsCount || 0} color="text-white" />
+        <StatItem label="COMPLETED_CYCLES" value={user?.completedProjectsCount || 0} color="text-white/40" />
+        <StatItem label="OPEN_SIGNALS" value={user?.proposalsCount || 0} color="text-white/40" />
       </div>
 
-      <section className="space-y-6">
-         <div className="flex justify-between items-center bg-white p-4 rounded-custom border border-border shadow-sm">
-           <div className="flex gap-4">
-             <button className="text-sm font-bold text-primary px-4 py-2 bg-primary/5 rounded-custom">Active Contracts</button>
-             <button className="text-sm font-bold text-gray-400 px-4 py-2 hover:text-secondary transition-all">Pending Proposals</button>
+      <section className="space-y-12">
+         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-8 border-b border-white/10 pb-8">
+           <div className="flex gap-10">
+             <button className="text-[10px] font-black text-white uppercase tracking-[0.3em] border-b-2 border-white pb-2">ACTIVE_DIRECTIVES</button>
+             <button className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em] hover:text-white transition-all pb-2">PENDING_SIGNALS</button>
            </div>
-           <div className="flex gap-2">
-             <button className="p-2 border border-border rounded-custom text-gray-400 hover:text-primary"><Filter size={18} /></button>
-             <button className="p-2 border border-border rounded-custom text-gray-400 hover:text-primary"><Search size={18} /></button>
+           <div className="flex gap-4">
+             <button className="p-3 border border-white/10 text-white/20 hover:text-white hover:border-white transition-all"><Filter size={16} /></button>
+             <button className="p-3 border border-white/10 text-white/20 hover:text-white hover:border-white transition-all"><Search size={16} /></button>
            </div>
          </div>
 
          <div className="space-y-4">
-            {/* Real project list would be mapped here */}
-            <p className="text-center py-20 text-gray-400 italic font-medium bg-white rounded-custom border border-dashed border-gray-200">
-              No active contracts found. Browse projects to get started.
-            </p>
+            <div className="py-32 text-center border border-dashed border-white/10 bg-white/[0.02]">
+              <p className="text-white/20 font-black uppercase tracking-[0.4em] text-[10px] italic">NO_ACTIVE_DIRECTIVES_DETECTED. BROWSE_MARKETPLACE_TO_INITIALIZE.</p>
+            </div>
          </div>
       </section>
     </DashboardLayout>
@@ -105,91 +109,106 @@ export function StudentSkills() {
     }
   };
 
-  if (isLoading && !user) return <div className="flex justify-center py-40"><Loader2 className="animate-spin text-primary" size={48} /></div>;
+  if (isLoading && !user) return <div className="flex justify-center py-40 bg-black min-h-screen"><Loader2 className="animate-spin text-white" size={48} /></div>;
 
   return (
     <DashboardLayout user={user}>
-      <header className="flex justify-between items-center mb-10">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-12 mb-20">
         <div>
-          <h1 className="text-3xl font-bold text-secondary mb-2">Skills & Badges</h1>
-          <p className="text-gray-500 font-medium text-sm">Your AI-verified expertise and digital credentials.</p>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+            <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em]">Sector: Expertise Manifest</span>
+          </div>
+          <h1 className="text-6xl font-black tracking-tighter uppercase italic">SKILLS <br />& BADGES.</h1>
         </div>
-        <Link to="/assessments">
-          <Button className="flex items-center gap-2 shadow-primary/20">
-            <Zap size={18} /> New Assessment
-          </Button>
-        </Link>
+        <button 
+          onClick={() => navigate('/assessments')}
+          className="flex items-center gap-4 bg-white text-black py-6 px-12 font-black uppercase tracking-[0.3em] text-xs hover:bg-white/90 transition-all group"
+        >
+          <Zap size={18} /> INITIATE_ASSESSMENT
+        </button>
       </header>
 
-      <div className="grid lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-10">
+      <div className="grid lg:grid-cols-3 gap-12">
+        <div className="lg:col-span-2 space-y-24">
           <section>
-            <h3 className="text-xl font-bold mb-6">Verified Badges</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="flex items-center gap-4 mb-12">
+              <h3 className="text-3xl font-black tracking-tighter uppercase italic">VERIFIED_BADGES.</h3>
+              <div className="h-[1px] bg-white/10 flex-1" />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
               {user?.badges?.length > 0 ? user.badges.map((badge, i) => (
-                <BadgeCard 
+                <BadgeItem 
                   key={i} 
                   id={badge.assessmentId}
                   title={badge.name || badge.title} 
                   score={badge.score} 
-                  date={new Date(badge.issuedAt || badge.earnedAt).toLocaleDateString()} 
-                  color={i % 2 === 0 ? 'bg-blue-500' : 'bg-purple-500'} 
+                  date={new Date(badge.issuedAt || badge.earnedAt).toLocaleDateString().toUpperCase()} 
                 />
               )) : (
-                <Card className="col-span-2 p-10 text-center bg-white border-dashed border-2 border-gray-200">
-                  <p className="text-gray-400 font-medium mb-4 italic">No verified badges yet.</p>
-                  <Button variant="outline" onClick={() => navigate('/assessments')}>Take Your First Assessment</Button>
-                </Card>
+                <div className="col-span-2 p-16 text-center border border-dashed border-white/10 bg-white/[0.02]">
+                  <p className="text-white/20 font-black uppercase tracking-[0.4em] text-[10px] mb-8 italic">ZERO_VERIFIED_CREDENTIALS_RECORDED.</p>
+                  <button onClick={() => navigate('/assessments')} className="px-10 py-4 border border-white text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all">INITIALIZE_FIRST_TASK</button>
+                </div>
               )}
             </div>
           </section>
 
           <section>
-             <h3 className="text-xl font-bold mb-6">Technical Skills</h3>
-             <div className="bg-white rounded-custom border border-border overflow-hidden shadow-sm">
+             <div className="flex items-center gap-4 mb-12">
+               <h3 className="text-3xl font-black tracking-tighter uppercase italic">TECHNICAL_CORRELATION.</h3>
+               <div className="h-[1px] bg-white/10 flex-1" />
+             </div>
+             <div className="border border-white/10 bg-white/5 divide-y divide-white/10">
                 {user?.skills?.length > 0 ? user.skills.map((skill, i) => (
-                  <SkillRow key={i} label={skill} value={80 + (i * 5) % 20} />
+                  <SkillLevelRow key={i} label={skill} value={80 + (i * 5) % 20} />
                 )) : (
-                  <p className="p-6 text-gray-400 text-center italic">Add skills to your profile to track your levels.</p>
+                  <p className="p-16 text-white/20 text-center font-black uppercase tracking-[0.4em] text-[10px] italic">NO_SKILL_SIGNALS_RECORDED.</p>
                 )}
              </div>
           </section>
         </div>
 
-        <aside className="space-y-8">
-          <Card className="p-8 bg-secondary text-white border-none mb-6 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -mr-16 -mt-16" />
-            <div className="relative z-10">
-              <h4 className="text-xs font-black uppercase tracking-widest text-primary mb-4">AI Identity Score</h4>
-              <div className="text-5xl font-black mb-2">{user?.aiScore || 0}</div>
-              <p className="text-xs text-gray-400 leading-relaxed mb-6">Verification ensures you stand out to premium clients.</p>
-              <div className="w-full h-1.5 bg-white/10 rounded-full mb-8 overflow-hidden">
-                 <div className="bg-primary h-full transition-all duration-1000" style={{ width: `${Math.min((user?.aiScore / 1000) * 100, 100)}%` }} />
+        <aside className="space-y-12">
+          <div className="p-1 border border-white/10 bg-white/5">
+            <div className="p-10 border border-white/10 bg-black relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 border border-white/5 -mr-16 -mt-16 rotate-45 pointer-events-none" />
+              <div className="relative z-10">
+                <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20 mb-8 italic text-center">AI_IDENTITY_SCORE</h4>
+                <div className="text-7xl font-black italic tracking-tighter text-center mb-8">{user?.aiScore || 0}</div>
+                <div className="w-full h-[1px] bg-white/10 mb-12 relative">
+                   <div className="absolute top-0 left-0 bg-white h-full transition-all duration-1000" style={{ width: `${Math.min((user?.aiScore / 1000) * 100, 100)}%` }} />
+                </div>
+                <div className="flex flex-col gap-4 items-center">
+                   <div className="flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-white/60">
+                     <CheckCircle size={14} className={user?.isVerified ? 'text-white' : 'text-white/20'} />
+                     STATUS: {user?.isVerified ? 'ELITE_VERIFIED' : 'PENDING_VALIDATION'}
+                   </div>
+                </div>
               </div>
-              <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest flex items-center gap-2">
-                <CheckCircle size={14} className="text-green-500" /> Profile Status: {user?.isVerified ? 'Elite Verified' : 'Standard'}
-              </p>
             </div>
-          </Card>
+          </div>
 
-          <Card className="p-8 bg-gradient-to-br from-blue-600 to-indigo-700 border-none shadow-xl text-white relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-1000" />
-            <div className="relative z-10">
-              <Badge className="mb-4 bg-white/20 text-white border-none font-black text-[10px] uppercase tracking-widest">Partner Tool</Badge>
-              <h4 className="text-xl font-bold mb-2">Build a Pro Resume</h4>
-              <p className="text-xs text-blue-100 mb-8 leading-relaxed">
-                Use <strong>Resusolve</strong> to create an ATS-friendly resume that complements your SkillScrumpt badges.
-              </p>
-              <a 
-                href="https://resusolve.vercel.app" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest bg-white text-blue-700 px-8 py-4 rounded-custom hover:bg-blue-50 transition-all shadow-xl"
-              >
-                Start Building <ArrowRight size={14} />
-              </a>
+          <div className="p-1 border border-white/10 bg-white/5">
+            <div className="p-10 bg-black border border-white/10 group relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 border border-white/5 -mr-16 -mt-16 rotate-45 pointer-events-none" />
+              <div className="relative z-10">
+                <div className="inline-block px-4 py-1 border border-white/20 text-[8px] font-black uppercase tracking-widest text-white/40 mb-6">PARTNER_PROTOCOL</div>
+                <h4 className="text-2xl font-black tracking-tighter italic uppercase mb-4">RESUME_SYNTHESIS.</h4>
+                <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-12 leading-relaxed">
+                  USE <span className="text-white">RESUSOLVE</span> TO GENERATE AN ATS-OPTIMIZED DOSSIER THAT COMPLEMENTS YOUR SkillScrumpt.in BADGES.
+                </p>
+                <a 
+                  href="https://resusolve.vercel.app" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="block text-center py-5 bg-white text-black font-black uppercase tracking-widest text-[10px] hover:bg-white/90 transition-all"
+                >
+                  START_SYNTHESIS
+                </a>
+              </div>
             </div>
-          </Card>
+          </div>
         </aside>
       </div>
     </DashboardLayout>
@@ -231,7 +250,6 @@ export function StudentSettings() {
 
   const handleUpdate = async () => {
     try {
-      // Assuming a put endpoint exists
       await api.put('/users/profile', formData);
       alert('Profile updated successfully!');
     } catch (err) {
@@ -239,190 +257,148 @@ export function StudentSettings() {
     }
   };
 
-  if (isLoading && !user) return <div className="flex justify-center py-40"><Loader2 className="animate-spin text-primary" size={48} /></div>;
+  if (isLoading && !user) return <div className="flex justify-center py-40 bg-black min-h-screen"><Loader2 className="animate-spin text-white" size={48} /></div>;
 
   return (
     <DashboardLayout user={user}>
-       <header className="mb-10">
-        <h1 className="text-3xl font-bold text-secondary mb-2">Account Settings</h1>
-        <p className="text-gray-500 font-medium text-sm">Update your profile, security, and notification preferences.</p>
+       <header className="mb-20">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+            <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em]">Sector: Identity Management</span>
+          </div>
+          <h1 className="text-6xl font-black tracking-tighter uppercase italic">ACCOUNT <br />PARAMETERS.</h1>
       </header>
 
-      <div className="grid lg:grid-cols-4 gap-8">
-        <div className="lg:col-span-1 space-y-2">
-           <SettingsNavItem icon={User} label="General Info" active />
-           <SettingsNavItem icon={Lock} label="Security & Password" />
-           <SettingsNavItem icon={Bell} label="Notifications" />
-           <SettingsNavItem icon={CreditCard} label="Billing & Payouts" />
-           <SettingsNavItem icon={Shield} label="AI Privacy" />
+      <div className="grid lg:grid-cols-4 gap-12">
+        <div className="lg:col-span-1 space-y-1">
+           <SettingsLink icon={User} label="CORE_IDENTITY" active />
+           <SettingsLink icon={Lock} label="SECURITY_PASS" />
+           <SettingsLink icon={Bell} label="RELAY_NOTICES" />
+           <SettingsLink icon={CreditCard} label="FINANCIAL_RECORDS" />
+           <SettingsLink icon={Shield} label="AI_PRIVACY" />
         </div>
 
         <div className="lg:col-span-3">
-          <Card className="p-10 border-none shadow-xl space-y-8 bg-white">
-            <div className="grid md:grid-cols-2 gap-8">
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-gray-700 ml-1">First Name</label>
-                <input 
-                  type="text" 
-                  value={formData.firstName} 
-                  onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-custom outline-none focus:bg-white focus:border-primary transition-all font-medium" 
-                />
+          <div className="p-1 border border-white/10 bg-white/5">
+            <div className="bg-black border border-white/10 p-12 md:p-20 space-y-12">
+              <div className="grid md:grid-cols-2 gap-12">
+                <div className="space-y-3">
+                  <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.4em] ml-1">GIVEN_NAME</label>
+                  <input 
+                    type="text" 
+                    value={formData.firstName} 
+                    onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                    className="w-full px-6 py-4 bg-transparent border border-white/20 focus:border-white outline-none transition-all font-black uppercase tracking-widest placeholder:text-white/10" 
+                  />
+                </div>
+                <div className="space-y-3">
+                  <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.4em] ml-1">SURNAME</label>
+                  <input 
+                    type="text" 
+                    value={formData.lastName} 
+                    onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+                    className="w-full px-6 py-4 bg-transparent border border-white/20 focus:border-white outline-none transition-all font-black uppercase tracking-widest placeholder:text-white/10" 
+                  />
+                </div>
+                <div className="space-y-3 md:col-span-2">
+                  <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.4em] ml-1">IDENTITY_EMAIL</label>
+                  <input 
+                    type="email" 
+                    value={formData.email} 
+                    disabled
+                    className="w-full px-6 py-4 bg-white/[0.02] border border-white/5 text-white/20 outline-none font-black uppercase tracking-widest cursor-not-allowed" 
+                  />
+                </div>
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-gray-700 ml-1">Last Name</label>
-                <input 
-                  type="text" 
-                  value={formData.lastName} 
-                  onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-custom outline-none focus:bg-white focus:border-primary transition-all font-medium" 
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-gray-700 ml-1">Email Address</label>
-                <input 
-                  type="email" 
-                  value={formData.email} 
-                  disabled
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-custom outline-none opacity-60 font-medium cursor-not-allowed" 
-                />
-              </div>
-            </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-gray-700 ml-1">Professional Bio</label>
-              <textarea 
-                rows={5} 
-                value={formData.bio}
-                onChange={(e) => setFormData({...formData, bio: e.target.value})}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-custom outline-none focus:bg-white focus:border-primary transition-all font-medium resize-none"
-                placeholder="Tell us about your experience..."
-              ></textarea>
-            </div>
+              <div className="space-y-3">
+                <label className="text-[9px] font-black text-white/20 uppercase tracking-[0.4em] ml-1">OPERATIVE_BIO</label>
+                <textarea 
+                  rows={6} 
+                  value={formData.bio}
+                  onChange={(e) => setFormData({...formData, bio: e.target.value})}
+                  className="w-full px-6 py-4 bg-transparent border border-white/20 focus:border-white outline-none transition-all font-bold placeholder:text-white/10 resize-none uppercase tracking-widest text-[11px]"
+                  placeholder="ESTABLISH YOUR PROFESSIONAL DIRECTIVE..."
+                ></textarea>
+              </div>
 
-            <div className="pt-8 border-t border-border flex justify-end gap-4">
-               <Button variant="outline">Cancel</Button>
-               <Button onClick={handleUpdate} className="px-12 shadow-primary/20">Save Changes</Button>
+              <div className="pt-12 border-t border-white/10 flex justify-end gap-8">
+                 <button className="px-10 py-5 border border-white/10 text-white/40 font-black uppercase tracking-[0.3em] text-[10px] hover:text-white transition-all">ABORT_CHANGES</button>
+                 <button onClick={handleUpdate} className="px-16 py-5 bg-white text-black font-black uppercase tracking-[0.3em] text-[10px] hover:bg-white/90 transition-all">SAVE_PARAMETERS</button>
+              </div>
             </div>
-          </Card>
+          </div>
         </div>
       </div>
     </DashboardLayout>
   );
 }
 
-// --- Add New Skill Assessment (Placeholder View) ---
-export function AddAssessment() {
-  return (
-    <div className="min-h-screen bg-[#f8f9fb] p-8">
-       <header className="mb-12 max-w-3xl">
-        <h1 className="text-4xl font-bold text-secondary mb-4">Choose Your Next Badge</h1>
-        <p className="text-gray-500 font-medium text-lg">Select a technology to start your AI-proctored assessment and earn a verified credential.</p>
-      </header>
+// --- Helper Components ---
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <AssessmentOption title="Advanced TypeScript" difficulty="Expert" time="60 min" />
-        <AssessmentOption title="Smart Contract Security" difficulty="Expert" time="120 min" />
-        <AssessmentOption title="Python for AI/ML" difficulty="Intermediate" time="90 min" />
-      </div>
+function StatItem({ label, value, color }) {
+  return (
+    <div className="p-10 border border-white/10 bg-white/[0.02] hover:bg-white/5 transition-all">
+      <p className="text-[9px] font-black text-white/20 uppercase tracking-[0.4em] mb-4 italic">{label}</p>
+      <div className={`text-5xl font-black italic tracking-tighter ${color}`}>{value}</div>
     </div>
   );
 }
 
-// --- Helper Components ---
-
-function StatCard({ label, value, color }) {
-  return (
-    <Card className="p-8 border-none shadow-sm bg-white">
-      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">{label}</p>
-      <div className={`text-4xl font-black ${color}`}>{value}</div>
-    </Card>
-  );
-}
-
-function BadgeCard({ title, score, date, color, id }) {
+function BadgeItem({ title, score, date, id }) {
   const navigate = useNavigate();
-  
-  const handleClick = () => {
-    if (id) {
-      navigate(`/dashboard/student/skills/${id}`);
-    } else {
-      alert("Detail report not available for this legacy badge.");
-    }
-  };
-
   return (
-    <Card 
-      onClick={handleClick}
-      className={`p-8 border-none shadow-xl hover:-translate-y-1 transition-all group overflow-hidden relative bg-white cursor-pointer ${!id ? 'opacity-80' : ''}`}
+    <div 
+      onClick={() => id && navigate(`/dashboard/student/skills/${id}`)}
+      className="p-10 border border-white/10 bg-black hover:bg-white/5 transition-all group cursor-pointer relative"
     >
-      <div className={`absolute top-0 right-0 w-24 h-24 ${color} opacity-5 rounded-full -mr-12 -mt-12 group-hover:scale-150 transition-transform duration-700`} />
-      <div className="flex items-center gap-5 mb-8">
-        <div className={`w-14 h-14 ${color} text-white rounded-custom flex items-center justify-center shadow-lg shadow-black/10`}>
+      <div className="flex items-center gap-6 mb-10">
+        <div className="w-16 h-16 border border-white/10 flex items-center justify-center text-white/40 group-hover:bg-white group-hover:text-black transition-all italic">
           <Award size={32} />
         </div>
         <div>
-          <h4 className="font-bold text-xl text-secondary">{title}</h4>
-          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Earned {date}</p>
+          <h4 className="text-xl font-black tracking-tight uppercase group-hover:italic">{title}</h4>
+          <p className="text-[9px] text-white/20 font-black uppercase tracking-widest mt-2">EARNED_{date}</p>
         </div>
       </div>
       <div className="flex justify-between items-end">
         <div>
-          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">AI Match Score</p>
-          <p className={`text-3xl font-black ${color.replace('bg-', 'text-')}`}>{score}</p>
+          <p className="text-[9px] text-white/20 font-black uppercase tracking-[0.3em] mb-2">AI_CORRELATION</p>
+          <p className="text-4xl font-black italic tracking-tighter text-white">{score}</p>
         </div>
-        <div className="flex flex-col items-end gap-2">
-           <Badge variant="neutral" className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest">Verified ID</Badge>
-           <span className={`text-[9px] font-black uppercase tracking-tighter ${id ? 'text-primary' : 'text-gray-400'}`}>
-             {id ? 'Click for Details' : 'Details Not Available'}
-           </span>
-        </div>
+        <div className="px-3 py-1 border border-white/10 text-[8px] font-black uppercase tracking-widest group-hover:border-white">VERIFIED_ID</div>
       </div>
-    </Card>
+    </div>
   );
 }
 
-function SkillRow({ label, value }) {
+function SkillLevelRow({ label, value }) {
   return (
-    <div className="p-8 flex items-center justify-between border-b border-border last:border-none group hover:bg-gray-50 transition-colors">
+    <div className="p-10 flex items-center justify-between group hover:bg-white/5 transition-colors">
        <div className="flex-1">
-         <h5 className="font-bold text-lg text-secondary mb-3">{label}</h5>
-         <div className="w-full bg-gray-100 h-2 rounded-full max-w-md overflow-hidden">
-            <div className="bg-primary h-full group-hover:bg-blue-600 transition-all duration-700" style={{ width: `${value}%` }} />
+         <h5 className="text-xl font-black tracking-tight uppercase group-hover:italic mb-6">{label}</h5>
+         <div className="w-full max-w-lg bg-white/5 h-[1px] relative">
+            <div className="absolute top-0 left-0 bg-white h-full transition-all duration-1000" style={{ width: `${value}%` }} />
          </div>
        </div>
        <div className="text-right">
-          <span className="text-2xl font-black text-secondary">{value}</span>
-          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mt-1">Level</span>
+          <span className="text-3xl font-black italic tracking-tighter">{value}</span>
+          <span className="text-[9px] font-black text-white/20 uppercase tracking-widest block mt-2">LEVEL</span>
        </div>
     </div>
   );
 }
 
-function SettingsNavItem({ icon: Icon, label, active = false }) {
+function SettingsLink({ icon: Icon, label, active = false }) {
   return (
-    <button className={`flex items-center gap-3 w-full px-4 py-4 rounded-custom transition-all font-bold text-sm ${
-      active ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-gray-500 hover:text-secondary hover:bg-white border border-transparent hover:border-border'
+    <button className={`flex items-center justify-between w-full p-6 transition-all font-black text-[10px] uppercase tracking-[0.3em] ${
+      active ? 'bg-white text-black' : 'text-white/30 hover:text-white hover:bg-white/5 border border-transparent'
     }`}>
-      <Icon size={20} />
-      <span>{label}</span>
+      <div className="flex items-center gap-4">
+        <Icon size={16} />
+        <span>{label}</span>
+      </div>
+      <ChevronRight size={14} className={active ? 'text-black' : 'text-white/10'} />
     </button>
-  );
-}
-
-function AssessmentOption({ title, difficulty, time }) {
-  const navigate = useNavigate();
-  return (
-    <Card className="p-10 group hover:border-primary transition-all flex flex-col items-center text-center bg-white">
-      <div className="w-20 h-20 bg-primary/5 text-primary rounded-full flex items-center justify-center mb-8 group-hover:bg-primary group-hover:text-white transition-all shadow-inner">
-        <Target size={40} />
-      </div>
-      <h4 className="text-2xl font-bold mb-3">{title}</h4>
-      <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-widest text-gray-400 mb-10">
-        <span className="flex items-center gap-1.5"><Clock size={14} /> {time}</span>
-        <span className="flex items-center gap-1.5 text-primary"><Zap size={14} /> {difficulty}</span>
-      </div>
-      <Button onClick={() => navigate('/assessments')} className="w-full h-12">Start Now</Button>
-    </Card>
   );
 }
