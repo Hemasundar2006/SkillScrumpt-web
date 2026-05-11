@@ -19,13 +19,24 @@ export function AboutPage() {
                <div className="w-12 h-[1px] bg-white" />
                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">The Institutional Vision</span>
             </div>
-            <h1 className="text-4xl md:text-7xl lg:text-[8rem] font-black mb-12 leading-[0.85] tracking-tighter uppercase italic">
+            <motion.h1 
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="text-4xl md:text-7xl lg:text-[8rem] font-black mb-12 leading-[0.85] tracking-tighter uppercase italic"
+            >
               ELIMINATE <br />
               <span className="text-white/30">GUESSWORK.</span>
-            </h1>
-            <p className="text-xl text-white/40 max-w-3xl leading-relaxed font-bold uppercase tracking-widest">
+            </motion.h1>
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+              className="text-xl text-white/40 max-w-3xl leading-relaxed font-bold uppercase tracking-widest"
+            >
               SkillScrumpt.in was founded in 2024 with a simple mission: to create a world where talent is recognized by what they can do, not where they come from or what's on their resume.
-            </p>
+            </motion.p>
           </motion.div>
         </div>
         
@@ -98,13 +109,24 @@ export function PricingPage() {
             animate={{ opacity: 1, y: 0 }}
           >
             <div className="inline-block px-8 py-2 border border-white/10 text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] text-white/40 mb-12">TRANSPARENT_PRICING_PROTOCOL</div>
-            <h2 className="text-4xl md:text-7xl lg:text-[10rem] font-black mb-12 leading-[0.8] tracking-tighter uppercase italic">
+            <motion.h2 
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              className="text-4xl md:text-7xl lg:text-[10rem] font-black mb-12 leading-[0.8] tracking-tighter uppercase italic"
+            >
               FLAT FEE. <br />
               <span className="text-white/30">ZERO BROKERAGE.</span>
-            </h2>
-            <p className="text-xl text-white/40 font-bold uppercase tracking-widest max-w-3xl mx-auto leading-relaxed">
+            </motion.h2>
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+              className="text-xl text-white/40 font-bold uppercase tracking-widest max-w-3xl mx-auto leading-relaxed"
+            >
               CHOOSE YOUR PATH AND START YOUR JOURNEY WITH A SINGLE SUBSCRIPTION. NO COMMISSION, NO HIDDEN FEES, JUST PURE GROWTH.
-            </p>
+            </motion.p>
           </motion.div>
         </div>
 
@@ -350,13 +372,24 @@ export function ProctoringPage() {
             <div className="w-12 h-[1px] bg-white" />
             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">The Gold Standard</span>
           </div>
-          <h1 className="text-4xl md:text-7xl lg:text-[10rem] font-black mb-12 leading-[0.8] tracking-tighter uppercase italic">
+          <motion.h1 
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="text-4xl md:text-7xl lg:text-[10rem] font-black mb-12 leading-[0.8] tracking-tighter uppercase italic"
+          >
             RADICAL <br />
             <span className="text-white/30">INTEGRITY.</span>
-          </h1>
-          <p className="text-xl text-white/40 font-bold uppercase tracking-widest max-w-3xl leading-relaxed">
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+            className="text-xl text-white/40 font-bold uppercase tracking-widest max-w-3xl leading-relaxed"
+          >
             OUR AI-DRIVEN PROCTORING ENGINE ENSURES THAT EVERY BADGE EARNED ON SKILLSCRUMPT.IN IS A TESTAMENT TO GENUINE EXPERTISE.
-          </p>
+          </motion.p>
         </header>
 
         <div className="grid lg:grid-cols-2 gap-20 items-center mb-40">
@@ -420,13 +453,24 @@ export function MarketplacePage() {
             <div className="w-12 h-[1px] bg-white" />
             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">Access Elite Talent</span>
           </div>
-          <h1 className="text-4xl md:text-7xl lg:text-[10rem] font-black mb-12 leading-[0.8] tracking-tighter uppercase italic">
+          <motion.h1 
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="text-4xl md:text-7xl lg:text-[10rem] font-black mb-12 leading-[0.8] tracking-tighter uppercase italic"
+          >
             THE <br />
             <span className="text-white/30">MARKETPLACE.</span>
-          </h1>
-          <p className="text-xl text-white/40 font-bold uppercase tracking-widest max-w-3xl leading-relaxed">
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+            className="text-xl text-white/40 font-bold uppercase tracking-widest max-w-3xl leading-relaxed"
+          >
             ELIMINATE THE MIDDLEMAN. CONNECT DIRECTLY WITH VERIFIED PROFESSIONALS WHO HAVE PASSED OUR RIGOROUS AI PROCTORING PROTOCOLS.
-          </p>
+          </motion.p>
         </header>
 
         <div className="grid md:grid-cols-3 gap-8 mb-40">

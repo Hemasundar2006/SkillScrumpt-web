@@ -119,8 +119,9 @@ export function LandingPage() {
             </motion.h1>
             
             <motion.p 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
               transition={{ delay: 0.5, duration: 1 }}
               className="text-xl text-muted max-w-md mb-12 leading-relaxed"
             >
@@ -145,7 +146,12 @@ export function LandingPage() {
               </Link>
             </motion.div>
 
-            <div className="mt-16 flex items-center gap-12">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="mt-16 flex items-center gap-12"
+            >
                <div>
                  <p className="text-[10px] font-black text-muted uppercase tracking-[0.2em] mb-2">Volume</p>
                  <p className="text-2xl font-black">₹12.4Cr+</p>
@@ -155,7 +161,7 @@ export function LandingPage() {
                  <p className="text-[10px] font-black text-muted uppercase tracking-[0.2em] mb-2">Integrity</p>
                  <p className="text-2xl font-black">99.9%</p>
                </div>
-            </div>
+            </motion.div>
           </div>
 
           <div className="relative flex justify-center lg:justify-end">
@@ -218,9 +224,14 @@ export function LandingPage() {
         <div className="max-w-[1400px] mx-auto px-6 grid lg:grid-cols-2 gap-20 items-center">
           <div>
             <div className="text-[11px] font-black uppercase tracking-[0.3em] text-muted mb-10">AI Proctoring</div>
-            <h2 className="text-6xl md:text-8xl font-black tracking-tighter mb-20 leading-[0.9]">
+            <motion.h2 
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="text-6xl md:text-8xl font-black tracking-tighter mb-20 leading-[0.9]"
+            >
               The Standard <br />of Integrity.
-            </h2>
+            </motion.h2>
             
             <div className="grid gap-0 border-t border-white/10">
               {[
@@ -269,7 +280,14 @@ export function LandingPage() {
         <div className="max-w-[1400px] mx-auto px-6 mb-20 flex justify-between items-end">
           <div>
             <div className="text-[11px] font-black uppercase tracking-[0.3em] text-black/50 mb-4">Marketplace</div>
-            <h2 className="text-6xl md:text-8xl font-black tracking-tighter">Elite Talent.</h2>
+            <motion.h2 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-6xl md:text-8xl font-black tracking-tighter"
+            >
+              Elite Talent.
+            </motion.h2>
           </div>
           <Link to="/marketplace" className="hidden md:block mb-4 text-xs font-black uppercase tracking-widest border-b border-black">
             Enter Marketplace Hub →
