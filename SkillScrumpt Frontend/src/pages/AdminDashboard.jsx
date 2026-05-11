@@ -133,6 +133,21 @@ export function AdminDashboard() {
     }
   };
 
+  const handleToggleCooling = async () => {
+    setIsUpdatingSettings(true);
+    try {
+      const response = await api.put('/admin/settings', { 
+        coolingPeriodActive: !settings.coolingPeriodActive 
+      });
+      setSettings(response.data.data);
+      alert(`COOLING PERIOD: ${response.data.data.coolingPeriodActive ? 'ENFORCED (48h)' : 'DISABLED (Testing Mode)'}`);
+    } catch (err) {
+      alert('PROTOCOL_ERROR: SETTINGS_UPDATE_FAILED');
+    } finally {
+      setIsUpdatingSettings(false);
+    }
+  };
+
   if (isLoading && !user) {
     const cachedUserStr = localStorage.getItem('user');
     const cachedUser = cachedUserStr ? JSON.parse(cachedUserStr) : null;
@@ -231,7 +246,7 @@ export function AdminDashboard() {
               <aside className="space-y-12">
                 <section>
                   <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-6">System Controls</div>
-                  <div className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm">
+                  <div className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-6">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-bold text-slate-900">Maintenance Mode</p>
@@ -239,9 +254,26 @@ export function AdminDashboard() {
                       </div>
                       <button 
                         onClick={handleToggleMaintenance}
+                        disabled={isUpdatingSettings}
                         className={`w-12 h-6 rounded-full transition-all relative p-1 ${settings.maintenanceMode ? 'bg-indigo-600' : 'bg-slate-200'}`}
                       >
                          <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-all ${settings.maintenanceMode ? 'translate-x-6' : 'translate-x-0'}`} />
+                      </button>
+                    </div>
+
+                    <div className="h-px bg-slate-100 w-full" />
+
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-bold text-slate-900">Enforce 48h Cooling</p>
+                        <p className="text-xs text-slate-500 font-medium mt-1">Lockout after assessment attempt</p>
+                      </div>
+                      <button 
+                        onClick={handleToggleCooling}
+                        disabled={isUpdatingSettings}
+                        className={`w-12 h-6 rounded-full transition-all relative p-1 ${settings.coolingPeriodActive !== false ? 'bg-indigo-600' : 'bg-slate-200'}`}
+                      >
+                         <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-all ${settings.coolingPeriodActive !== false ? 'translate-x-6' : 'translate-x-0'}`} />
                       </button>
                     </div>
                   </div>

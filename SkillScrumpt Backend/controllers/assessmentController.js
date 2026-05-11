@@ -1,6 +1,7 @@
 const Assessment = require('../models/Assessment');
 const AssessmentResult = require('../models/AssessmentResult');
 const User = require('../models/User');
+const Settings = require('../models/Settings');
 
 // @desc    Get all assessments
 // @route   GET /api/v1/assessments
@@ -17,12 +18,13 @@ exports.getAssessments = async (req, res) => {
 // @route   GET /api/v1/assessments/:id
 exports.getAssessmentById = async (req, res) => {
   try {
+    const settings = await Settings.findOne() || { coolingPeriodActive: true };
     const user = await User.findById(req.user._id);
     const lastAttempt = user.attemptedExams
       .filter(attempt => attempt.examId === req.params.id)
       .sort((a, b) => b.attemptedAt - a.attemptedAt)[0];
     
-    if (lastAttempt) {
+    if (lastAttempt && settings.coolingPeriodActive) {
       const coolingPeriodMs = 48 * 60 * 60 * 1000; // 48 hours
       const timePassed = Date.now() - new Date(lastAttempt.attemptedAt).getTime();
       
