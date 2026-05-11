@@ -85,6 +85,25 @@ const templates = {
         <a href="${testLink}" style="display: inline-block; padding: 12px 24px; background-color: #4f46e5; color: white; text-decoration: none; border-radius: 8px; margin: 20px 0;">Start on Desktop</a>
       </div>
     `
+  }),
+  proUpgrade: (name) => ({
+    subject: 'Welcome to SkillScrumpt Pro - Identity Verified',
+    html: `
+      <div style="font-family: sans-serif; padding: 20px; color: #333;">
+        <h1 style="color: #4f46e5;">Welcome to Elite Status, ${name}!</h1>
+        <p>Your account has been upgraded to <b>SkillScrumpt Pro</b>.</p>
+        <div style="padding: 15px; background: #eff6ff; border-radius: 8px; margin: 20px 0; border: 1px solid #dbeafe;">
+          <ul style="margin: 0; padding-left: 20px; color: #1e40af;">
+            <li>Unlimited Verified Badges</li>
+            <li>Priority Placement in Client Search</li>
+            <li>Zero Brokerage on High-Value Projects</li>
+            <li>Exclusive Expert-Only Assessments</li>
+          </ul>
+        </div>
+        <p>Your professional identity is now backed by our AI-Verification protocol.</p>
+        <a href="https://skillscrumpt.in/dashboard/student" style="display: inline-block; padding: 12px 24px; background-color: #4f46e5; color: white; text-decoration: none; border-radius: 8px; margin-top: 20px;">Explore Pro Features</a>
+      </div>
+    `
   })
 };
 

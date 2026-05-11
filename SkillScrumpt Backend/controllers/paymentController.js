@@ -1,6 +1,7 @@
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const User = require('../models/User');
+const { sendEmail, templates } = require('../utils/mailService');
 
 // Initialize Razorpay
 const razorpay = new Razorpay({
@@ -91,7 +92,15 @@ exports.verifyPayment = async (req, res) => {
       // Update user to Pro status if userId is provided
       const { userId } = req.body;
       if (userId) {
-        await User.findByIdAndUpdate(userId, { isPro: true });
+        const user = await User.findByIdAndUpdate(userId, { isPro: true }, { new: true });
+        
+        // Send Pro Upgrade Email
+        try {
+          const template = templates.proUpgrade(user.firstName);
+          await sendEmail(user.email, template.subject, template.html);
+        } catch (mailErr) {
+          console.error('Failed to send pro upgrade email:', mailErr);
+        }
       }
 
       res.status(200).json({
