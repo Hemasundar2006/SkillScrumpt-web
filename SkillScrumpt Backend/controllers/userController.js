@@ -46,6 +46,9 @@ exports.registerUser = async (req, res) => {
         lastName: user.lastName,
         email: user.email,
         role: user.role,
+        isPro: user.isPro,
+        isVerified: user.isVerified,
+        aiScore: user.aiScore,
         token: generateToken(user._id)
       });
     }
@@ -70,6 +73,9 @@ exports.loginUser = async (req, res) => {
         lastName: user.lastName,
         email: user.email,
         role: user.role,
+        isPro: user.isPro,
+        isVerified: user.isVerified,
+        aiScore: user.aiScore,
         token: generateToken(user._id)
       });
     } else {
@@ -208,6 +214,9 @@ exports.updateUserProfile = async (req, res) => {
         lastName: updatedUser.lastName,
         email: updatedUser.email,
         role: updatedUser.role,
+        isPro: updatedUser.isPro,
+        isVerified: updatedUser.isVerified,
+        aiScore: updatedUser.aiScore,
         bio: updatedUser.bio,
         phone: updatedUser.phone,
         location: updatedUser.location,

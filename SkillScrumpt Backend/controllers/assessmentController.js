@@ -40,7 +40,15 @@ exports.getAssessmentById = async (req, res) => {
       }
     }
 
-    const assessment = await Assessment.findById(req.params.id);
+    let assessment;
+    if (mongoose.Types.ObjectId.isValid(req.params.id)) {
+      assessment = await Assessment.findById(req.params.id);
+    }
+    
+    if (!assessment) {
+      assessment = await Assessment.findOne({ testId: req.params.id });
+    }
+
     if (assessment) {
       res.json(assessment);
     } else {
@@ -75,30 +83,24 @@ exports.submitResult = async (req, res) => {
     let proctoringSummary = 'Session verified clean.';
 
     if (proctoringReport) {
-      // Use the actual AI Proctoring report
       const proctoringScore = proctoringReport.proctoring_score || 100;
-      
-      // Cheating probability is inversely proportional to proctoring score
       cheatingProbability = (100 - proctoringScore) / 100;
-      
-      // Calculate final overall score combining technical score and proctoring integrity
-      // Technical score is 70% weight, Proctoring integrity is 30% weight
       finalScore = Math.round((score * 0.7) + (proctoringScore * 0.3));
 
+      const techGrade = score >= 90 ? 'EXCEPTIONAL' : score >= 70 ? 'COMPETENT' : 'DEVELOPING';
+      const integrityGrade = proctoringScore >= 85 ? 'OPTIMAL' : proctoringScore >= 70 ? 'NOMINAL' : 'COMPROMISED';
+
       if (proctoringScore < 50) {
-        proctoringSummary = `CRITICAL_VIOLATION: AI proctoring detected significant integrity anomalies. Assessment terminated with failure status.`;
-        cheatingProbability = 0.9; // Force failure
-      } else if (proctoringScore < 70) {
-        proctoringSummary = `INTEGRITY_ALERT: Multiple suspicious behaviors detected during the session.`;
+        proctoringSummary = `CRITICAL_SECURITY_VIOLATION: AI telemetry detected significant integrity deviations (Integrity: ${integrityGrade}). Technical performance (${techGrade}) voided due to security breach.`;
+        cheatingProbability = 0.9;
       } else if (proctoringScore < 85) {
-        proctoringSummary = `NOMINAL_ANOMALIES: Minor behavioral deviations recorded.`;
+        proctoringSummary = `INTEGRITY_ALERT: Technical proficiency evaluated as ${techGrade}. However, behavioral telemetry recorded minor anomalies (Integrity: ${integrityGrade}). Further manual audit may be required for elite badge verification.`;
       } else {
-        proctoringSummary = `VERIFIED_CLEAN: Session maintained optimal integrity standards.`;
+        proctoringSummary = `VERIFIED_SUCCESS: Candidate demonstrated ${techGrade} technical proficiency with ${integrityGrade} session integrity. AI Engine confirms authentic expertise.`;
       }
     } else {
-      // Fallback if no report is provided
       cheatingProbability = calculateCheatingProbability(proctoringLogs);
-      proctoringSummary = cheatingProbability > 0.5 ? 'SECURITY_BREACH: Suspicious activity detected via telemetry logs.' : 'VERIFIED_CLEAN: No significant telemetry alerts.';
+      proctoringSummary = cheatingProbability > 0.5 ? 'SECURITY_ALERT: Suspicious telemetry detected. Session integrity compromised.' : 'VERIFIED_CLEAN: Performance metrics and integrity logs within expected parameters.';
     }
 
     // A test fails if either the technical score is too low (< 70) OR if suspicious activity is high
@@ -155,11 +157,11 @@ exports.submitResult = async (req, res) => {
     try {
       // Find assessment - handle potential non-ObjectId errors
       let assessmentData;
-      try {
+      if (mongoose.Types.ObjectId.isValid(req.params.id)) {
         assessmentData = await Assessment.findById(req.params.id);
-      } catch (err) {
-        // If not a valid ObjectId, search by _id string or use a fallback
-        assessmentData = await Assessment.findOne({ _id: req.params.id });
+      }
+      if (!assessmentData) {
+        assessmentData = await Assessment.findOne({ testId: req.params.id });
       }
 
       const finalAssessmentTitle = assessmentData?.title || 'Expert Assessment';

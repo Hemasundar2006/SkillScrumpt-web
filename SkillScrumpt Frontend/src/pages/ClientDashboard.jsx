@@ -112,6 +112,7 @@ export function ClientDashboard() {
       ]);
 
       setUser(profileRes.data);
+      localStorage.setItem('user', JSON.stringify(profileRes.data));
       setProjects(projectsRes.data.slice(0, 3)); 
       setTalent(talentRes.data.slice(0, 3));
     } catch (err) {

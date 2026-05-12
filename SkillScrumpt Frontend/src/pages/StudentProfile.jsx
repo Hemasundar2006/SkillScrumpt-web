@@ -134,13 +134,20 @@ export function StudentProfile() {
             <Card className="p-8 border-none shadow-xl">
               <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-6">AI Skill Score</h3>
               <div className="text-center py-6 bg-gray-50 rounded-custom mb-6">
-                <div className="text-5xl font-black text-primary mb-2">982</div>
-                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Top 1% of Platform</p>
+                <div className="text-5xl font-black text-primary mb-2">{profile.aiScore || 0}</div>
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+                  {profile.aiScore > 500 ? 'Top 1% of Platform' : profile.aiScore > 200 ? 'Expert Tier' : 'Growing Talent'}
+                </p>
               </div>
               <div className="space-y-4">
-                <SkillProgress label="Frontend Architecture" value={98} />
-                <SkillProgress label="Distributed Systems" value={95} />
-                <SkillProgress label="Security & Cryptography" value={92} />
+                {profile.skills && profile.skills.length > 0 ? profile.skills.map((skill, idx) => (
+                  <SkillProgress key={idx} label={skill} value={profile.aiScore > 0 ? Math.min(100, Math.floor(profile.aiScore / 10)) : 75} />
+                )) : (
+                  <>
+                    <SkillProgress label="Core Competency" value={75} />
+                    <SkillProgress label="Session Integrity" value={98} />
+                  </>
+                )}
               </div>
             </Card>
 

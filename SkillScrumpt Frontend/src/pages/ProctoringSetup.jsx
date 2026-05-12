@@ -106,7 +106,7 @@ export function ProctoringSetup() {
 
   const nextStep = () => {
     if (step < steps.length - 1) setStep(step + 1);
-    else navigate(`/assessments/live`, { state: { testId: id } });
+    else navigate(`/assessments/live/${id}`);
   };
 
   return (

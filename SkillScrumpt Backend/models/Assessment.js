@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const assessmentSchema = new mongoose.Schema({
+  testId: { type: String, required: true, unique: true },
   title: { type: String, required: true },
   description: { type: String },
   duration: { type: Number, required: true }, // in minutes

@@ -21,16 +21,16 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { Button, Badge, Card } from '../components/UI';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import api from '../utils/api';
 
 import { useProctoring } from '../hooks/useProctoring';
 import { ProctoringOverlay } from '../components/ProctoringOverlay';
 
 export function AIProctoringInterface() {
+  const { testId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const testId = location.state?.testId;
   const user = JSON.parse(localStorage.getItem('user'));
   
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
@@ -45,19 +45,47 @@ export function AIProctoringInterface() {
   const [lockMessage, setLockMessage] = useState("");
   const [remainingHours, setRemainingHours] = useState(null);
 
+  const [questions, setQuestions] = useState([]);
+  const [assessment, setAssessment] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
-    const checkAttempt = async () => {
+    const fetchAssessmentData = async () => {
+      setIsLoading(true);
       try {
-        await api.get(`/assessments/${testId || 'react-assessment-01'}`);
-      } catch (error) {
-        if (error.response && error.response.status === 403) {
-          setIsLocked(true);
-          setLockMessage(error.response.data.message);
-          setRemainingHours(error.response.data.remainingHours);
+        const id = testId || 'react-assessment-01';
+        const response = await api.get(`/assessments/${id}`);
+        setAssessment(response.data);
+        if (response.data.questions && response.data.questions.length > 0) {
+          setQuestions(response.data.questions);
+          // Set duration from assessment if available
+          if (response.data.duration) {
+            setTimeLeft(response.data.duration * 60);
+          }
+        } else {
+          // Fallback if no questions found
+          setQuestions([
+            {
+              id: 1,
+              type: 'mcq',
+              question: 'System Error: No questions found for this assessment. Please contact support.',
+              options: ['Retry', 'Exit'],
+              correctAnswer: 0
+            }
+          ]);
         }
+      } catch (err) {
+        console.error('Error fetching assessment questions:', err);
+        if (err.response && err.response.status === 403) {
+          setIsLocked(true);
+          setLockMessage(err.response.data.message);
+          setRemainingHours(err.response.data.remainingHours);
+        }
+      } finally {
+        setIsLoading(false);
       }
     };
-    checkAttempt();
+    fetchAssessmentData();
   }, [testId]);
 
   const {
@@ -82,26 +110,6 @@ export function AIProctoringInterface() {
       handleFinish();
     }
   }, [violations, isActive]);
-
-  const questions = [
-    ...Array.from({ length: 20 }, (_, i) => ({
-      id: i + 1,
-      type: 'mcq',
-      question: `Question ${i + 1}: What is the output of this ${i % 2 === 0 ? 'React' : 'JavaScript'} concept?`,
-      options: [
-        'Option A: Performance optimized approach',
-        'Option B: Standard implementation',
-        'Option C: Deprecated but functional',
-        'Option D: Syntax error in strict mode'
-      ]
-    })),
-    {
-      id: 21,
-      type: 'coding',
-      question: 'Implement a function to find the longest palindromic substring in a given string.',
-      initialCode: '// Write your JavaScript solution here\nfunction longestPalindrome(s) {\n  \n}'
-    }
-  ];
 
   useEffect(() => {
     const handleResize = () => setIsDesktop(window.innerWidth >= 1024);
@@ -130,48 +138,63 @@ export function AIProctoringInterface() {
   };
 
   const handleFinish = async () => {
-    if (isSubmitting) return;
+    if (isSubmitting || questions.length === 0) return;
     setIsSubmitting(true);
     const report = await stopProctoring();
     
     try {
-      // Calculate basic technical score from answers
+      // Calculate technical score from actual answers
       let correctCount = 0;
-      Object.keys(answers).forEach(qId => {
-        // Mock correct answer logic: assume option A (0) is always correct for MCQ
-        if (questions[qId].type === 'mcq' && answers[qId] === 0) {
-          correctCount++;
-        } else if (questions[qId].type === 'coding' && answers[qId].length > 20) {
-          correctCount++;
+      let totalPoints = 0;
+      let earnedPoints = 0;
+
+      questions.forEach((q, idx) => {
+        const qPoints = q.points || 1;
+        totalPoints += qPoints;
+        
+        if (q.type === 'mcq') {
+          if (answers[idx] === q.correctAnswer) {
+            correctCount++;
+            earnedPoints += qPoints;
+          }
+        } else if (q.type === 'coding') {
+          // For coding challenges, we do a basic length/keyword check if not using a real runner
+          // or we can assume a base score if they attempted it
+          if (answers[idx] && answers[idx].length > 50) {
+            correctCount++;
+            earnedPoints += qPoints;
+          }
         }
       });
       
-      const technicalScore = Math.round((correctCount / questions.length) * 100) || 85;
+      const technicalScore = totalPoints > 0 ? Math.round((earnedPoints / totalPoints) * 100) : 0;
 
       const response = await api.post(`/assessments/${testId || 'react-assessment-01'}/submit`, {
         score: technicalScore,
         totalQuestions: questions.length,
         correctAnswers: correctCount,
-        timeTaken: 3600 - timeLeft,
-        proctoringReport: report, // Sending the full report to backend
+        timeTaken: (assessment?.duration * 60 || 3600) - timeLeft,
+        proctoringReport: report,
       });
 
       navigate('/assessments/result', { 
           state: { 
               score: response.data.score || technicalScore,
               proctoringScore: report?.proctoring_score || 100,
-              report: report,
+              report: {
+                ...report,
+                aiAnalysis: response.data.aiAnalysis // Include the backend analysis
+              },
               status: response.data.status,
               assessmentId: testId || 'react-assessment-01'
           } 
       });
     } catch (error) {
       console.error("Error submitting assessment:", error);
-      // Fallback if backend fails
       navigate('/assessments/result', { 
           state: { 
-              score: 85,
-              proctoringScore: report?.proctoring_score || 100,
+              score: 0,
+              proctoringScore: report?.proctoring_score || 0,
               report: report,
               status: 'failed'
           } 
@@ -218,6 +241,17 @@ export function AIProctoringInterface() {
   }
 
   if (!isDesktop) return <DesktopRequiredView />;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-6">
+          <div className="w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+          <p className="text-slate-500 font-bold text-sm uppercase tracking-widest animate-pulse">Initializing Assessment Engine...</p>
+        </div>
+      </div>
+    );
+  }
 
   const currentQuestion = questions[currentQuestionIdx];
 
@@ -333,7 +367,7 @@ export function AIProctoringInterface() {
                       <div className="bg-slate-50 px-6 py-4 border-b border-slate-200 flex items-center justify-between">
                          <div className="flex items-center gap-3">
                             <div className="w-2 h-2 bg-indigo-500 rounded-full" />
-                            <span className="text-xs font-bold text-slate-600">index.js</span>
+                            <span className="text-xs font-bold text-slate-600">{currentQuestion.language === 'python' ? 'solution.py' : 'index.js'}</span>
                          </div>
                          <button 
                             onClick={async () => {
@@ -341,7 +375,7 @@ export function AIProctoringInterface() {
                               setConsoleOutput("Compiling...");
                               try {
                                 const response = await api.post('/compiler/run', {
-                                  compiler: 'nodejs20',
+                                  compiler: currentQuestion.language === 'python' ? 'python3' : 'nodejs20',
                                   code: answers[currentQuestionIdx] || currentQuestion.initialCode,
                                   input: ''
                                 });

@@ -221,7 +221,7 @@ function App() {
               <ZeroBrokeragePage />
             </PageWrapper>
           } />
-          <Route path="/assessments/live" element={
+          <Route path="/assessments/live/:testId" element={
             <ProtectedRoute role="professional">
               <PageWrapper>
                 <AIProctoringInterface />

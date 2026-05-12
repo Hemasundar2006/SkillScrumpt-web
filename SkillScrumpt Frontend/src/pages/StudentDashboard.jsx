@@ -120,6 +120,7 @@ export function StudentDashboard() {
       ]);
 
       setUser(profileRes.data);
+      localStorage.setItem('user', JSON.stringify(profileRes.data));
       setProjects(projectsRes.data.slice(0, 3)); 
       setTestHistory(historyRes.data);
       

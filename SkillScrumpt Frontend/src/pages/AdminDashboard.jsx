@@ -73,6 +73,7 @@ export function AdminDashboard() {
         api.get('/admin/stats')
       ]);
       setUser(profileRes.data);
+      localStorage.setItem('user', JSON.stringify(profileRes.data));
       setStats(statsRes.data.stats);
       setRecentActivity(statsRes.data.recentActivity);
     } catch (err) {

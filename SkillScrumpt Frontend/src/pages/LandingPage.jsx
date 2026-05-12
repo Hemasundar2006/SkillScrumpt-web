@@ -88,9 +88,9 @@ export function LandingPage() {
     window.addEventListener('scroll', handleScroll);
     
     // Fetch real stats from backend
-    fetch('http://localhost:5000/api/v1/users/stats')
-      .then(res => res.json())
-      .then(data => {
+    api.get('/users/stats')
+      .then(res => {
+        const data = res.data;
         if(data && !data.message) {
           setStats({
             students: data.students,
@@ -103,9 +103,9 @@ export function LandingPage() {
       .catch(err => console.error("Could not fetch stats", err));
 
     // Fetch real feedbacks
-    fetch('http://localhost:5000/api/v1/users/feedbacks')
-      .then(res => res.json())
-      .then(data => {
+    api.get('/users/feedbacks')
+      .then(res => {
+        const data = res.data;
         if(data && Array.isArray(data) && data.length > 0) {
           // If we have less than 4, append defaults to make it scroll nicely
           if (data.length < 4) {
