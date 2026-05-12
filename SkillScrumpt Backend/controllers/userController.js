@@ -125,10 +125,10 @@ exports.getStats = async (req, res) => {
     const hiredCount = Math.floor(studentCount * 0.3);
 
     res.json({
-      students: studentCount + 150000, // Adding base count to look realistic per UI
-      clients: clientCount + 1200,
-      assessments: assessmentsCount + 850000,
-      hired: hiredCount + 45000
+      students: studentCount,
+      clients: clientCount,
+      assessments: assessmentsCount,
+      hired: hiredCount
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

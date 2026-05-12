@@ -71,10 +71,10 @@ export function LandingPage() {
   const [loading, setLoading] = useState(true);
   const [scrolled, setScrolled] = useState(false);
   const [stats, setStats] = useState({
-    students: "150k+",
-    assessments: "850k+",
-    clients: "1200+",
-    hired: "45k+"
+    students: "0",
+    assessments: "0",
+    clients: "0",
+    hired: "0"
   });
   const [feedbacks, setFeedbacks] = useState([
     { user: { firstName: "Sarah", lastName: "Jenkins", role: "professional" }, text: "SkillScrumpt.in helped me land a high-paying freelance gig at a top tech company. The verification process is tough, but it really sets you apart.", createdAt: "2024-07-31" },
@@ -93,10 +93,10 @@ export function LandingPage() {
       .then(data => {
         if(data && !data.message) {
           setStats({
-            students: (data.students >= 1000 ? (data.students/1000).toFixed(1) + 'k+' : data.students),
-            assessments: (data.assessments >= 1000 ? (data.assessments/1000).toFixed(1) + 'k+' : data.assessments),
-            clients: data.clients + '+',
-            hired: (data.hired >= 1000 ? (data.hired/1000).toFixed(1) + 'k+' : data.hired)
+            students: data.students,
+            assessments: data.assessments,
+            clients: data.clients,
+            hired: data.hired
           });
         }
       })
@@ -260,7 +260,7 @@ export function LandingPage() {
             `${stats.assessments} ASSESSMENTS TAKEN`, 
             `${stats.clients} TRUSTED CLIENTS`, 
             `${stats.hired} PROFESSIONALS HIRED`, 
-            "120+ COUNTRIES",
+            "1 COUNTRY (INDIA)",
             "ZERO BROKERAGE"
           ].map((stat, i) => (
             <div key={i} className="my-8 flex flex-col md:flex-row items-center justify-center gap-4 md:gap-10 text-4xl md:text-7xl font-black italic text-outline hover:text-white transition-all cursor-default text-center px-4">
