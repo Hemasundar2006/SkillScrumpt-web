@@ -39,12 +39,16 @@ export function AssessmentResult() {
     proctoringScore: 100, 
     report: null,
     status: 'failed',
-    assessmentId: 'react-assessment-01'
+    assessmentId: ''
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (assessmentId) {
+      fetchData();
+    } else {
+      setIsLoading(false);
+    }
+  }, [assessmentId]);
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -52,7 +56,7 @@ export function AssessmentResult() {
       const savedUser = JSON.parse(localStorage.getItem('user'));
       const [profileRes, assessmentRes] = await Promise.all([
         api.get(`/users/profile/${savedUser._id || savedUser.id}`),
-        api.get(`/assessments/${assessmentId || 'react-assessment-01'}`)
+        api.get(`/assessments/${assessmentId}`)
       ]);
       setCurrentUser(profileRes.data);
       setAssessment(assessmentRes.data);

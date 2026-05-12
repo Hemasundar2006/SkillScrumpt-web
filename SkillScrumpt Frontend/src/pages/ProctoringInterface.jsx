@@ -51,35 +51,74 @@ export function AIProctoringInterface() {
 
   useEffect(() => {
     const fetchAssessmentData = async () => {
+      if (!testId) {
+        setIsLoading(false);
+        return;
+      }
+
       setIsLoading(true);
       try {
-        const id = testId || 'react-assessment-01';
-        const response = await api.get(`/assessments/${id}`);
-        setAssessment(response.data);
-        if (response.data.questions && response.data.questions.length > 0) {
-          setQuestions(response.data.questions);
-          // Set duration from assessment if available
-          if (response.data.duration) {
-            setTimeLeft(response.data.duration * 60);
+        console.log(`Attempting to fetch assessment with ID: ${testId}`);
+        const response = await api.get(`/assessments/${testId}`);
+        
+        if (response.data) {
+          setAssessment(response.data);
+          if (response.data.questions && response.data.questions.length > 0) {
+            setQuestions(response.data.questions);
+            if (response.data.duration) {
+              setTimeLeft(response.data.duration * 60);
+            }
+          } else {
+            console.warn('Assessment found but contains no questions.');
+            setQuestions([
+              {
+                id: 1,
+                type: 'mcq',
+                question: 'Assessment data error: No questions are associated with this test ID.',
+                options: ['Return to Dashboard', 'Contact Support'],
+                correctAnswer: 0
+              }
+            ]);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching assessment questions:', err);
+        if (err.response) {
+          if (err.response.status === 403) {
+            setIsLocked(true);
+            setLockMessage(err.response.data.message);
+            setRemainingHours(err.response.data.remainingHours);
+          } else if (err.response.status === 404) {
+            setQuestions([
+              {
+                id: 1,
+                type: 'mcq',
+                question: `Error 404: The assessment ID "${testId}" was not found in our database.`,
+                options: ['Go Back', 'Browse All Tests'],
+                correctAnswer: 0
+              }
+            ]);
+          } else {
+            setQuestions([
+              {
+                id: 1,
+                type: 'mcq',
+                question: `Backend Error: ${err.response.data.message || 'Failed to connect to assessment engine.'}`,
+                options: ['Retry', 'Exit'],
+                correctAnswer: 0
+              }
+            ]);
           }
         } else {
-          // Fallback if no questions found
           setQuestions([
             {
               id: 1,
               type: 'mcq',
-              question: 'System Error: No questions found for this assessment. Please contact support.',
+              question: 'Network Error: Unable to reach the SkillScrumpt backend. Please check your connection.',
               options: ['Retry', 'Exit'],
               correctAnswer: 0
             }
           ]);
-        }
-      } catch (err) {
-        console.error('Error fetching assessment questions:', err);
-        if (err.response && err.response.status === 403) {
-          setIsLocked(true);
-          setLockMessage(err.response.data.message);
-          setRemainingHours(err.response.data.remainingHours);
         }
       } finally {
         setIsLoading(false);
@@ -98,7 +137,7 @@ export function AIProctoringInterface() {
     canvasRef,
   } = useProctoring({
     userId: user?._id || user?.id,
-    examId: testId || 'react-assessment-01',
+    examId: testId,
     onAlert: (alert) => {
       console.log("[HUD Alert]", alert);
     }
@@ -169,7 +208,7 @@ export function AIProctoringInterface() {
       
       const technicalScore = totalPoints > 0 ? Math.round((earnedPoints / totalPoints) * 100) : 0;
 
-      const response = await api.post(`/assessments/${testId || 'react-assessment-01'}/submit`, {
+      const response = await api.post(`/assessments/${testId}/submit`, {
         score: technicalScore,
         totalQuestions: questions.length,
         correctAnswers: correctCount,
@@ -186,7 +225,7 @@ export function AIProctoringInterface() {
                 aiAnalysis: response.data.aiAnalysis // Include the backend analysis
               },
               status: response.data.status,
-              assessmentId: testId || 'react-assessment-01'
+              assessmentId: testId
           } 
       });
     } catch (error) {
@@ -640,7 +679,7 @@ function DesktopRequiredView() {
   const [isSending, setIsSending] = useState(false);
   const [sent, setSent] = useState(false);
   const location = useLocation();
-  const testId = location.state?.testId || 'react-assessment-01';
+  const testId = location.state?.testId || '';
 
   const handleSendLink = async () => {
     setIsSending(true);

@@ -37,16 +37,57 @@ const generateAssessments = () => {
         questions: []
       };
 
-      // Generate 60 MCQs
-      for (let i = 1; i <= 60; i++) {
+      // Skill-specific templates for better quality
+      const getSkillSpecificTemplates = (skillName) => {
+        const lowerSkill = skillName.toLowerCase();
+        if (lowerSkill.includes('react')) {
+          return [
+            `What is the primary purpose of the Virtual DOM in ${skillName}?`,
+            `How does ${skillName} handle prop drilling in large-scale applications?`,
+            `What are the advantages of using Functional Components over Class Components in ${skillName}?`,
+            `Explain the reconciliation process in ${skillName}.`,
+            `How do you optimize performance for a large list in ${skillName}?`
+          ];
+        }
+        if (lowerSkill.includes('python')) {
+          return [
+            `What is the difference between a list and a tuple in ${skillName}?`,
+            `How does ${skillName} handle memory management and garbage collection?`,
+            `What is a decorator in ${skillName} and when should you use it?`,
+            `Explain the difference between 'is' and '==' in ${skillName}.`,
+            `What are generators in ${skillName} and how do they differ from iterators?`
+          ];
+        }
+        return [];
+      };
+
+      const skillTemplates = getSkillSpecificTemplates(skill);
+      const questionTemplates = [
+        ...skillTemplates,
+        `What is the primary architectural benefit of using ${skill} in a production-scale system?`,
+        `When debugging a high-latency issue in a ${skill} environment, which tool/pattern is most effective?`,
+        `How does ${skill} handle internal state management compared to industry alternatives?`,
+        `Which of the following is a security best practice specifically for ${skill} implementations?`,
+        `In a microservices architecture, how should ${skill} components ideally communicate?`,
+        `What is the time complexity of the core data structure used by ${skill} for lookup operations?`,
+        `How do you implement effective error boundary patterns within a ${skill} application?`,
+        `What is the recommended strategy for horizontal scaling of ${skill} instances?`,
+        `Which design pattern is most commonly used in ${skill} to decouple business logic?`,
+        `How does ${skill} ensure data consistency during concurrent write operations?`
+      ];
+
+      // Generate 20 MCQs
+      for (let i = 0; i < 20; i++) {
+        const template = questionTemplates[i % questionTemplates.length];
         assessment.questions.push({
-          question: `Q${i}: In a professional ${skill} environment, what is the most critical consideration when implementing a scalable solution?`,
+          id: i + 1, // Explicit ID for frontend tracking
+          question: template,
           type: 'mcq',
           options: [
-            'Maintainability and architectural integrity',
-            'Short-term performance hacks',
-            'Minimal documentation for faster delivery',
-            'Legacy compatibility without refactoring'
+            `Optimized ${skill} performance and maintainability`,
+            `Legacy compatibility with non-${skill} systems`,
+            `Reducing development time at the cost of scalability`,
+            `Minimal configuration overhead for small teams`
           ],
           correctAnswer: 0,
           points: 1
@@ -57,13 +98,19 @@ const generateAssessments = () => {
       const isCoding = ['Programming', 'Web Development', 'Mobile Development', 'Data & AI'].includes(category);
       const language = isCoding ? (skill.toLowerCase().includes('python') ? 'python' : 'nodejs20') : 'text';
 
-      for (let j = 1; j <= 3; j++) {
+      const codingChallenges = [
+        `Implement a ${skill} utility function that handles asynchronous retry logic with exponential backoff.`,
+        `Refactor the following ${skill} code snippet to improve its time complexity from O(n^2) to O(n log n).`,
+        `Create a robust validation schema for a ${skill} data model ensuring strict type integrity.`
+      ];
+
+      for (let j = 0; j < 3; j++) {
         assessment.questions.push({
-          question: `Technical Challenge ${j}: ${isCoding ? 'Implement' : 'Describe'} a complex ${skill} workflow that optimizes for concurrency and data integrity.`,
+          question: `Technical Challenge ${j + 1}: ${isCoding ? 'Implement' : 'Describe'} ${codingChallenges[j]}`,
           type: 'coding',
           language: language,
-          initialCode: language === 'python' ? '# Python Solution\ndef process_data():\n    pass' : language === 'nodejs20' ? '// Node.js Solution\nfunction processData() {\n}' : '// Provide your detailed response here',
-          testCases: [{ input: 'payload_01', output: 'success_01', isPublic: true }],
+          initialCode: language === 'python' ? `# Python Solution\ndef solution():\n    # Your code for ${skill} here\n    pass` : language === 'nodejs20' ? `// Node.js Solution\nfunction solution() {\n    // Your code for ${skill} here\n}` : `// Provide your detailed response regarding ${skill} here`,
+          testCases: [{ input: 'test_input', output: 'expected_output', isPublic: true }],
           points: 10
         });
       }

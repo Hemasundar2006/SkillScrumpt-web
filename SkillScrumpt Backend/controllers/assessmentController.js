@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Assessment = require('../models/Assessment');
 const AssessmentResult = require('../models/AssessmentResult');
 const User = require('../models/User');
@@ -21,6 +22,8 @@ exports.getAssessmentById = async (req, res) => {
   try {
     const settings = await Settings.findOne() || { coolingPeriodActive: true };
     const user = await User.findById(req.user._id);
+    
+    // Check for cooling period if attempt failed recently
     const lastAttempt = user.attemptedExams
       .filter(attempt => attempt.examId === req.params.id)
       .sort((a, b) => b.attemptedAt - a.attemptedAt)[0];
@@ -50,7 +53,34 @@ exports.getAssessmentById = async (req, res) => {
     }
 
     if (assessment) {
-      res.json(assessment);
+      // Logic: Randomize questions for each student attempt
+      const mcqs = assessment.questions.filter(q => q.type === 'mcq');
+      const coding = assessment.questions.filter(q => q.type === 'coding');
+      
+      // Helper to shuffle
+      const shuffle = (array) => {
+        const arr = [...array];
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+      };
+
+      // Pick random subset: 20 MCQs + 1 Coding challenge
+      const selectedMcqs = shuffle(mcqs).slice(0, 20);
+      const selectedCoding = shuffle(coding).slice(0, 1);
+      
+      // Re-index questions for frontend display consistency
+      const finalQuestions = [...selectedMcqs, ...selectedCoding].map((q, idx) => {
+        const qObj = q.toObject ? q.toObject() : q;
+        return { ...qObj, id: idx + 1 };
+      });
+
+      const assessmentObj = assessment.toObject();
+      assessmentObj.questions = finalQuestions;
+      
+      res.json(assessmentObj);
     } else {
       res.status(404).json({ message: 'Assessment not found' });
     }
