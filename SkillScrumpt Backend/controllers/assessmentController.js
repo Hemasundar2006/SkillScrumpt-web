@@ -53,9 +53,11 @@ exports.getAssessmentById = async (req, res) => {
     }
 
     if (assessment) {
+      const assessmentObj = assessment.toObject();
+      
       // Logic: Randomize questions for each student attempt
-      const mcqs = assessment.questions.filter(q => q.type === 'mcq');
-      const coding = assessment.questions.filter(q => q.type === 'coding');
+      const mcqs = assessmentObj.questions.filter(q => q.type === 'mcq');
+      const coding = assessmentObj.questions.filter(q => q.type === 'coding');
       
       // Helper to shuffle
       const shuffle = (array) => {
@@ -71,14 +73,18 @@ exports.getAssessmentById = async (req, res) => {
       const selectedMcqs = shuffle(mcqs).slice(0, 20);
       const selectedCoding = shuffle(coding).slice(0, 1);
       
-      // Re-index questions for frontend display consistency
-      const finalQuestions = [...selectedMcqs, ...selectedCoding].map((q, idx) => {
-        const qObj = q.toObject ? q.toObject() : q;
-        return { ...qObj, id: idx + 1 };
-      });
-
-      const assessmentObj = assessment.toObject();
-      assessmentObj.questions = finalQuestions;
+      // Re-index questions for frontend display consistency and ensure all fields are explicitly sent
+      assessmentObj.questions = [...selectedMcqs, ...selectedCoding].map((q, idx) => ({
+        id: idx + 1,
+        question: q.question,
+        type: q.type,
+        options: q.options || [],
+        correctAnswer: q.correctAnswer, // This allows frontend scoring
+        points: q.points || 1,
+        language: q.language,
+        initialCode: q.initialCode,
+        testCases: q.testCases || []
+      }));
       
       res.json(assessmentObj);
     } else {
@@ -133,14 +139,17 @@ exports.submitResult = async (req, res) => {
       proctoringSummary = cheatingProbability > 0.5 ? 'SECURITY_ALERT: Suspicious telemetry detected. Session integrity compromised.' : 'VERIFIED_CLEAN: Performance metrics and integrity logs within expected parameters.';
     }
 
-    // A test fails if either the technical score is too low (< 70) OR if suspicious activity is high
-    const status = (finalScore >= 70 && cheatingProbability < 0.5) ? 'passed' : 'failed';
+    const assessmentData = await Assessment.findById(req.params.id) || await Assessment.findOne({ testId: req.params.id });
+    const cutoff = assessmentData?.cutoffScore || 90;
+
+    // A test fails if either the technical score is too low (< cutoff) OR if suspicious activity is high
+    const status = (finalScore >= cutoff && cheatingProbability < 0.5) ? 'passed' : 'failed';
     
     // Explicitly set failure reason if it's proctoring related
     if (status === 'failed' && cheatingProbability >= 0.5) {
       proctoringSummary = proctoringSummary || "FAILED: Security protocols detected suspicious activity.";
-    } else if (status === 'failed' && finalScore < 70) {
-      proctoringSummary = "FAILED: Technical performance did not meet the required threshold.";
+    } else if (status === 'failed' && finalScore < cutoff) {
+      proctoringSummary = `FAILED: Technical performance (${finalScore}%) did not meet the required threshold of ${cutoff}%.`;
     }
 
     const result = await AssessmentResult.create({

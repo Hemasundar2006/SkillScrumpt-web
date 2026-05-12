@@ -32,7 +32,7 @@ const generateAssessments = () => {
         difficulty: 'Intermediate',
         reward: `${skill} Verified Badge`,
         category: category,
-        cutoffScore: 70,
+        cutoffScore: 90,
         isProctored: true,
         questions: []
       };
@@ -89,7 +89,7 @@ const generateAssessments = () => {
             `Reducing development time at the cost of scalability`,
             `Minimal configuration overhead for small teams`
           ],
-          correctAnswer: 0,
+          correctAnswer: Math.floor(Math.random() * 4),
           points: 1
         });
       }
