@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Shield, 
@@ -45,11 +45,29 @@ export function StudentProfile() {
   }, [id]);
 
   if (isLoading) {
-    return <div className="pt-32 pb-24 text-center font-bold text-gray-500">Loading profile...</div>;
+    return (
+      <DashboardLayout user={currentUser}>
+        <div className="pt-32 pb-24 text-center">
+          <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="font-bold text-slate-500 uppercase tracking-widest text-xs">Synchronizing Profile Data...</p>
+        </div>
+      </DashboardLayout>
+    );
   }
 
   if (!profile) {
-    return <div className="pt-32 pb-24 text-center font-bold text-gray-500">Profile not found.</div>;
+    return (
+      <DashboardLayout user={currentUser}>
+        <div className="pt-32 pb-24 text-center">
+          <div className="w-16 h-16 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
+            <Shield size={32} />
+          </div>
+          <p className="font-bold text-slate-900 text-lg">Identity Not Found</p>
+          <p className="text-slate-500 text-sm mt-2">The requested profile signature could not be verified in the vault.</p>
+          <Button onClick={() => navigate(-1)} variant="outline" className="mt-8 border-slate-200 text-slate-600">Return to Previous Node</Button>
+        </div>
+      </DashboardLayout>
+    );
   }
 
   const isOwnProfile = currentUser && (currentUser._id === id || currentUser.id === id);

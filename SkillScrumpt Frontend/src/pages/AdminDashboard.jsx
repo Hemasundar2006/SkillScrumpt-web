@@ -308,10 +308,10 @@ export function AdminDashboard() {
                     <tr key={u._id} className="hover:bg-slate-50 transition-colors group">
                       <td className="p-4">
                         <div className="flex items-center gap-3">
-                           <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center font-bold text-slate-400 text-sm">{u.firstName[0]}</div>
+                           <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center font-bold text-slate-400 text-sm">{u.firstName?.[0] || 'U'}</div>
                            <div>
                              <div className="flex items-center gap-2">
-                               <p className="font-semibold text-slate-900 text-sm">{u.firstName} {u.lastName}</p>
+                               <p className="font-semibold text-slate-900 text-sm">{u.firstName || 'Unknown'} {u.lastName || 'User'}</p>
                                {u.isPro && (
                                  <span className="flex items-center gap-1 px-1.5 py-0.5 bg-gradient-to-r from-amber-400 to-amber-600 text-white text-[8px] font-black rounded-full shadow-sm">
                                    <Zap size={8} fill="currentColor" /> PRO
@@ -385,8 +385,8 @@ export function AdminDashboard() {
                            </div>
                         </td>
                         <td className="p-4">
-                           <div className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${audit.isPassed ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-500'}`}>
-                             {audit.isPassed ? 'Cleared' : 'Flagged'}
+                           <div className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${audit.status === 'passed' ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-500'}`}>
+                             {audit.status === 'passed' ? 'Cleared' : 'Flagged'}
                            </div>
                         </td>
                         <td className="p-4 text-xs font-medium text-slate-400">
