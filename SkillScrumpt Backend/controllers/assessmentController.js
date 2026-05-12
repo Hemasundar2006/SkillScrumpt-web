@@ -78,8 +78,7 @@ exports.getAssessmentById = async (req, res) => {
         id: idx + 1,
         question: q.question,
         type: q.type,
-        options: q.options || [],
-        correctAnswer: q.correctAnswer, // This allows frontend scoring
+        options: q.options || [], // Now an array of objects { text, isCorrect }
         points: q.points || 1,
         language: q.language,
         initialCode: q.initialCode,

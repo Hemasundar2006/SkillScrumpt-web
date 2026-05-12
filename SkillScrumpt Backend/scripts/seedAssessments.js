@@ -76,20 +76,50 @@ const generateAssessments = () => {
         `How does ${skill} ensure data consistency during concurrent write operations?`
       ];
 
+      // Options templates to provide variety
+      const optionsTemplates = [
+        [
+          `Optimized ${skill} performance and maintainability`,
+          `Legacy compatibility with non-${skill} systems`,
+          `Reducing development time at the cost of scalability`,
+          `Minimal configuration overhead for small teams`
+        ],
+        [
+          `High-fidelity ${skill} reactive state management`,
+          `Direct memory access without abstraction layers`,
+          `Compiled-time optimization for low-end hardware`,
+          `Native support for legacy ${skill} plugins`
+        ],
+        [
+          `Distributed architecture with ${skill} micro-kernels`,
+          `Monolithic deployment for simplified orchestration`,
+          `Event-driven synchronization between ${skill} nodes`,
+          `Stateless execution within a virtualized sandbox`
+        ],
+        [
+          `Strict type safety and compile-time validation`,
+          `Dynamic interpretation for rapid prototyping`,
+          `Garbage-collected memory with deterministic cleanup`,
+          `Just-in-time compilation for adaptive performance`
+        ]
+      ];
+
       // Generate 20 MCQs
       for (let i = 0; i < 20; i++) {
         const template = questionTemplates[i % questionTemplates.length];
+        const optionsRaw = optionsTemplates[i % optionsTemplates.length];
+        const correctIdx = Math.floor(Math.random() * 4);
+        
+        const options = optionsRaw.map((optText, idx) => ({
+          text: optText,
+          isCorrect: idx === correctIdx
+        }));
+        
         assessment.questions.push({
-          id: i + 1, // Explicit ID for frontend tracking
+          id: i + 1,
           question: template,
           type: 'mcq',
-          options: [
-            `Optimized ${skill} performance and maintainability`,
-            `Legacy compatibility with non-${skill} systems`,
-            `Reducing development time at the cost of scalability`,
-            `Minimal configuration overhead for small teams`
-          ],
-          correctAnswer: Math.floor(Math.random() * 4),
+          options: options,
           points: 1
         });
       }

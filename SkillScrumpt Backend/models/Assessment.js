@@ -12,8 +12,11 @@ const assessmentSchema = new mongoose.Schema({
     question: { type: String, required: true },
     type: { type: String, enum: ['mcq', 'coding'], default: 'mcq' },
     // MCQ fields
-    options: [String],
-    correctAnswer: Number, // index of options for MCQ
+    options: [{
+      text: { type: String, required: true },
+      isCorrect: { type: Boolean, default: false }
+    }],
+    // removed correctAnswer: Number,
     // Coding fields
     testCases: [{
       input: String,

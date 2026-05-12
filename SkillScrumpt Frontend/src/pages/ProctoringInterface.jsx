@@ -192,7 +192,8 @@ export function AIProctoringInterface() {
         totalPoints += qPoints;
         
         if (q.type === 'mcq') {
-          if (answers[idx] === q.correctAnswer) {
+          const selectedOptionIdx = answers[idx];
+          if (selectedOptionIdx !== undefined && q.options[selectedOptionIdx]?.isCorrect) {
             correctCount++;
             earnedPoints += qPoints;
           }
@@ -394,7 +395,7 @@ export function AIProctoringInterface() {
                     <OptionCard 
                       key={i}
                       label={String.fromCharCode(65 + i)} 
-                      text={opt}
+                      text={opt.text}
                       selected={answers[currentQuestionIdx] === i}
                       onClick={() => setAnswers({...answers, [currentQuestionIdx]: i})}
                     />
