@@ -1,10 +1,11 @@
 const nodemailer = require('nodemailer');
 
+// 1. Create the Transporter
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
   port: 587,
   secure: false, // Use STARTTLS
-  family: 4, // Force IPv4 (Fixes ENETUNREACH on Render)
+  family: 4, // Force IPv4 (Fixes ENETUNREACH on Render and some other cloud providers)
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
@@ -13,12 +14,12 @@ const transporter = nodemailer.createTransport({
   maxConnections: 5,
   tls: {
     // This allows the connection even if the server certificate is not perfectly matched
-    // Often necessary for cloud environments like Render
+    // Often necessary for cloud environments
     rejectUnauthorized: false
   }
 });
 
-// Verify connection configuration
+// 2. (Optional) Verify connection configuration on startup
 transporter.verify(function (error, success) {
   if (error) {
     console.error('MAIL_SERVER_CONNECTION_ERROR:', {
@@ -31,12 +32,13 @@ transporter.verify(function (error, success) {
   }
 });
 
+// 3. Reusable function to send emails
 const sendEmail = async (to, subject, html) => {
   try {
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
       throw new Error('MISSING_MAIL_CREDENTIALS: EMAIL_USER or EMAIL_PASS not defined in environment.');
     }
-
+    
     console.log(`ATTEMPTING_EMAIL_DISPATCH to: ${to} | Subject: ${subject}`);
     const info = await transporter.sendMail({
       from: `"SkillScrumpt" <${process.env.EMAIL_USER}>`,
@@ -55,7 +57,7 @@ const sendEmail = async (to, subject, html) => {
     });
     
     if (error.code === 'EAUTH') {
-      console.error('AUTH_FAILURE: Gmail rejected credentials. 1. Check if EMAIL_USER/PASS are set in Live Env. 2. Ensure you are using an APP PASSWORD, not your regular password.');
+      console.error('AUTH_FAILURE: Gmail rejected credentials. 1. Check if EMAIL_USER/PASS are set. 2. Ensure you are using an APP PASSWORD, not your regular password.');
     }
     throw error;
   }
