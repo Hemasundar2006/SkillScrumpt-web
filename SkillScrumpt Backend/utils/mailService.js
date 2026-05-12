@@ -1,41 +1,64 @@
-const { Resend } = require('resend');
+const nodemailer = require('nodemailer');
 
-// Initialize Resend with the API key from environment variables
-const resend = new Resend(process.env.RESEND_API_KEY);
+// 1. Create the Transporter
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true, // Use SSL/TLS instead of STARTTLS (Often fixes Render timeouts)
+  family: 4, // Force IPv4 (Fixes ENETUNREACH on Render and some other cloud providers)
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+  pool: true,
+  maxConnections: 5,
+  tls: {
+    // This allows the connection even if the server certificate is not perfectly matched
+    // Often necessary for cloud environments
+    rejectUnauthorized: false
+  }
+});
 
-// Reusable function to send emails using Resend
+// 2. (Optional) Verify connection configuration on startup
+transporter.verify(function (error, success) {
+  if (error) {
+    console.error('MAIL_SERVER_CONNECTION_ERROR:', {
+      message: error.message,
+      code: error.code,
+      command: error.command
+    });
+  } else {
+    console.log('MAIL_SERVER_STATUS: Ready to deliver messages');
+  }
+});
+
+// 3. Reusable function to send emails
 const sendEmail = async (to, subject, html) => {
   try {
-    if (!process.env.RESEND_API_KEY) {
-      throw new Error('MISSING_MAIL_CREDENTIALS: RESEND_API_KEY not defined in environment.');
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      throw new Error('MISSING_MAIL_CREDENTIALS: EMAIL_USER or EMAIL_PASS not defined in environment.');
     }
     
     console.log(`ATTEMPTING_EMAIL_DISPATCH to: ${to} | Subject: ${subject}`);
-    
-    // IMPORTANT: If you have a custom domain on Resend (e.g., hello@skillscrumpt.com),
-    // set RESEND_FROM_EMAIL in your .env.
-    // If not, Resend requires you to use 'onboarding@resend.dev' and you can ONLY 
-    // send emails to the email address you used to sign up for Resend.
-    const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
-
-    const { data, error } = await resend.emails.send({
-      from: `SkillScrumpt <${fromEmail}>`,
-      to: [to], // Resend expects an array
-      subject: subject,
-      html: html,
+    const info = await transporter.sendMail({
+      from: `"SkillScrumpt" <${process.env.EMAIL_USER}>`,
+      to,
+      subject,
+      html,
     });
-
-    if (error) {
-      console.error('RESEND_API_ERROR:', error);
-      throw new Error(error.message);
-    }
-
-    console.log('EMAIL_SENT_SUCCESS: ID %s', data.id);
-    return data;
+    console.log('EMAIL_SENT_SUCCESS: %s', info.messageId);
+    return info;
   } catch (error) {
     console.error('CRITICAL_MAIL_ERROR:', {
-      message: error.message
+      message: error.message,
+      stack: error.stack,
+      code: error.code,
+      response: error.response
     });
+    
+    if (error.code === 'EAUTH') {
+      console.error('AUTH_FAILURE: Gmail rejected credentials. 1. Check if EMAIL_USER/PASS are set. 2. Ensure you are using an APP PASSWORD, not your regular password.');
+    }
     throw error;
   }
 };
