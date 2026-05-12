@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Star, Plus, Shield, ShieldCheck, Zap, Monitor, Lock, Target, ExternalLink, Mail, Instagram, Linkedin, Twitter, Menu, X, ChevronRight, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import api from '../utils/api';
 
 const Asterisk = ({ className }) => (
   <svg viewBox="0 0 100 100" className={`asterisk-spin ${className}`} fill="currentColor">
