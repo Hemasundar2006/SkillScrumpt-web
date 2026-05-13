@@ -47,3 +47,21 @@ exports.authorize = (...roles) => {
     next();
   };
 };
+// Optional protect - don't fail if no token
+exports.optionalProtect = async (req, res, next) => {
+  let token;
+
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    try {
+      token = req.headers.authorization.split(' ')[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
+      req.user = await User.findById(decoded.id).select('-password');
+    } catch (error) {
+      // Just continue without user
+    }
+  }
+  next();
+};

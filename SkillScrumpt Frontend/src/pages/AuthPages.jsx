@@ -73,7 +73,7 @@ export function Login() {
   }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black text-white selection:bg-white selection:text-black pt-20 px-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-black text-white selection:bg-white selection:text-black pt-32 pb-20 px-4 relative overflow-hidden">
       {/* Background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
         <Asterisk className="absolute -top-20 -right-20 w-96 h-96 text-white/10" />

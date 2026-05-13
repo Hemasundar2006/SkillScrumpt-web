@@ -72,12 +72,15 @@ export function ViewBids() {
             {project?.bids?.length > 0 ? project.bids.map((bid, i) => (
               <BidRow 
                 key={bid._id || i}
-                name={`${bid.professional?.firstName || 'Professional'} ${bid.professional?.lastName || ''}`} 
-                score={bid.professional?.aiScore || 0} 
-                isPro={bid.professional?.isPro}
+                id={bid._id}
+                projectId={id}
+                name={`${bid.bidder?.firstName || 'Professional'} ${bid.bidder?.lastName || ''}`} 
+                score={bid.bidder?.aiScore || 0} 
+                isPro={bid.bidder?.isPro}
                 rate={`$${bid.amount?.toLocaleString()}`} 
                 date={new Date(bid.createdAt).toLocaleDateString()} 
                 active={i === 0} 
+                onAccept={() => fetchProjectAndBids()}
               />
             )) : (
               <div className="py-32 text-center bg-white border border-slate-200 rounded-[2rem] shadow-sm">
@@ -160,6 +163,9 @@ export function ProjectDetails() {
               <div className="md:text-right bg-slate-50 p-6 rounded-2xl border border-slate-100 min-w-[200px]">
                 <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Fixed Budget</p>
                 <p className="text-4xl font-bold tracking-tighter text-slate-900">${project.budget?.toLocaleString()}</p>
+                <div className="mt-4 flex items-center justify-end gap-1.5 text-[10px] font-black uppercase text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100">
+                  <Shield size={12} /> Zero Brokerage
+                </div>
               </div>
             </div>
 
@@ -188,7 +194,20 @@ export function ProjectDetails() {
 
               <div className="pt-8 flex flex-col sm:flex-row gap-4">
                   {(() => {
-                    const user = JSON.parse(localStorage.getItem('user') || '{}');
+                    const userStr = localStorage.getItem('user');
+                    const user = userStr ? JSON.parse(userStr) : null;
+                    
+                    if (!user || (!user._id && !user.id)) {
+                      return (
+                        <button 
+                          onClick={() => navigate('/login', { state: { from: `/projects/${id}` } })} 
+                          className="px-10 py-4 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-md text-sm"
+                        >
+                          Login to Apply
+                        </button>
+                      );
+                    }
+
                     if (user.isPro) {
                       return (
                         <button 
@@ -214,7 +233,16 @@ export function ProjectDetails() {
                       );
                     }
                   })()}
-                  <button className="px-10 py-4 border border-slate-200 bg-white text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-all shadow-sm text-sm">Save Project</button>
+                  <button 
+                    onClick={() => {
+                      const user = JSON.parse(localStorage.getItem('user') || '{}');
+                      if (!user._id && !user.id) return navigate('/login', { state: { from: `/projects/${id}` } });
+                      alert('Project saved to your watchlist.');
+                    }}
+                    className="px-10 py-4 border border-slate-200 bg-white text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-all shadow-sm text-sm"
+                  >
+                    Save Project
+                  </button>
               </div>
             </div>
           </div>
@@ -373,10 +401,24 @@ export function SubmitBid() {
   const navigate = useNavigate();
   const [project, setProject] = useState(null);
   const [amount, setAmount] = useState('');
+  const [deliveryTime, setDeliveryTime] = useState(7);
   const [coverLetter, setCoverLetter] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
+    const userStr = localStorage.getItem('user');
+    const user = userStr ? JSON.parse(userStr) : null;
+    
+    if (!user || (!user._id && !user.id)) {
+      navigate('/login', { state: { from: `/projects/${id}/apply` } });
+      return;
+    }
+
+    if (!user.isPro) {
+      alert('PRO_ACCESS_REQUIRED: Only SkillScrumpt Pro members can place bids.');
+      navigate(`/projects/${id}`);
+      return;
+    }
     fetchProject();
   }, [id]);
 
@@ -391,11 +433,15 @@ export function SubmitBid() {
   };
 
   const handleSubmit = async () => {
-    if (!amount || !coverLetter) return alert('Please fill all fields');
+    if (!amount || !coverLetter || !deliveryTime) return alert('Please fill all fields');
     setIsSubmitting(true);
     try {
-      await api.post(`/projects/${id}/bid`, { amount, coverLetter });
-      alert('Proposal submitted successfully!');
+      await api.post(`/projects/${id}/bid`, { 
+        amount: Number(amount), 
+        deliveryTime: Number(deliveryTime), 
+        coverLetter 
+      });
+      alert('Proposal submitted successfully! Zero brokerage applied.');
       navigate(`/projects/${id}`);
     } catch (err) {
       alert(err.response?.data?.message || 'Error submitting proposal');
@@ -420,43 +466,61 @@ export function SubmitBid() {
         <div className="space-y-8">
           <div className="bg-white rounded-[2rem] p-10 border border-slate-200 shadow-sm">
             <h3 className="text-xl font-bold tracking-tight mb-8">Proposal Details</h3>
-            <div className="space-y-8">
+            <div className="grid md:grid-cols-2 gap-8 mb-8">
               <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Proposed Rate (USD)</label>
-                <div className="relative max-w-sm">
-                  <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 font-bold">$</span>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Your Bid Amount ($)</label>
+                <div className="relative">
+                  <DollarSign size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input 
                     type="number" 
                     value={amount} 
                     onChange={(e) => setAmount(e.target.value)}
-                    className="w-full pl-10 pr-5 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all font-bold text-lg text-slate-900 placeholder:text-slate-300" 
+                    className="w-full pl-12 pr-5 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all font-bold text-lg text-slate-900" 
                     placeholder="0.00"
+                    required
+                  />
+                </div>
+                <p className="text-[10px] font-bold text-emerald-600 mt-1 flex items-center gap-1"><Zap size={10}/> No hidden fees. You keep 100%.</p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Delivery Time (Days)</label>
+                <div className="relative">
+                  <Clock size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input 
+                    type="number" 
+                    value={deliveryTime} 
+                    onChange={(e) => setDeliveryTime(e.target.value)}
+                    className="w-full pl-12 pr-5 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all font-bold text-lg text-slate-900" 
+                    placeholder="7"
+                    required
                   />
                 </div>
               </div>
-              
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Cover Letter</label>
-                <textarea 
-                  rows={8} 
-                  value={coverLetter}
-                  onChange={(e) => setCoverLetter(e.target.value)}
-                  className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all font-medium text-slate-900 placeholder:text-slate-400 resize-none" 
-                  placeholder="Explain why you are the best fit for this project..."
-                ></textarea>
-              </div>
-
-              {project?.skills?.length > 0 && (
-                <div className="space-y-3 pt-6 border-t border-slate-100">
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Relevant Skills Required</label>
-                  <div className="flex flex-wrap gap-2">
-                    {project.skills.map((skill, i) => (
-                      <div key={i} className="px-3 py-1.5 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded-lg text-xs font-bold">{skill}</div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
+
+            <div className="space-y-2 mb-8">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Cover Letter</label>
+              <textarea 
+                rows={8} 
+                value={coverLetter}
+                onChange={(e) => setCoverLetter(e.target.value)}
+                className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all font-medium text-slate-900 placeholder:text-slate-400 resize-none" 
+                placeholder="Explain why you are the best fit for this project..."
+                required
+              ></textarea>
+            </div>
+
+            {project?.skills?.length > 0 && (
+              <div className="space-y-3 pt-6 border-t border-slate-100">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Relevant Skills Required</label>
+                <div className="flex flex-wrap gap-2">
+                  {project.skills.map((skill, i) => (
+                    <div key={i} className="px-3 py-1.5 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded-lg text-xs font-bold">{skill}</div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="p-6 bg-emerald-50 border border-emerald-100 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -468,6 +532,9 @@ export function SubmitBid() {
                 <h4 className="text-sm font-bold text-emerald-900 mb-1">Secure Application</h4>
                 <p className="text-xs font-medium text-emerald-700">Your proposal is protected by our AI integrity system.</p>
               </div>
+            </div>
+            <div className="flex items-center gap-2 text-emerald-600 font-bold text-xs uppercase tracking-widest">
+              <CheckCircle size={16} /> Verified Protocol
             </div>
           </div>
 
@@ -489,7 +556,7 @@ export function SubmitBid() {
 
 // --- Helper Components ---
 
-function BidRow({ name, score, rate, date, isPro, active = false }) {
+function BidRow({ id, projectId, name, score, rate, date, isPro, active = false, onAccept }) {
   return (
     <div className={`bg-white border transition-all rounded-2xl overflow-hidden shadow-sm hover:shadow-md ${active ? 'border-indigo-400 ring-1 ring-indigo-400' : 'border-slate-200 hover:border-slate-300'}`}>
       <div className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6 cursor-pointer">
@@ -514,15 +581,29 @@ function BidRow({ name, score, rate, date, isPro, active = false }) {
               </div>
            </div>
          </div>
-         <div className="flex items-center gap-6">
+          <div className="flex items-center gap-6">
             <div className="text-right">
                <p className="text-xl font-bold text-slate-900">{rate}</p>
                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Proposed Rate</p>
             </div>
-            <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors">
-              <ChevronRight size={20} />
-            </div>
-         </div>
+            <button 
+              onClick={async (e) => {
+                e.stopPropagation();
+                if(window.confirm('Accept this bid and start the project?')) {
+                  try {
+                    await api.post(`/projects/${projectId}/bids/${id}/accept`);
+                    alert('Bid accepted!');
+                    onAccept();
+                  } catch (err) {
+                    alert(err.response?.data?.message || 'Error accepting bid');
+                  }
+                }
+              }}
+              className="px-4 py-2 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-indigo-600 transition-all"
+            >
+              Accept
+            </button>
+          </div>
       </div>
     </div>
   );

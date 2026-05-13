@@ -240,7 +240,7 @@ export function StudentDashboard() {
                 <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
                   <Activity className="text-indigo-600" /> Matched Projects
                 </h3>
-                <Link to="/projects" className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 transition-colors">
+                <Link to="/dashboard/student/browse" className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 transition-colors">
                   View Market <ArrowRight size={14} />
                 </Link>
               </div>
@@ -377,7 +377,7 @@ export function StudentDashboard() {
                   <QuickActionButton onClick={() => setShowUpgradeModal(true)} icon={Zap} label="Upgrade Access Level" />
                 )}
                 <QuickActionButton onClick={() => navigate('/assessments')} icon={Shield} label="Launch AI Proctoring" />
-                <QuickActionButton onClick={() => navigate('/projects')} icon={Briefcase} label="Browse Project Market" />
+                <QuickActionButton onClick={() => navigate('/dashboard/student/browse')} icon={Briefcase} label="Browse Project Market" />
                 <QuickActionButton icon={Users} label="Collaborator Network" />
               </div>
             </motion.section>

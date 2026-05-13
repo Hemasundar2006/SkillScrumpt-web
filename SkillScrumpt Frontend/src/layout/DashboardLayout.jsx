@@ -59,7 +59,7 @@ export function DashboardLayout({ children, user }) {
     // Default: Professional/Student
     return [
       { icon: LayoutDashboard, label: 'Overview', path: '/dashboard/student' },
-      { icon: Briefcase, label: 'Browse Projects', path: '/marketplace' },
+      { icon: Briefcase, label: 'Browse Projects', path: '/dashboard/student/browse' },
       { icon: Briefcase, label: 'My Contracts', path: '/dashboard/student/projects' },
       { icon: Award, label: 'Skill Badges', path: '/dashboard/student/skills' },
       { icon: Shield, label: 'Skill Assessments', path: '/dashboard/student/assessments' },
@@ -188,7 +188,7 @@ export function DashboardLayout({ children, user }) {
         </header>
 
         {/* Page Content */}
-        <main className="px-4 sm:px-6 lg:px-8 pb-12 relative z-10">
+        <main className="px-4 sm:px-6 lg:px-8 pt-8 pb-12 relative z-10">
           {children}
         </main>
       </div>

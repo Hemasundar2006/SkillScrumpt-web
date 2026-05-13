@@ -29,17 +29,27 @@ import api from '../utils/api';
 // --- Student Projects Dashboard ---
 export function StudentProjects() {
   const [user, setUser] = useState(null);
+  const [bids, setBids] = useState([]);
+  const [contracts, setContracts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [activeFilter, setActiveFilter] = useState('active');
 
   useEffect(() => {
-    fetchProfile();
+    fetchData();
   }, []);
 
-  const fetchProfile = async () => {
+  const fetchData = async () => {
     try {
       const savedUser = JSON.parse(localStorage.getItem('user'));
-      const response = await api.get(`/users/profile/${savedUser._id || savedUser.id}`);
-      setUser(response.data);
+      const [profileRes, bidsRes, projectsRes] = await Promise.all([
+        api.get(`/users/profile/${savedUser._id || savedUser.id}`),
+        api.get('/projects/my-bids'),
+        api.get('/projects')
+      ]);
+
+      setUser(profileRes.data);
+      setBids(bidsRes.data);
+      setContracts(projectsRes.data.filter(p => p.professional && p.professional._id === savedUser._id));
     } catch (err) {
       console.error(err);
     } finally {
@@ -80,24 +90,73 @@ export function StudentProjects() {
           <section className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-8 md:p-10">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-8 border-b border-slate-100 pb-6 mb-8">
               <div className="flex gap-4">
-                <button className="text-sm font-bold text-slate-900 bg-slate-100 px-6 py-2.5 rounded-xl transition-all">Active</button>
-                <button className="text-sm font-bold text-slate-500 hover:text-slate-900 hover:bg-slate-50 px-6 py-2.5 rounded-xl transition-all">Pending</button>
-                <button className="text-sm font-bold text-slate-500 hover:text-slate-900 hover:bg-slate-50 px-6 py-2.5 rounded-xl transition-all">Completed</button>
-              </div>
-              <div className="flex gap-3">
-                <button className="p-2.5 border border-slate-200 text-slate-400 hover:text-slate-600 hover:border-slate-300 rounded-xl transition-all shadow-sm bg-white"><Filter size={18} /></button>
-                <button className="p-2.5 border border-slate-200 text-slate-400 hover:text-slate-600 hover:border-slate-300 rounded-xl transition-all shadow-sm bg-white"><Search size={18} /></button>
+                <button 
+                  onClick={() => setActiveFilter('active')}
+                  className={`text-sm font-bold px-6 py-2.5 rounded-xl transition-all ${activeFilter === 'active' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'}`}
+                >
+                  Active Contracts
+                </button>
+                <button 
+                  onClick={() => setActiveFilter('pending')}
+                  className={`text-sm font-bold px-6 py-2.5 rounded-xl transition-all ${activeFilter === 'pending' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'}`}
+                >
+                  Pending Bids
+                </button>
               </div>
             </div>
 
-            <div className="space-y-4">
-                <div className="py-24 text-center">
-                  <div className="w-16 h-16 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-slate-400">
-                    <Briefcase size={24} />
-                  </div>
-                  <p className="text-slate-500 font-bold text-sm">No active contracts found.</p>
-                  <p className="text-slate-400 text-xs mt-2">Browse the marketplace to start bidding on projects.</p>
-                </div>
+            <div className="space-y-6">
+                {activeFilter === 'active' ? (
+                  contracts.length > 0 ? contracts.map((project) => (
+                    <div key={project._id} className="p-6 border border-slate-200 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6 hover:shadow-md transition-all">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-indigo-600 text-white rounded-xl flex items-center justify-center font-bold text-lg">
+                          {project.title[0]}
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-slate-900">{project.title}</h4>
+                          <p className="text-xs text-slate-500 font-medium">Client: {project.client?.firstName} {project.client?.lastName}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-8">
+                        <div className="text-right">
+                          <p className="text-sm font-black text-slate-900 tracking-tighter">${project.budget?.toLocaleString()}</p>
+                          <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest mt-0.5">IN_PROGRESS</p>
+                        </div>
+                        <Link to={`/workspace/${project._id}`} className="px-6 py-2.5 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition-all shadow-sm">
+                          Enter Workspace
+                        </Link>
+                      </div>
+                    </div>
+                  )) : (
+                    <EmptyState icon={Briefcase} title="No active contracts found." subtitle="Secure a bid to start working on elite projects." />
+                  )
+                ) : (
+                  bids.length > 0 ? bids.map((bid) => (
+                    <div key={bid._id} className="p-6 border border-slate-200 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6 hover:shadow-md transition-all">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-center text-slate-400 font-bold text-lg">
+                          {bid.project?.title?.[0]}
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-slate-900">{bid.project?.title}</h4>
+                          <p className="text-xs text-slate-500 font-medium italic">Status: {bid.status.toUpperCase()}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-8">
+                        <div className="text-right">
+                          <p className="text-sm font-black text-slate-900 tracking-tighter">${bid.amount?.toLocaleString()}</p>
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">{new Date(bid.createdAt).toLocaleDateString()}</p>
+                        </div>
+                        <Badge variant={bid.status === 'accepted' ? 'success' : bid.status === 'rejected' ? 'danger' : 'secondary'} className="uppercase text-[9px] font-black tracking-widest px-3 py-1">
+                          {bid.status}
+                        </Badge>
+                      </div>
+                    </div>
+                  )) : (
+                    <EmptyState icon={Zap} title="No pending bids found." subtitle="Browse the marketplace to find projects matching your skills." />
+                  )
+                )}
             </div>
           </section>
         </div>
@@ -244,6 +303,18 @@ export function StudentSkills() {
 // StudentSettings has been migrated to SharedSettingsPage
 
 // --- Helper Components ---
+
+function EmptyState({ icon: Icon, title, subtitle }) {
+  return (
+    <div className="py-24 text-center">
+      <div className="w-16 h-16 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-slate-400">
+        <Icon size={24} />
+      </div>
+      <p className="text-slate-500 font-bold text-sm">{title}</p>
+      <p className="text-slate-400 text-xs mt-2">{subtitle}</p>
+    </div>
+  );
+}
 
 function StatItem({ label, value, active = false }) {
   return (

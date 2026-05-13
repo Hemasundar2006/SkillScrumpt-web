@@ -155,7 +155,7 @@ export function LandingPage() {
       </nav>
 
       {/* HERO SECTION */}
-      <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
+      <section className="relative min-h-screen flex items-center pt-32 overflow-hidden">
         <div className="max-w-[1400px] mx-auto px-6 w-full grid lg:grid-cols-2 items-center gap-20">
           <div className="relative z-10">
             <motion.div
@@ -170,7 +170,7 @@ export function LandingPage() {
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 1, ease: "easeOut" }}
-              className="text-[12vw] lg:text-[8rem] font-black leading-[0.85] tracking-tighter mb-10"
+              className="text-6xl md:text-8xl lg:text-[8rem] font-black leading-[0.9] tracking-tighter mb-10"
             >
               EARN AS <br />YOU GROW.
             </motion.h1>
@@ -250,9 +250,9 @@ export function LandingPage() {
         <div className="max-w-[1400px] mx-auto px-6 grid md:grid-cols-[200px_1fr] gap-20">
           <div className="text-[11px] font-black uppercase tracking-[0.3em] text-muted">Our Vision</div>
           <div className="border-l border-white/20 pl-10 md:pl-20">
-            <h2 className="text-4xl md:text-7xl font-bold leading-[1.1] tracking-tight mb-12 uppercase italic">
-              SkillScrumpt is a freelancing platform for students <br /> 
-              where your skills are verified by our <br />
+            <h2 className="text-3xl md:text-7xl font-bold leading-[1.1] tracking-tight mb-12 uppercase italic">
+              SkillScrumpt is a freelancing platform for students <br className="hidden md:block" /> 
+              where your skills are verified by our <br className="hidden md:block" />
               AI proctoring system.
             </h2>
             <Link to="/about" className="inline-flex items-center gap-4 text-[11px] font-black uppercase tracking-[0.4em] text-white/40 hover:text-white transition-colors group">

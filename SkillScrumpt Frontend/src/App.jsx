@@ -12,6 +12,7 @@ import { AboutPage, PricingPage, ProctoringPage, MarketplacePage } from './pages
 import { AIProctoringInterface } from './pages/ProctoringInterface';
 import { AssessmentResult } from './pages/AssessmentResult';
 import { PostNewProject, HelpCenter } from './pages/UtilityPages';
+import { ProjectMarketplace } from './pages/ProjectMarketplace';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import { StudentEarnings } from './pages/EarningsPage';
@@ -20,6 +21,7 @@ import {
   StudentProjects, 
   StudentSkills 
 } from './pages/StudentExperiencePages';
+import { StudentProjectMarket } from './pages/StudentProjectMarket';
 import { 
   ViewBids, 
   SubmitBid,
@@ -208,7 +210,7 @@ function App() {
           } />
           <Route path="/marketplace" element={
             <PageWrapper>
-              <MarketplacePage />
+              <ProjectMarketplace />
             </PageWrapper>
           } />
           <Route path="/settings" element={
@@ -256,6 +258,13 @@ function App() {
             <ProtectedRoute role="professional">
               <PageWrapper>
                 <StudentSkills />
+              </PageWrapper>
+            </ProtectedRoute>
+          } />
+          <Route path="/dashboard/student/browse" element={
+            <ProtectedRoute role="professional">
+              <PageWrapper>
+                <StudentProjectMarket />
               </PageWrapper>
             </ProtectedRoute>
           } />

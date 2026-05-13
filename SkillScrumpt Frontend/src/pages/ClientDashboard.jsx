@@ -107,7 +107,7 @@ export function ClientDashboard() {
       const savedUser = JSON.parse(localStorage.getItem('user'));
       const [profileRes, projectsRes, talentRes] = await Promise.all([
         api.get(`/users/profile/${savedUser._id || savedUser.id}`),
-        api.get('/projects'), 
+        api.get('/projects?mine=true'), 
         api.get('/users/professionals') 
       ]);
 

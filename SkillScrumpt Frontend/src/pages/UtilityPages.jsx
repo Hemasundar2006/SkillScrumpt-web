@@ -124,6 +124,7 @@ export function PostNewProject() {
                         onChange={handleInputChange}
                         className="w-full px-6 py-4 bg-transparent border border-white/20 focus:border-white outline-none transition-all font-black uppercase tracking-widest text-xl placeholder:text-white/10"
                         placeholder="E.G. CORE_SYSTEMS_REBUILD"
+                        required
                       />
                     </div>
 
@@ -136,6 +137,7 @@ export function PostNewProject() {
                         onChange={handleInputChange}
                         className="w-full px-6 py-4 bg-transparent border border-white/20 focus:border-white outline-none transition-all font-bold placeholder:text-white/10 resize-none uppercase tracking-widest text-[11px]"
                         placeholder="ESTABLISH GOALS, REQUIREMENTS, AND FINAL DELIVERABLES..."
+                        required
                       />
                     </div>
 
@@ -222,6 +224,7 @@ export function PostNewProject() {
                             onChange={handleInputChange}
                             className="w-full pl-12 pr-6 py-4 bg-transparent border border-white/20 focus:border-white outline-none transition-all font-black italic text-xl placeholder:text-white/10"
                             placeholder="5000"
+                            required
                           />
                         </div>
                       </div>
@@ -237,6 +240,7 @@ export function PostNewProject() {
                           value={formData.deadline}
                           onChange={handleInputChange}
                           className="w-full pl-16 pr-6 py-4 bg-transparent border border-white/20 focus:border-white outline-none transition-all font-black uppercase tracking-widest text-sm text-white/40 focus:text-white"
+                          required
                         />
                       </div>
                     </div>
