@@ -196,71 +196,17 @@ export const AssessmentsPage = () => {
                   ✕
                 </button>
                 
-                <div className="grid lg:grid-cols-12">
-                  <div className="lg:col-span-8 aspect-video bg-slate-50 relative flex flex-col border-r border-slate-200">
-                    {/* Simulator Header */}
-                    <div className="h-14 border-b border-slate-200 flex items-center justify-between px-6 bg-white">
-                      <div className="flex items-center gap-3">
-                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-sm" />
-                        <span className="text-xs font-bold text-slate-500">Live AI Proctoring Demo</span>
-                      </div>
-                      <div className="flex items-center gap-6">
-                        <div className="text-slate-600 font-mono text-sm font-bold">44:59</div>
-                        <div className="px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-bold shadow-sm">Review</div>
-                      </div>
-                    </div>
-
-                    <div className="flex-1 p-8 flex flex-col relative overflow-hidden bg-white/50">
-                      <div className="mb-8">
-                        <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Question 4 of 30</div>
-                        <h4 className="text-2xl font-bold tracking-tight text-slate-900">Implement a Debounce Hook</h4>
-                      </div>
-                      
-                      <div className="flex-1 bg-slate-900 rounded-2xl p-6 font-mono text-sm leading-relaxed text-slate-300 relative shadow-inner">
-                        <div className="flex gap-4 mb-6 text-xs font-bold text-slate-500">
-                          <span className="text-slate-300">useDebounce.js</span>
-                        </div>
-                        <div className="space-y-1">
-                          <p><span className="text-indigo-400">import</span> {'{'} useState, useEffect {'}'} <span className="text-indigo-400">from</span> 'react';</p>
-                          <p><span className="text-indigo-400">export function</span> useDebounce(value, delay) {'{'}</p>
-                          <p>&nbsp;&nbsp;<span className="text-indigo-400">const</span> [debouncedValue, setDebouncedValue] = useState(value);</p>
-                          <p>&nbsp;&nbsp;useEffect(() =&gt; {'{'}</p>
-                          <p>&nbsp;&nbsp;&nbsp;&nbsp;<span className="text-indigo-400">const</span> handler = setTimeout(() =&gt; {'{'}</p>
-                          <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;setDebouncedValue(value);</p>
-                          <p>&nbsp;&nbsp;&nbsp;&nbsp;{'}'}, delay);</p>
-                          <div className="w-2 h-4 bg-slate-300 animate-pulse inline-block align-middle" />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* PIP View */}
-                    <div className="absolute bottom-8 right-8 w-48 rounded-2xl bg-white shadow-lg overflow-hidden border border-slate-200">
-                      <div className="aspect-[4/3] relative flex items-center justify-center bg-slate-100">
-                        <div className="absolute top-2 right-2 w-2 h-2 bg-emerald-500 rounded-full shadow-sm" />
-                        <div className="absolute inset-4 border-2 border-indigo-200 border-dashed rounded-xl" />
-                        <div className="absolute bottom-2 left-2 px-2 py-1 bg-white/90 backdrop-blur text-[9px] text-slate-700 font-bold rounded shadow-sm">
-                          Verified
-                        </div>
-                      </div>
-                      <div className="p-3 bg-white border-t border-slate-100">
-                        <div className="flex justify-between items-center text-[10px] font-bold text-slate-500 mb-1.5">
-                          <span>Focus Level</span>
-                          <span className="text-indigo-600">98%</span>
-                        </div>
-                        <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                          <div className="bg-indigo-500 h-full w-[98%]" />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="absolute inset-0 flex items-center justify-center z-30 group cursor-pointer bg-slate-900/10">
-                      <div className="w-16 h-16 bg-white shadow-xl rounded-full flex items-center justify-center text-indigo-600 scale-100 group-hover:scale-110 transition-all duration-300">
-                        <Play size={24} fill="currentColor" className="ml-1" />
-                      </div>
-                    </div>
+                <div className="flex flex-col lg:flex-row items-stretch min-h-[600px]">
+                  <div className="lg:w-[70%] bg-slate-950 relative flex flex-col border-r border-slate-200 overflow-hidden">
+                    <video 
+                      src="/the_new_standard_of_trust_unlock_your_potential_wi.mp4" 
+                      className="w-full h-full object-contain"
+                      controls 
+                      autoPlay
+                    />
                   </div>
 
-                  <div className="lg:col-span-4 p-10 flex flex-col justify-center bg-white">
+                  <div className="lg:w-[30%] p-12 flex flex-col justify-center bg-white">
                     <h3 className="text-3xl font-bold tracking-tight text-slate-900 mb-8">AI Proctoring <br /><span className="text-slate-400">Security</span></h3>
                     <div className="space-y-6">
                       {[

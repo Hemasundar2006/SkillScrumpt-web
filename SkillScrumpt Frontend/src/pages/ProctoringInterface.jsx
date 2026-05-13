@@ -350,7 +350,7 @@ export function AIProctoringInterface() {
       {/* Workspace */}
       <div className="flex-1 flex overflow-hidden">
         {/* Navigation Sidebar */}
-        <aside className="w-24 border-r border-slate-200 bg-white flex flex-col items-center py-8 gap-3 overflow-y-auto shadow-sm z-10">
+        <aside className="w-24 border-r border-slate-200 bg-white flex flex-col items-center py-8 gap-4 overflow-y-auto shadow-sm z-10">
           {questions.map((_, i) => (
             <button 
               key={i}
@@ -369,8 +369,8 @@ export function AIProctoringInterface() {
         </aside>
 
         {/* Assessment Engine */}
-        <main className="flex-1 p-10 overflow-y-auto relative bg-slate-50/50">
-          <div className="max-w-4xl mx-auto h-full flex flex-col">
+        <main className="flex-1 p-12 overflow-y-auto relative bg-slate-50/50">
+          <div className="max-w-5xl mx-auto h-full flex flex-col">
             <motion.div
               key={currentQuestionIdx}
               initial={{ opacity: 0, y: 10 }}
@@ -524,9 +524,9 @@ export function AIProctoringInterface() {
              </div>
           </section>
 
-          <section className="space-y-4">
-            <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Telemetry</h4>
-            <div className="grid grid-cols-2 gap-3">
+          <section className="space-y-6">
+            <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Telemetry Metrics</h4>
+            <div className="grid grid-cols-2 gap-4">
               <TelemetryCard icon={Eye} label="Gaze" value={realScore > 80 ? "Focused" : "Deviated"} active={realScore > 80} />
               <TelemetryCard icon={Activity} label="Score" value={`${realScore}%`} active={realScore > 80} />
               <TelemetryCard icon={Cpu} label="Status" value={isActive ? "Active" : "Idle"} active={isActive} />
@@ -648,7 +648,7 @@ function OptionCard({ label, text, selected = false, onClick }) {
   return (
     <button 
       onClick={onClick}
-      className={`w-full text-left p-6 rounded-2xl border transition-all flex items-center gap-6 group shadow-sm ${
+      className={`w-full text-left p-6 rounded-2xl border transition-all flex items-start gap-6 group shadow-sm ${
         selected 
           ? 'bg-indigo-50 border-indigo-200' 
           : 'bg-white border-slate-200 hover:border-indigo-300 hover:shadow-md'
@@ -668,7 +668,7 @@ function OptionCard({ label, text, selected = false, onClick }) {
 
 function TelemetryCard({ icon: Icon, label, value, active }) {
   return (
-    <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 flex flex-col items-center text-center justify-center">
+    <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 flex flex-col items-center text-center justify-center min-h-[110px]">
        <Icon size={20} className={`mb-2 ${active ? 'text-indigo-500' : 'text-slate-400'}`} />
        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{label}</p>
        <p className={`text-sm font-bold ${active ? 'text-slate-900' : 'text-slate-500'}`}>{value}</p>

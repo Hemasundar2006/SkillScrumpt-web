@@ -25,6 +25,7 @@ export function DashboardLayout({ children, user }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isSidebarHovered, setIsSidebarHovered] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -81,12 +82,18 @@ export function DashboardLayout({ children, user }) {
       )}
 
       {/* Sidebar */}
-      <aside className={`w-64 bg-white border-r border-slate-200 flex-col fixed h-full z-50 transition-transform duration-300 ${mobileMenuOpen ? 'translate-x-0 flex' : '-translate-x-full lg:translate-x-0 lg:flex'}`}>
-        <div className="p-8 flex items-center justify-between">
-          <Link to="/" className="text-xl font-bold tracking-tight text-indigo-600 hover:text-indigo-700 transition-colors inline-block">
-            SkillScrumpt
+      <aside 
+        onMouseEnter={() => setIsSidebarHovered(true)}
+        onMouseLeave={() => setIsSidebarHovered(false)}
+        className={`bg-white border-r border-slate-200 flex-col fixed h-full z-50 transition-all duration-300 ease-in-out overflow-hidden ${
+          mobileMenuOpen ? 'w-64 translate-x-0 flex' : '-translate-x-full lg:translate-x-0 lg:flex'
+        } ${!mobileMenuOpen && (isSidebarHovered ? 'lg:w-64 shadow-xl' : 'lg:w-20')}`}
+      >
+        <div className={`p-8 flex items-center transition-all duration-300 ${isSidebarHovered ? 'justify-between' : 'justify-center'}`}>
+          <Link to="/" className="text-xl font-black tracking-tighter text-indigo-600 hover:text-indigo-700 transition-all inline-block whitespace-nowrap">
+            {isSidebarHovered ? 'SkillScrumpt' : 'SS'}
           </Link>
-          <button className="lg:hidden p-2 text-slate-400 hover:text-slate-900" onClick={() => setMobileMenuOpen(false)}>
+          <button className={`${isSidebarHovered ? 'lg:hidden' : 'hidden'} p-2 text-slate-400 hover:text-slate-900`} onClick={() => setMobileMenuOpen(false)}>
             <X size={20} />
           </button>
         </div>
@@ -99,17 +106,19 @@ export function DashboardLayout({ children, user }) {
                 navigate(item.path);
                 setMobileMenuOpen(false);
               }}
-              className={`flex items-center gap-3 w-full px-4 py-3 rounded-lg transition-all mx-2 w-[calc(100%-1rem)] ${
-                location.pathname === item.path ? 'bg-indigo-50 text-indigo-600 font-semibold' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50 font-medium'
-              }`}
+              className={`flex items-center transition-all duration-300 w-full rounded-xl mx-auto px-4 py-3.5 ${
+                location.pathname === item.path ? 'bg-indigo-50 text-indigo-600 font-bold' : 'text-slate-400 hover:text-slate-900 hover:bg-slate-50 font-medium'
+              } ${isSidebarHovered ? 'gap-4 w-[calc(100%-1rem)]' : 'justify-center w-12'}`}
             >
-              <item.icon size={18} />
-              <span className="text-sm">{item.label}</span>
+              <item.icon size={20} className="flex-shrink-0" />
+              <span className={`text-[13px] whitespace-nowrap transition-all duration-300 ${isSidebarHovered ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'}`}>
+                {item.label}
+              </span>
             </button>
           ))}
         </nav>
 
-        <div className="p-6 mt-auto">
+        <div className={`p-6 mt-auto transition-all duration-300 ${isSidebarHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           {user?.role === 'professional' && (
             <div className="p-4 bg-slate-50 rounded-xl mb-6">
               <p className="text-xs text-slate-500 font-medium mb-2">AI Integrity Score</p>
@@ -123,16 +132,16 @@ export function DashboardLayout({ children, user }) {
           )}
           <button 
             onClick={handleLogout}
-            className="flex items-center gap-3 w-full px-6 py-4 text-slate-400 hover:text-red-600 transition-all font-medium text-sm"
+            className={`flex items-center transition-all duration-300 w-full text-slate-400 hover:text-red-600 font-bold text-sm ${isSidebarHovered ? 'gap-4 px-6 py-4' : 'justify-center p-4'}`}
           >
-            <LogOut size={16} />
-            <span>Sign Out</span>
+            <LogOut size={18} className="flex-shrink-0" />
+            <span className={`transition-all duration-300 ${isSidebarHovered ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'}`}>Sign Out</span>
           </button>
         </div>
       </aside>
 
       {/* Main Content Wrapper */}
-      <div className="flex-1 lg:ml-64 flex flex-col min-w-0">
+      <div className={`flex-1 transition-all duration-300 lg:ml-20 flex flex-col min-w-0`}>
         {/* Header */}
         <header className="flex justify-between items-center p-6 lg:p-8 bg-transparent sticky top-0 z-20 backdrop-blur-sm">
           <button 

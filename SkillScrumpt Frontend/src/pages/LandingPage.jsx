@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Star, Plus, Shield, ShieldCheck, Zap, Monitor, Lock, Target, ExternalLink, Mail, Instagram, Linkedin, Twitter, Menu, X, ChevronRight, CheckCircle } from 'lucide-react';
+import { ArrowRight, Star, Plus, Shield, ShieldCheck, Zap, Monitor, Lock, Target, ExternalLink, Mail, Instagram, Linkedin, Twitter, Menu, X, ChevronRight, CheckCircle, Award } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import api from '../utils/api';
 
@@ -70,6 +70,7 @@ const Loader = ({ onFinish }) => {
 
 export function LandingPage() {
   const [loading, setLoading] = useState(true);
+  const [showVideoPreview, setShowVideoPreview] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [stats, setStats] = useState({
     students: "0",
@@ -305,11 +306,19 @@ export function LandingPage() {
               ))}
             </div>
 
-            <Link to="/proctoring">
-              <button className="mt-20 flex items-center gap-4 text-sm font-black uppercase tracking-widest group">
-                Full Security Protocol <ArrowRight className="group-hover:translate-x-2 transition-transform" />
+            <div className="mt-20 flex flex-wrap items-center gap-10">
+              <Link to="/proctoring">
+                <button className="flex items-center gap-4 text-sm font-black uppercase tracking-widest group">
+                  Full Security Protocol <ArrowRight className="group-hover:translate-x-2 transition-transform" />
+                </button>
+              </Link>
+              <button 
+                onClick={() => setShowVideoPreview(true)}
+                className="flex items-center gap-4 text-sm font-black uppercase tracking-widest group text-muted hover:text-white transition-colors"
+              >
+                Watch System Demo <Monitor size={18} className="group-hover:scale-110 transition-transform" />
               </button>
-            </Link>
+            </div>
           </div>
 
           <div className="relative">
@@ -328,48 +337,116 @@ export function LandingPage() {
         </div>
       </SectionReveal>
 
-      {/* CASE STUDIES / MARKETPLACE */}
-      <section className="py-40 bg-white text-black" id="work">
-        <div className="max-w-[1400px] mx-auto px-6 mb-20 flex justify-between items-end">
-          <div>
-            <div className="text-[11px] font-black uppercase tracking-[0.3em] text-black/50 mb-4">Marketplace</div>
-            <motion.h2 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-6xl md:text-8xl font-black tracking-tighter"
-            >
-              Elite Talent.
-            </motion.h2>
+      {/* TRUST PROTOCOL HUB */}
+      <section className="py-40 bg-white text-black overflow-hidden" id="trust-protocol">
+        <div className="max-w-[1400px] mx-auto px-6">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-10">
+            <div className="max-w-2xl">
+              <div className="text-[11px] font-black uppercase tracking-[0.3em] text-black/40 mb-6">Security Layer</div>
+              <h2 className="text-5xl md:text-8xl font-black tracking-tighter leading-[0.85]">THE TRUST <br />PROTOCOL.</h2>
+            </div>
+            <div className="text-right">
+              <p className="text-xl text-black/60 max-w-sm mb-8 leading-relaxed">
+                Our proprietary AI monitoring engine ensures a <span className="font-bold text-black italic">zero-compromise</span> environment for all technical assessments.
+              </p>
+              <div className="flex justify-end gap-10">
+                 <div>
+                   <p className="text-[10px] font-black uppercase tracking-widest text-black/40 mb-1">Latency</p>
+                   <p className="text-2xl font-black">12ms</p>
+                 </div>
+                 <div>
+                   <p className="text-[10px] font-black uppercase tracking-widest text-black/40 mb-1">Accuracy</p>
+                   <p className="text-2xl font-black">99.98%</p>
+                 </div>
+              </div>
+            </div>
           </div>
-          <Link to="/marketplace" className="hidden md:block mb-4 text-xs font-black uppercase tracking-widest border-b border-black">
-            Enter Marketplace Hub →
-          </Link>
-        </div>
 
-        <div className="border-t border-black/10">
-          {[
-            { client: "Fullstack Engineering", desc: "Verified experts in React, Node, and Cloud architecture.", img: "/talent_marketplace_3d_1778513912255.png" },
-            { client: "AI & Data Science", desc: "Proctored talent capable of building production-grade models.", img: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2000&auto=format&fit=crop" },
-            { client: "UI/UX Architecture", desc: "Designers who understand depth, motion, and conversion.", img: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2000&auto=format&fit=crop" }
-          ].map((project, i) => (
-            <SectionReveal key={i} className={`flex flex-col lg:flex-row border-b border-black/10 ${i % 2 === 0 ? '' : 'lg:flex-row-reverse'}`}>
-              <div className="flex-1 p-10 md:p-20 flex flex-col justify-center">
-                <h3 className="text-4xl md:text-6xl font-black mb-6">{project.client}</h3>
-                <p className="text-xl text-black/60 mb-10 max-w-md">{project.desc}</p>
-                <Link to="/register" className="flex items-center gap-4 font-black uppercase tracking-widest text-[11px]">
-                  Hire Now <ChevronRight size={16} />
-                </Link>
+          <div className="grid lg:grid-cols-3 gap-6">
+            {/* Feature 1: Live Monitoring */}
+            <div className="lg:col-span-2 group relative bg-black rounded-[2.5rem] p-12 overflow-hidden border border-black/5 hover:border-black/20 transition-all">
+              <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-10">
+                   <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                   <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Active Monitoring Hub</span>
+                </div>
+                <h3 className="text-4xl md:text-5xl font-black text-white mb-8 italic tracking-tighter">LIVE AI <br />INSPECTION.</h3>
+                <p className="text-white/50 max-w-md text-sm leading-relaxed mb-10 uppercase tracking-widest font-bold">
+                  Continuous gaze tracking, ambient noise analysis, and browser-lock enforcement in real-time.
+                </p>
+                <div className="flex gap-4">
+                  {[1, 2, 3, 4].map(i => (
+                    <div key={i} className="w-12 h-1.5 rounded-full bg-white/10 overflow-hidden">
+                       <motion.div 
+                         initial={{ x: "-100%" }}
+                         animate={{ x: "100%" }}
+                         transition={{ duration: 2, repeat: Infinity, delay: i * 0.5 }}
+                         className="w-full h-full bg-white/40"
+                       />
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="flex-1 overflow-hidden h-[400px] lg:h-auto m-6 radius-design border border-white/10">
-                <img 
-                  src={project.img} 
-                  alt={project.client} 
-                  className="w-full h-full object-cover grayscale hover:grayscale-0 hover:scale-105 transition-all duration-1000"
-                />
-              </div>
-            </SectionReveal>
-          ))}
+              <img 
+                src="/proctoring_system_3d_1778513881929.png" 
+                className="absolute top-1/2 right-0 -translate-y-1/2 w-2/3 opacity-40 group-hover:opacity-60 transition-opacity grayscale hover:grayscale-0 duration-1000"
+                alt=""
+              />
+            </div>
+
+            {/* Feature 2: Integrity Score */}
+            <div className="bg-zinc-100 rounded-[2.5rem] p-12 flex flex-col justify-between border border-black/5 hover:border-black/10 transition-all">
+               <div>
+                 <ShieldCheck className="text-black mb-8" size={32} />
+                 <h4 className="text-3xl font-black italic mb-4">INTEGRITY <br />SCORE.</h4>
+                 <p className="text-black/40 text-[10px] font-black uppercase tracking-widest leading-loose">
+                   A dynamic trust rating earned through consistent, proctored performance.
+                 </p>
+               </div>
+               <div className="mt-10">
+                 <div className="text-6xl font-black tracking-tighter">982</div>
+                 <div className="text-[10px] font-black uppercase tracking-widest text-black/40 mt-2">Elite Threshold: 950+</div>
+               </div>
+            </div>
+
+            {/* Feature 3: Verified Badges */}
+            <div className="bg-zinc-100 rounded-[2.5rem] p-12 flex flex-col justify-between border border-black/5 hover:border-black/10 transition-all">
+               <div>
+                 <Award className="text-black mb-8" size={32} />
+                 <h4 className="text-3xl font-black italic mb-4">VERIFIED <br />BADGES.</h4>
+                 <p className="text-black/40 text-[10px] font-black uppercase tracking-widest leading-loose">
+                   Immutable skill validation issued on the blockchain network.
+                 </p>
+               </div>
+               <div className="relative mt-10 h-24 flex items-center justify-center">
+                  <img src="/verified_badge_3d_1778513897472.png" className="w-32 absolute hover:scale-110 transition-transform duration-500" alt="" />
+               </div>
+            </div>
+
+            {/* Feature 4: Proof of Skill */}
+            <div className="lg:col-span-2 bg-zinc-900 rounded-[2.5rem] p-12 relative overflow-hidden border border-white/5 hover:border-white/10 transition-all">
+               <div className="relative z-10 flex flex-col h-full justify-between">
+                  <div className="flex justify-between items-start">
+                    <h3 className="text-4xl font-black text-white italic tracking-tighter">PROOF OF <br />SKILL.</h3>
+                    <div className="px-4 py-2 bg-white/10 rounded-full text-[10px] font-black text-white uppercase tracking-widest">Protocol V2.0</div>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-10">
+                    {[
+                      { label: "Tests Conducted", val: "140K+" },
+                      { label: "Cheating Detected", val: "0.02%" },
+                      { label: "Talent Verified", val: "85K" },
+                      { label: "Global Reach", val: "IND" }
+                    ].map((s, i) => (
+                      <div key={i}>
+                        <p className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-1">{s.label}</p>
+                        <p className="text-2xl font-black text-white">{s.val}</p>
+                      </div>
+                    ))}
+                  </div>
+               </div>
+               <div className="absolute inset-0 bg-gradient-to-r from-black to-transparent opacity-60" />
+            </div>
+          </div>
         </div>
       </section>
 
@@ -677,6 +754,67 @@ export function LandingPage() {
           </div>
         </div>
       </footer>
+
+      {/* AI Proctoring Video Preview Modal */}
+      <AnimatePresence>
+        {showVideoPreview && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+          >
+            <motion.div 
+              initial={{ scale: 0.98, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.98, y: 20 }}
+              className="max-w-6xl w-full bg-zinc-900 rounded-[2rem] border border-white/10 overflow-hidden relative shadow-2xl"
+            >
+              <button 
+                onClick={() => setShowVideoPreview(false)}
+                className="absolute top-6 right-6 w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-all z-20 font-bold shadow-sm"
+              >
+                ✕
+              </button>
+              
+              <div className="flex flex-col lg:flex-row items-stretch min-h-[600px]">
+                <div className="lg:w-[70%] bg-black relative flex flex-col border-r border-white/10 overflow-hidden">
+                  <video 
+                    src="/the_new_standard_of_trust_unlock_your_potential_wi.mp4" 
+                    className="w-full h-full object-contain"
+                    controls 
+                    autoPlay
+                  />
+                </div>
+
+                <div className="lg:w-[30%] p-12 flex flex-col justify-center bg-zinc-900">
+                  <h3 className="text-3xl font-bold tracking-tight text-white mb-8">AI Proctoring <br /><span className="text-zinc-500">Security</span></h3>
+                  <div className="space-y-6">
+                    {[
+                      { title: 'Gaze Tracking', desc: 'Ensures focus remains on the assessment.' },
+                      { title: 'Audio Analysis', desc: 'Detects unauthorized background noise.' },
+                      { title: 'Browser Lock', desc: 'Prevents switching tabs or windows.' }
+                    ].map((item, i) => (
+                      <div key={i} className="flex gap-4 p-4 bg-white/5 rounded-xl border border-white/5">
+                         <div className="mt-0.5"><Shield size={16} className="text-white/60" /></div>
+                         <div>
+                           <p className="text-sm font-bold text-white mb-1">{item.title}</p>
+                           <p className="text-xs text-zinc-400 font-medium leading-relaxed">{item.desc}</p>
+                         </div>
+                      </div>
+                    ))}
+                  </div>
+                  <Link to="/register" className="mt-10 block">
+                    <button className="w-full py-4 bg-white text-black font-black uppercase tracking-widest text-[10px] hover:bg-zinc-200 transition-all shadow-md rounded-xl">
+                      Create Account to Start
+                    </button>
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
