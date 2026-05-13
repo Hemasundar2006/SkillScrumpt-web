@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Shield, Mail, Lock, ArrowRight, Code, Monitor, Zap, Loader2, CheckCircle, ChevronRight, Star, Cpu } from 'lucide-react';
 import { Button, Card } from '../components/UI';
@@ -40,6 +40,37 @@ export function Login() {
       setIsLoading(false);
     }
   };
+
+  const handleGoogleResponse = async (response) => {
+    setIsLoading(true);
+    try {
+      const res = await api.post('/users/google-login', { token: response.credential });
+      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('user', JSON.stringify(res.data));
+      
+      if (res.data.role === 'admin') navigate('/dashboard/admin');
+      else if (res.data.role === 'professional') navigate('/dashboard/student');
+      else navigate('/dashboard/client');
+    } catch (err) {
+      setError('GOOGLE_AUTH_FAILED: ' + (err.response?.data?.message || 'Unknown Error'));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    /* global google */
+    if (window.google) {
+      google.accounts.id.initialize({
+        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+        callback: handleGoogleResponse
+      });
+      google.accounts.id.renderButton(
+        document.getElementById("googleBtn"),
+        { theme: "outline", size: "large", width: "100%", text: "continue_with" }
+      );
+    }
+  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black text-white selection:bg-white selection:text-black pt-20 px-4 relative overflow-hidden">
@@ -130,15 +161,8 @@ export function Login() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <button type="button" className="flex items-center justify-center gap-3 py-4 border border-white/10 hover:border-white/40 transition-all group">
-                  <Monitor size={16} className="text-white/40 group-hover:text-white transition-colors" />
-                  <span className="text-[10px] font-black uppercase tracking-widest">Google</span>
-                </button>
-                <button type="button" className="flex items-center justify-center gap-3 py-4 border border-white/10 hover:border-white/40 transition-all group">
-                  <Code size={16} className="text-white/40 group-hover:text-white transition-colors" />
-                  <span className="text-[10px] font-black uppercase tracking-widest">Github</span>
-                </button>
+              <div className="grid grid-cols-1 gap-4">
+                <div id="googleBtn" className="w-full"></div>
               </div>
             </form>
           </div>

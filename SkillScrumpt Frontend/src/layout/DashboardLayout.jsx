@@ -72,7 +72,7 @@ export function DashboardLayout({ children, user }) {
   const navItems = getNavItems();
 
   return (
-    <div className="flex min-h-screen bg-slate-50 text-slate-900 font-sans">
+    <div className="flex min-h-screen bg-slate-50 text-slate-900 font-sans" style={{ scrollbarGutter: 'stable' }}>
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
         <div 
@@ -90,9 +90,16 @@ export function DashboardLayout({ children, user }) {
         } ${!mobileMenuOpen && (isSidebarHovered ? 'lg:w-64 shadow-xl' : 'lg:w-20')}`}
       >
         <div className={`p-8 flex items-center transition-all duration-300 ${isSidebarHovered ? 'justify-between' : 'justify-center'}`}>
-          <Link to="/" className="text-xl font-black tracking-tighter text-indigo-600 hover:text-indigo-700 transition-all inline-block whitespace-nowrap">
-            {isSidebarHovered ? 'SkillScrumpt' : 'SS'}
-          </Link>
+          <div className="flex flex-col">
+            <Link to="/" className="text-xl font-black tracking-tighter text-indigo-600 hover:text-indigo-700 transition-all inline-block whitespace-nowrap leading-none">
+              {isSidebarHovered ? 'SkillScrumpt' : 'SS'}
+            </Link>
+            {isSidebarHovered && (
+              <span className="text-[7px] font-black uppercase tracking-widest text-slate-400 mt-1 animate-in fade-in duration-500">
+                AI-Proctored Freelancing for Students
+              </span>
+            )}
+          </div>
           <button className={`${isSidebarHovered ? 'lg:hidden' : 'hidden'} p-2 text-slate-400 hover:text-slate-900`} onClick={() => setMobileMenuOpen(false)}>
             <X size={20} />
           </button>
@@ -107,8 +114,8 @@ export function DashboardLayout({ children, user }) {
                 setMobileMenuOpen(false);
               }}
               className={`flex items-center transition-all duration-300 w-full rounded-xl mx-auto px-4 py-3.5 ${
-                location.pathname === item.path ? 'bg-indigo-50 text-indigo-600 font-bold' : 'text-slate-400 hover:text-slate-900 hover:bg-slate-50 font-medium'
-              } ${isSidebarHovered ? 'gap-4 w-[calc(100%-1rem)]' : 'justify-center w-12'}`}
+                location.pathname === item.path ? 'bg-indigo-50 text-indigo-600 font-semibold shadow-sm' : 'text-slate-400 hover:text-slate-900 hover:bg-slate-50 font-medium'
+              } ${isSidebarHovered ? 'gap-4 w-[calc(100%-2rem)]' : 'justify-center w-12'}`}
             >
               <item.icon size={20} className="flex-shrink-0" />
               <span className={`text-[13px] whitespace-nowrap transition-all duration-300 ${isSidebarHovered ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'}`}>
@@ -132,7 +139,7 @@ export function DashboardLayout({ children, user }) {
           )}
           <button 
             onClick={handleLogout}
-            className={`flex items-center transition-all duration-300 w-full text-slate-400 hover:text-red-600 font-bold text-sm ${isSidebarHovered ? 'gap-4 px-6 py-4' : 'justify-center p-4'}`}
+            className={`flex items-center transition-all duration-300 w-full text-slate-400 hover:text-red-600 font-semibold text-sm ${isSidebarHovered ? 'gap-4 px-6 py-4' : 'justify-center p-4'}`}
           >
             <LogOut size={18} className="flex-shrink-0" />
             <span className={`transition-all duration-300 ${isSidebarHovered ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'}`}>Sign Out</span>
@@ -143,7 +150,7 @@ export function DashboardLayout({ children, user }) {
       {/* Main Content Wrapper */}
       <div className={`flex-1 transition-all duration-300 lg:ml-20 flex flex-col min-w-0`}>
         {/* Header */}
-        <header className="flex justify-between items-center p-6 lg:p-8 bg-transparent sticky top-0 z-20 backdrop-blur-sm">
+        <header className="flex justify-between items-center p-6 lg:px-12 lg:py-8 bg-slate-50/80 sticky top-0 z-20 backdrop-blur-md border-b border-slate-200/50">
           <button 
             className="lg:hidden p-2 text-slate-400 hover:text-indigo-600 bg-white border border-slate-200 rounded-lg"
             onClick={() => setMobileMenuOpen(true)}

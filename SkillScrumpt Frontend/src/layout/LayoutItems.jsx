@@ -54,9 +54,14 @@ export function Navbar() {
         <div className="flex justify-between h-20">
           {/* Logo and Desktop Links */}
           <div className="flex items-center gap-12">
-            <Link to="/" className="text-2xl font-black italic tracking-tighter uppercase">
-              SkillScrumpt.in
-            </Link>
+            <div className="flex flex-col">
+              <Link to="/" className="text-2xl font-black italic tracking-tighter uppercase leading-none">
+                SkillScrumpt.in
+              </Link>
+              <span className="text-[7px] font-black uppercase tracking-[0.2em] text-white/30 hidden lg:block mt-1">
+                AI-Proctored Student Freelance Network
+              </span>
+            </div>
             
             <div className="hidden md:flex space-x-10">
               {navLinks.map((link) => (
@@ -139,7 +144,7 @@ export function Footer() {
               SkillScrumpt.in
             </Link>
             <p className="text-white/40 text-[11px] font-bold uppercase tracking-widest leading-relaxed">
-              AI-Proctored Skill Verification <br />& Global Freelance Marketplace. <br />Empowering verified talent with <br />global opportunities.
+              SkillScrumpt is a premium freelancing platform for students where every skill is verified through our advanced AI proctoring system to ensure absolute integrity.
             </p>
           </div>
           

@@ -10,7 +10,8 @@ const {
   desktopHandoff,
   getStats,
   getFeedbacks,
-  addFeedback
+  addFeedback,
+  googleLogin
 } = require('../controllers/userController');
 
 const router = express.Router();
@@ -18,6 +19,7 @@ const { protect } = require('../middleware/authMiddleware');
 
 router.post('/register', registerUser);
 router.post('/login', loginUser);
+router.post('/google-login', googleLogin);
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password/:token', resetPassword);
 router.post('/desktop-handoff', protect, desktopHandoff);

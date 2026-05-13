@@ -1,11 +1,14 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, Shield, Globe, Award, Zap, Users, MessageSquare, DollarSign, CheckCircle, MinusCircle, Star, Cpu, Lock, Monitor, Target, ArrowRight, User } from 'lucide-react';
+import { Check, Shield, Globe, Award, Zap, Users, MessageSquare, DollarSign, CheckCircle, MinusCircle, Star, Cpu, Lock, Monitor, Target, ArrowRight, User, Linkedin, Twitter, Mail } from 'lucide-react';
 import { Button, Card, Badge } from '../components/UI';
 import { Link, useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '../layout/DashboardLayout';
 
 export function AboutPage() {
+  React.useEffect(() => {
+    document.title = "About SkillScrumpt | The Future of Student Freelancing";
+  }, []);
   return (
     <div className="pt-20 bg-black text-white selection:bg-white selection:text-black">
       {/* Hero */}
@@ -70,26 +73,43 @@ export function AboutPage() {
         </div>
       </section>
 
-      {/* Team/Company Info Placeholder */}
-      <section className="py-40 border-t border-white/10">
+      {/* TEAM SECTION */}
+      <section className="py-40 border-t border-white/10" id="team">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-24 gap-12">
-            <h2 className="text-4xl md:text-5xl font-black tracking-tighter uppercase italic">MEET THE <br />TEAM.</h2>
-            <div className="h-[1px] bg-white/10 flex-1 mx-12 hidden md:block" />
-            <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em]">Setting the Standard</p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-1">
-            {[1, 2, 3, 4].map(i => (
-              <div key={i} className="group border border-white/10 p-1 bg-white/5 hover:bg-white transition-all radius-design-sm">
-                <div className="p-6 md:p-10 bg-black border border-white/10 group-hover:border-black group-hover:bg-white transition-all radius-design-sm h-full">
-                  <div className="aspect-square bg-white/5 border border-white/10 mb-8 overflow-hidden group-hover:border-black/10 transition-all flex items-center justify-center radius-design-sm">
-                    <User className="text-white/10 group-hover:text-black/20" size={48} />
-                  </div>
-                  <h4 className="font-black text-lg md:text-xl italic group-hover:text-black transition-colors">TEAM MEMBER</h4>
-                  <p className="text-[9px] md:text-[10px] text-white/30 font-black uppercase tracking-widest group-hover:text-black/40 transition-colors">Lead Developer</p>
+          <div className="grid lg:grid-cols-2 gap-20 items-center">
+             <div className="relative group">
+                <div className="absolute -inset-4 bg-gradient-to-tr from-indigo-500/20 to-transparent blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+                <div className="relative radius-design overflow-hidden border border-white/10 aspect-[4/5] bg-zinc-900">
+                   <img 
+                     src="/founder.jpeg" 
+                     className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-100" 
+                     alt="Hemasundar Maroti" 
+                   />
                 </div>
-              </div>
-            ))}
+                <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white text-black flex flex-col items-center justify-center radius-design shadow-2xl p-6 text-center z-10">
+                   <p className="text-[10px] font-black uppercase tracking-widest mb-2 text-black/40">Established</p>
+                   <p className="text-2xl font-black italic">2026</p>
+                </div>
+             </div>
+
+             <div className="lg:pl-10">
+                <div className="text-[11px] font-black uppercase tracking-[0.3em] text-white/40 mb-6">The Architect</div>
+                <h2 className="text-5xl md:text-8xl font-black tracking-tighter mb-10 leading-[0.9] uppercase italic">
+                  Hemasundar <br />Maroti.
+                </h2>
+                <div className="flex items-center gap-4 mb-10">
+                   <span className="px-5 py-2 bg-white/10 rounded-full text-[10px] font-black uppercase tracking-widest text-white border border-white/10">Founder</span>
+                   <span className="px-5 py-2 bg-white text-black rounded-full text-[10px] font-black uppercase tracking-widest shadow-[0_0_20px_rgba(255,255,255,0.2)]">Lead Developer</span>
+                </div>
+                <p className="text-xl text-white/40 font-bold uppercase tracking-widest leading-relaxed mb-12 max-w-lg">
+                  The visionary behind SkillScrumpt's un-cheatable AI architecture. Hemasundar is dedicated to building an ecosystem where merit is the only currency and talent is verified through absolute transparency.
+                </p>
+                <div className="flex gap-8">
+                   <a href="#" className="text-white hover:text-white/60 transition-colors"><Linkedin size={24} /></a>
+                   <a href="#" className="text-white hover:text-white/60 transition-colors"><Twitter size={24} /></a>
+                   <a href="#" className="text-white hover:text-white/60 transition-colors"><Mail size={24} /></a>
+                </div>
+             </div>
           </div>
         </div>
       </section>
@@ -99,6 +119,9 @@ export function AboutPage() {
 
 export function PricingPage() {
   const [role, setRole] = React.useState('student');
+  React.useEffect(() => {
+    document.title = "Zero Brokerage Pricing | SkillScrumpt.in";
+  }, []);
 
   return (
     <div className="pt-24 pb-20 bg-black text-white selection:bg-white selection:text-black min-h-screen">
@@ -365,6 +388,10 @@ function ValueCard({ icon: Icon, title, desc }) {
 }
 
 export function ProctoringPage() {
+  React.useEffect(() => {
+    document.title = "AI Proctoring System | SkillScrumpt Security";
+  }, []);
+
   return (
     <div className="pt-24 pb-20 bg-black text-white selection:bg-white selection:text-black min-h-screen">
       <div className="max-w-7xl mx-auto px-6">
@@ -446,6 +473,10 @@ export function ProctoringPage() {
 
 export function MarketplacePage() {
   const navigate = useNavigate();
+  React.useEffect(() => {
+    document.title = "Verified Talent Marketplace | SkillScrumpt.in";
+  }, []);
+
   const content = (
     <div className="pt-24 pb-20 bg-black text-white selection:bg-white selection:text-black min-h-screen">
       <div className="max-w-7xl mx-auto px-6">

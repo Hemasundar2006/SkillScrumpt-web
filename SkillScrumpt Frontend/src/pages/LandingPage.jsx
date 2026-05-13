@@ -86,6 +86,13 @@ export function LandingPage() {
   ]);
   
   useEffect(() => {
+    // SEO Optimization
+    document.title = "SkillScrumpt.in | AI-Proctored Student Freelancing Platform";
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute("content", "SkillScrumpt is the world's first AI-proctored freelancing platform for students. Verify your skills through live proctoring and keep 100% of your earnings with our zero-brokerage model.");
+    }
+
     const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
     
@@ -155,9 +162,9 @@ export function LandingPage() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
-              className="text-[10px] font-black uppercase tracking-[0.4em] text-muted mb-6"
+              className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-500 mb-6"
             >
-              The New Standard of Trust
+              The Next-Gen Student Freelance Network
             </motion.div>
             <motion.h1 
               initial={{ opacity: 0, x: -50 }}
@@ -165,7 +172,7 @@ export function LandingPage() {
               transition={{ duration: 1, ease: "easeOut" }}
               className="text-[12vw] lg:text-[8rem] font-black leading-[0.85] tracking-tighter mb-10"
             >
-              VERIFY <br />TALENT.
+              EARN AS <br />YOU GROW.
             </motion.h1>
             
             <motion.p 
@@ -175,7 +182,7 @@ export function LandingPage() {
               transition={{ delay: 0.5, duration: 1 }}
               className="text-xl text-muted max-w-md mb-12 leading-relaxed"
             >
-              A decentralized talent ecosystem powered by <span className="text-white font-bold italic">Live AI Proctoring</span>. Stop guessing and start hiring verified expertise.
+              SkillScrumpt is a freelancing platform for students where skills are verified by our <span className="text-white font-bold italic text-xl uppercase tracking-tighter">AI proctoring system</span>. Stop guessing and start hiring verified expertise.
             </motion.p>
 
             <motion.div 
@@ -243,9 +250,10 @@ export function LandingPage() {
         <div className="max-w-[1400px] mx-auto px-6 grid md:grid-cols-[200px_1fr] gap-20">
           <div className="text-[11px] font-black uppercase tracking-[0.3em] text-muted">Our Vision</div>
           <div className="border-l border-white/20 pl-10 md:pl-20">
-            <h2 className="text-4xl md:text-7xl font-bold leading-[1.1] tracking-tight mb-12">
-              We've built an ecosystem where <br /> 
-              trust is the primary currency.
+            <h2 className="text-4xl md:text-7xl font-bold leading-[1.1] tracking-tight mb-12 uppercase italic">
+              SkillScrumpt is a freelancing platform for students <br /> 
+              where your skills are verified by our <br />
+              AI proctoring system.
             </h2>
             <Link to="/about" className="inline-flex items-center gap-4 text-[11px] font-black uppercase tracking-[0.4em] text-white/40 hover:text-white transition-colors group">
               Learn More <ArrowRight size={14} className="group-hover:translate-x-2 transition-transform" />

@@ -3,6 +3,8 @@ const Feedback = require('../models/Feedback');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { sendEmail, templates } = require('../utils/mailService');
+const { OAuth2Client } = require('google-auth-library');
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // @desc    Register a new user
 // @route   POST /api/v1/users/register
@@ -311,6 +313,57 @@ exports.resetPassword = async (req, res) => {
     res.json({ message: 'Password reset successfully.' });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Google Login
+// @route   POST /api/v1/users/google-login
+// @access  Public
+exports.googleLogin = async (req, res) => {
+  try {
+    const { token } = req.body;
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    
+    const { email, given_name, family_name, picture } = ticket.getPayload();
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      // Create new user if not exists
+      user = await User.create({
+        firstName: given_name,
+        lastName: family_name || 'User',
+        email,
+        password: crypto.randomBytes(16).toString('hex'), // Random password for social login
+        role: 'professional', // Default role
+        avatar: picture
+      });
+
+      // Send Welcome Email
+      try {
+        const template = templates.welcomeStudent(user.firstName);
+        await sendEmail(user.email, template.subject, template.html);
+      } catch (err) {
+        console.error('Failed to send welcome email:', err);
+      }
+    }
+
+    res.json({
+      _id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      role: user.role,
+      isPro: user.isPro,
+      isVerified: user.isVerified,
+      aiScore: user.aiScore,
+      token: generateToken(user._id)
+    });
+  } catch (error) {
+    res.status(401).json({ message: 'Google authentication failed: ' + error.message });
   }
 };
 
