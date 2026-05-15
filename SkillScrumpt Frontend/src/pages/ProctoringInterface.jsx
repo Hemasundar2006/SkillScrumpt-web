@@ -296,7 +296,7 @@ export function AIProctoringInterface() {
   const currentQuestion = questions[currentQuestionIdx];
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col font-sans selection:bg-indigo-100 selection:text-indigo-900">
       <canvas ref={canvasRef} style={{ display: "none" }} />
       <div className="hidden">
          <ProctoringOverlay 
@@ -306,291 +306,353 @@ export function AIProctoringInterface() {
          />
       </div>
 
-      {/* Header */}
-      <header className="h-20 border-b border-slate-200 bg-white flex items-center justify-between px-8 sticky top-0 z-50 shadow-sm">
-        <div className="flex items-center gap-6">
-          <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center shadow-sm">
-            <Shield size={20} />
-          </div>
-          <div>
-            <h1 className="text-lg font-bold text-slate-900 tracking-tight">SkillScrumpt Assessment</h1>
-            <div className="flex items-center gap-2 mt-0.5">
-              <div className={`w-2 h-2 rounded-full ${isActive ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300'}`} />
-              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                 {isActive ? 'Proctoring Active' : 'Proctoring Inactive'}
-              </p>
+      {/* Header - Premium Glassmorphism */}
+      <header className="h-20 border-b border-slate-200 bg-white/80 backdrop-blur-md flex items-center justify-between px-10 sticky top-0 z-[100] shadow-sm">
+        <div className="flex items-center gap-8">
+          <Link to="/dashboard/student" className="flex items-center gap-4 group">
+            <div className="w-11 h-11 bg-gradient-to-br from-indigo-600 to-violet-700 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200 group-hover:scale-105 transition-transform duration-300">
+              <Shield size={22} />
             </div>
-          </div>
+            <div>
+              <h1 className="text-lg font-black text-slate-900 tracking-tight leading-none mb-1">SkillScrumpt <span className="text-indigo-600">AI</span></h1>
+              <div className="flex items-center gap-2">
+                <div className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300'}`} />
+                <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">
+                   {isActive ? 'PROCTORING_SECURE' : 'SESSION_IDLE'}
+                </p>
+              </div>
+            </div>
+          </Link>
         </div>
 
-        <div className="flex items-center gap-10">
-          <div className="hidden xl:flex items-center gap-8">
-             <ProctorIndicator icon={Camera} label="Camera" active={isActive && cameraReady} />
+        <div className="flex items-center gap-12">
+          <div className="hidden xl:flex items-center gap-10">
+             <ProctorIndicator icon={Camera} label="Vision" active={isActive && cameraReady} />
              <ProctorIndicator icon={Mic} label="Audio" active={isActive} />
-             <ProctorIndicator icon={Monitor} label="Screen" active={isActive} />
+             <ProctorIndicator icon={Monitor} label="Stream" active={isActive} />
           </div>
           
-          <div className="flex items-center gap-3 px-5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl">
-            <Clock size={16} className="text-indigo-600" />
-            <span className={`text-lg font-bold tracking-tight ${timeLeft < 300 ? 'text-rose-600 animate-pulse' : 'text-slate-700'}`}>
-              {formatTime(timeLeft)}
-            </span>
-          </div>
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3 px-6 py-3 bg-slate-900 rounded-2xl shadow-xl shadow-slate-200">
+              <Clock size={18} className="text-indigo-400" />
+              <span className={`text-xl font-black tabular-nums tracking-tight ${timeLeft < 300 ? 'text-rose-400 animate-pulse' : 'text-white'}`}>
+                {formatTime(timeLeft)}
+              </span>
+            </div>
 
-          <button 
-            onClick={handleFinish}
-            disabled={isSubmitting}
-            className="px-6 py-2.5 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition-all shadow-sm"
-          >
-            {isSubmitting ? 'Submitting...' : 'Finish Test'}
-          </button>
+            <button 
+              onClick={handleFinish}
+              disabled={isSubmitting}
+              className="px-8 py-3.5 bg-indigo-600 text-white text-xs font-black uppercase tracking-widest rounded-2xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 hover:shadow-indigo-200 active:scale-95 disabled:opacity-50"
+            >
+              {isSubmitting ? 'Finalizing...' : 'Finish Test'}
+            </button>
+          </div>
         </div>
       </header>
 
-      {/* Workspace */}
+      {/* Main Workspace Layout */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Navigation Sidebar */}
-        <aside className="w-24 border-r border-slate-200 bg-white flex flex-col items-center py-8 gap-4 overflow-y-auto shadow-sm z-10">
+        
+        {/* Navigation Sidebar - Modern Dot Style */}
+        <aside className="w-28 border-r border-slate-200 bg-white flex flex-col items-center py-10 gap-5 overflow-y-auto z-10 custom-scrollbar">
+          <div className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Questions</div>
           {questions.map((_, i) => (
             <button 
               key={i}
               onClick={() => setCurrentQuestionIdx(i)}
-              className={`w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold transition-all flex-shrink-0 ${
+              className={`relative w-12 h-12 rounded-2xl flex items-center justify-center text-xs font-black transition-all duration-300 ${
                 i === currentQuestionIdx 
-                  ? 'bg-indigo-600 text-white shadow-md' 
+                  ? 'bg-slate-900 text-white shadow-xl scale-110' 
                   : answers[i] !== undefined
-                  ? 'bg-indigo-50 text-indigo-700 border border-indigo-100'
-                  : 'bg-slate-50 text-slate-500 border border-slate-200 hover:border-slate-300 hover:bg-slate-100'
+                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
+                  : 'bg-slate-50 text-slate-400 border border-slate-100 hover:border-indigo-200 hover:text-indigo-600'
               }`}
             >
               {i + 1}
+              {answers[i] !== undefined && i !== currentQuestionIdx && (
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white" />
+              )}
             </button>
           ))}
         </aside>
 
-        {/* Assessment Engine */}
-        <main className="flex-1 p-12 overflow-y-auto relative bg-slate-50/50">
-          <div className="max-w-5xl mx-auto h-full flex flex-col">
-            <motion.div
-              key={currentQuestionIdx}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="space-y-8 h-full flex flex-col"
-            >
-              <div className="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="px-3 py-1 bg-indigo-50 text-indigo-700 text-[10px] font-bold uppercase tracking-widest rounded-lg">
-                    {currentQuestion.type === 'mcq' ? 'Multiple Choice' : 'Coding Challenge'}
+        {/* Assessment Core Area */}
+        <main className="flex-1 flex flex-col bg-[#F8FAFC] overflow-hidden">
+          <div className="flex-1 overflow-y-auto p-12 custom-scrollbar">
+            <div className="max-w-5xl mx-auto space-y-10">
+              
+              {/* Question Header Card */}
+              <motion.div
+                key={`q-${currentQuestionIdx}`}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="bg-white p-12 rounded-[2.5rem] border border-slate-200 shadow-sm relative overflow-hidden group"
+              >
+                <div className="absolute top-0 left-0 w-2 h-full bg-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="flex items-center justify-between mb-8">
+                  <div className="flex items-center gap-4">
+                    <div className="px-4 py-1.5 bg-indigo-50 text-indigo-700 text-[10px] font-black uppercase tracking-[0.2em] rounded-full border border-indigo-100">
+                      {currentQuestion.type === 'mcq' ? 'PROTOCOL_MCQ' : 'CORE_ENGINE_CHALLENGE'}
+                    </div>
+                    <div className="h-4 w-px bg-slate-200" />
+                    <span className="text-slate-400 font-bold text-[10px] uppercase tracking-widest">
+                      Module {currentQuestion.id} <span className="text-slate-300 mx-1">/</span> {questions.length}
+                    </span>
                   </div>
-                  <span className="text-slate-400 font-bold text-[10px] uppercase tracking-widest">Question {currentQuestion.id} of {questions.length}</span>
+                  <Badge variant="outline" className="font-black text-[9px] tracking-widest">{currentQuestion.points || 1} POINTS</Badge>
                 </div>
-                <h2 className="text-2xl font-bold text-slate-900 leading-relaxed">
+                
+                <h2 className="text-3xl font-black text-slate-900 leading-[1.4] tracking-tight">
                   {currentQuestion.question}
                 </h2>
-              </div>
+              </motion.div>
 
-              {currentQuestion.type === 'mcq' ? (
-                <div className="grid gap-4 flex-1">
-                  {currentQuestion.options.map((opt, i) => (
-                    <OptionCard 
-                      key={i}
-                      label={String.fromCharCode(65 + i)} 
-                      text={opt.text}
-                      selected={answers[currentQuestionIdx] === i}
-                      onClick={() => setAnswers({...answers, [currentQuestionIdx]: i})}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <div className="flex-1 flex flex-col min-h-[500px] gap-6">
-                   <div className="flex flex-col overflow-hidden flex-[3] bg-white rounded-[2rem] border border-slate-200 shadow-sm">
-                      <div className="bg-slate-50 px-6 py-4 border-b border-slate-200 flex items-center justify-between">
-                         <div className="flex items-center gap-3">
-                            <div className="w-2 h-2 bg-indigo-500 rounded-full" />
-                            <span className="text-xs font-bold text-slate-600">{currentQuestion.language === 'python' ? 'solution.py' : 'index.js'}</span>
+              {/* Options Grid */}
+              <div className="grid gap-5">
+                {currentQuestion.type === 'mcq' ? (
+                  <AnimatePresence mode="popLayout">
+                    {currentQuestion.options.map((opt, i) => (
+                      <motion.div
+                        key={`${currentQuestionIdx}-${i}`}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.05 }}
+                      >
+                        <OptionCard 
+                          label={String.fromCharCode(65 + i)} 
+                          text={opt.text}
+                          selected={answers[currentQuestionIdx] === i}
+                          onClick={() => setAnswers({...answers, [currentQuestionIdx]: i})}
+                        />
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                ) : (
+                  <div className="space-y-8 min-h-[600px] flex flex-col">
+                    <div className="flex-1 flex flex-col overflow-hidden bg-white rounded-[2.5rem] border border-slate-200 shadow-sm">
+                      <div className="bg-slate-50 px-8 py-5 border-b border-slate-200 flex items-center justify-between">
+                         <div className="flex items-center gap-4">
+                            <div className="flex gap-1.5">
+                              <div className="w-2.5 h-2.5 rounded-full bg-rose-400" />
+                              <div className="w-2.5 h-2.5 rounded-full bg-amber-400" />
+                              <div className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+                            </div>
+                            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2">
+                              {currentQuestion.language === 'python' ? 'engine.py' : 'main.js'}
+                            </span>
                          </div>
                          <button 
                             onClick={async () => {
                               setIsRunning(true);
-                              setConsoleOutput("Compiling...");
+                              setConsoleOutput(">> Initializing Runtime environment...\n>> Compiling source code...");
                               try {
                                 const response = await api.post('/compiler/run', {
                                   compiler: currentQuestion.language === 'python' ? 'python3' : 'nodejs20',
                                   code: answers[currentQuestionIdx] || currentQuestion.initialCode,
                                   input: ''
                                 });
-                                setConsoleOutput(response.data.output || response.data.error || "Execution completed with no output.");
+                                setConsoleOutput(prev => prev + "\n>> Execution completed.\n\n" + (response.data.output || response.data.error || "Execution completed with no output."));
                               } catch (err) {
-                                setConsoleOutput("Error: " + err.message);
+                                setConsoleOutput(prev => prev + "\n>> CRITICAL_ERROR: " + err.message);
                               } finally {
                                 setIsRunning(false);
                               }
                             }}
                             disabled={isRunning}
-                            className="px-4 py-2 bg-indigo-600 text-white text-[10px] font-bold uppercase tracking-wider rounded-lg hover:bg-indigo-700 transition-all shadow-sm"
+                            className="px-6 py-2.5 bg-slate-900 text-white text-[10px] font-black uppercase tracking-[0.15em] rounded-xl hover:bg-slate-800 transition-all shadow-lg active:scale-95"
                           >
-                            {isRunning ? 'Running...' : 'Run Code'}
+                            {isRunning ? 'EXECUTING...' : 'RUN_CODE'}
                           </button>
                       </div>
                       
                       <textarea
-                        className="flex-1 bg-transparent p-6 font-mono text-sm leading-relaxed text-slate-700 outline-none resize-none"
+                        className="flex-1 bg-white p-10 font-mono text-sm leading-[1.7] text-slate-700 outline-none resize-none selection:bg-indigo-100"
                         spellCheck="false"
+                        placeholder="// Write your logic here..."
                         value={answers[currentQuestionIdx] || currentQuestion.initialCode}
                         onChange={(e) => setAnswers({...answers, [currentQuestionIdx]: e.target.value})}
                       />
-                   </div>
+                    </div>
 
-                   {/* Terminal */}
-                   <div className="flex flex-col overflow-hidden h-48 bg-slate-900 rounded-[2rem] shadow-sm">
-                      <div className="bg-slate-800 px-6 py-3 flex items-center justify-between border-b border-slate-700">
-                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Console Output</span>
-                         <button onClick={() => setConsoleOutput("")} className="text-[10px] text-slate-500 hover:text-white uppercase font-bold transition-colors">Clear</button>
-                      </div>
-                      <div className="flex-1 p-6 font-mono text-xs leading-relaxed overflow-y-auto whitespace-pre-wrap text-slate-300">
-                        {consoleOutput ? (
-                          <div>{consoleOutput}</div>
-                        ) : (
-                          <span className="text-slate-600 italic">No output yet. Run your code to see results.</span>
-                        )}
-                      </div>
-                   </div>
-                </div>
-              )}
-
-              <div className="flex justify-between items-center pt-6 mt-auto">
-                <button 
-                  onClick={() => setCurrentQuestionIdx(prev => Math.max(0, prev - 1))}
-                  className="px-8 py-4 bg-white border border-slate-200 text-slate-700 text-xs font-bold rounded-2xl hover:bg-slate-50 transition-all disabled:opacity-50 shadow-sm"
-                  disabled={currentQuestionIdx === 0}
-                >
-                  Previous
-                </button>
-                <button 
-                  className="px-8 py-4 bg-indigo-600 text-white font-bold text-xs rounded-2xl hover:bg-indigo-700 transition-all flex items-center gap-3 shadow-md shadow-indigo-200"
-                  onClick={() => {
-                    if (currentQuestionIdx < questions.length - 1) {
-                      setCurrentQuestionIdx(prev => prev + 1);
-                    } else {
-                      handleFinish();
-                    }
-                  }}
-                >
-                  {currentQuestionIdx === questions.length - 1 ? 'Review & Submit' : 'Next Question'} 
-                  <ArrowRight size={16} />
-                </button>
+                    {/* Console View */}
+                    <div className="h-64 bg-slate-900 rounded-[2.5rem] shadow-2xl border border-slate-800 flex flex-col overflow-hidden">
+                       <div className="bg-slate-800/50 px-8 py-4 flex items-center justify-between border-b border-slate-800">
+                          <div className="flex items-center gap-2">
+                            <Activity size={14} className="text-emerald-500" />
+                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Runtime Terminal</span>
+                          </div>
+                          <button onClick={() => setConsoleOutput("")} className="text-[9px] font-black text-slate-500 hover:text-white uppercase tracking-widest transition-colors">Wipe Console</button>
+                       </div>
+                       <div className="flex-1 p-8 font-mono text-xs leading-relaxed overflow-y-auto whitespace-pre-wrap text-emerald-500/90 custom-scrollbar">
+                         {consoleOutput ? (
+                           <div className="animate-in fade-in duration-500">{consoleOutput}</div>
+                         ) : (
+                           <span className="text-slate-600 italic">Terminal awaiting instructions. Press RUN_CODE to start.</span>
+                         )}
+                       </div>
+                    </div>
+                  </div>
+                )}
               </div>
-            </motion.div>
+            </div>
+          </div>
+
+          {/* Persistent Action Bar */}
+          <div className="h-24 bg-white border-t border-slate-200 px-12 flex items-center justify-between shadow-[0_-4px_20px_rgba(0,0,0,0.02)]">
+            <button 
+              onClick={() => setCurrentQuestionIdx(prev => Math.max(0, prev - 1))}
+              className="px-8 py-3.5 bg-white border border-slate-200 text-slate-700 text-xs font-black uppercase tracking-widest rounded-2xl hover:border-slate-400 transition-all disabled:opacity-30 active:scale-95 flex items-center gap-3"
+              disabled={currentQuestionIdx === 0}
+            >
+              <ChevronLeft size={18} /> Previous
+            </button>
+            
+            <div className="flex gap-4">
+               <div className="hidden md:flex items-center gap-2 mr-4">
+                  <div className="flex -space-x-1">
+                    {[1,2,3].map(i => <div key={i} className="w-2 h-2 rounded-full bg-slate-200 border border-white" />)}
+                  </div>
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Progress Verified</span>
+               </div>
+               
+               <button 
+                className="px-10 py-3.5 bg-indigo-600 text-white font-black text-xs uppercase tracking-widest rounded-2xl hover:bg-indigo-700 transition-all flex items-center gap-4 shadow-xl shadow-indigo-100 hover:shadow-indigo-200 active:scale-95"
+                onClick={() => {
+                  if (currentQuestionIdx < questions.length - 1) {
+                    setCurrentQuestionIdx(prev => prev + 1);
+                  } else {
+                    handleFinish();
+                  }
+                }}
+              >
+                {currentQuestionIdx === questions.length - 1 ? 'Review & Submit' : 'Next Question'} 
+                <ArrowRight size={18} />
+              </button>
+            </div>
           </div>
         </main>
 
-        {/* AI HUD Sidebar */}
-        <aside className="w-[360px] border-l border-slate-200 bg-white p-8 flex flex-col gap-8 overflow-y-auto z-10 shadow-sm">
-          <section>
-             <div className="flex items-center justify-between mb-4">
-               <h4 className="text-xs font-bold text-slate-900 flex items-center gap-2">
-                 <Activity size={16} className="text-indigo-600" /> Proctoring Status
-               </h4>
-               <div className={`px-2 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest ${isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
-                  {isActive ? 'Live' : 'Idle'}
+        {/* Right HUD - AI Surveillance Panel */}
+        <aside className="w-[420px] border-l border-slate-200 bg-white flex flex-col z-10 shadow-2xl overflow-hidden">
+          <div className="p-10 flex-1 overflow-y-auto custom-scrollbar space-y-12">
+            
+            <section>
+               <div className="flex items-center justify-between mb-6">
+                 <h4 className="text-[10px] font-black text-slate-900 flex items-center gap-3 uppercase tracking-[0.2em]">
+                   <Activity size={18} className="text-indigo-600" /> Biometric Link
+                 </h4>
+                 <div className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${isActive ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-100' : 'bg-slate-100 text-slate-500'}`}>
+                    {isActive ? 'SECURE_LIVE' : 'OFFLINE'}
+                 </div>
                </div>
-             </div>
-             
-             <div className="relative aspect-video rounded-2xl bg-slate-100 overflow-hidden group shadow-sm border border-slate-200">
-               <video 
-                 ref={videoRef} 
-                 autoPlay 
-                 muted 
-                 playsInline 
-                 className={`w-full h-full object-cover scale-x-[-1] transition-opacity duration-1000 ${cameraReady ? 'opacity-100' : 'opacity-0'}`} 
-               />
                
-               <div className="absolute inset-0 z-10 pointer-events-none">
-                 <AnimatePresence>
-                   {isActive && cameraReady && (
-                     <motion.div 
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-40 border-2 border-emerald-400/50 rounded-xl flex flex-col items-center justify-center"
-                     >
-                     </motion.div>
-                   )}
-                 </AnimatePresence>
+               <div className="relative aspect-video rounded-[2rem] bg-slate-900 overflow-hidden shadow-2xl border-4 border-white ring-1 ring-slate-200 group">
+                 <video 
+                   ref={videoRef} 
+                   autoPlay 
+                   muted 
+                   playsInline 
+                   className={`w-full h-full object-cover scale-x-[-1] transition-all duration-1000 ${cameraReady ? 'opacity-100 grayscale-[0.2]' : 'opacity-0'}`} 
+                 />
                  
-                 <div className="absolute bottom-3 left-3 text-[9px] font-bold text-white bg-black/50 px-2 py-1 rounded-md backdrop-blur-sm">
-                    Match: {realScore}%
+                 {/* AI Scanning Lines Overlay */}
+                 {isActive && cameraReady && (
+                    <div className="absolute inset-0 pointer-events-none">
+                      <div className="absolute top-0 left-0 w-full h-full border-[1px] border-emerald-500/20 rounded-[2rem]" />
+                      <div className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-emerald-400/50" />
+                      <div className="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-emerald-400/50" />
+                      <div className="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-emerald-400/50" />
+                      <div className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-emerald-400/50" />
+                      
+                      <motion.div 
+                        className="absolute inset-x-0 h-[2px] bg-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.5)]"
+                        animate={{ top: ["0%", "100%", "0%"] }}
+                        transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                      />
+                    </div>
+                 )}
+                 
+                 <div className="absolute bottom-6 right-6 z-20">
+                    <div className="px-4 py-2 bg-black/60 backdrop-blur-md rounded-xl text-[10px] font-black text-white border border-white/20 flex items-center gap-2">
+                       <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                       MATCH_STABILITY: {realScore}%
+                    </div>
                  </div>
                </div>
-             </div>
-          </section>
+            </section>
 
-          <section className="space-y-6">
-            <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Telemetry Metrics</h4>
-            <div className="grid grid-cols-2 gap-4">
-              <TelemetryCard icon={Eye} label="Gaze" value={realScore > 80 ? "Focused" : "Deviated"} active={realScore > 80} />
-              <TelemetryCard icon={Activity} label="Score" value={`${realScore}%`} active={realScore > 80} />
-              <TelemetryCard icon={Cpu} label="Status" value={isActive ? "Active" : "Idle"} active={isActive} />
-              <TelemetryCard icon={Lock} label="Identity" value="Secure" active={true} />
-            </div>
-          </section>
+            <section>
+              <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] mb-8">Telemetry Diagnostics</h4>
+              <div className="grid grid-cols-2 gap-5">
+                <TelemetryCard icon={Eye} label="Gaze Focus" value={realScore > 80 ? "OPTIMAL" : "DEVIATED"} active={realScore > 80} />
+                <TelemetryCard icon={Activity} label="Integrity" value={`${realScore}%`} active={realScore > 80} />
+                <TelemetryCard icon={Cpu} label="Engine" value={isActive ? "NOMINAL" : "IDLE"} active={isActive} />
+                <TelemetryCard icon={Lock} label="Identity" value="VERIFIED" active={true} />
+              </div>
+            </section>
 
-          <section className="flex-1 flex flex-col min-h-0">
-            <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Activity Log</h4>
-            <div className="flex-1 bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3 font-mono text-[10px] overflow-y-auto">
-               {violations.length > 0 ? violations.map((v, i) => (
-                 <div key={i} className={`flex gap-2 ${v.severity === 'high' || v.severity === 'critical' ? 'text-rose-600 font-bold' : 'text-slate-600'}`}>
-                    <span className="text-slate-400">[{new Date().toLocaleTimeString().slice(0,5)}]</span>
-                    <span>{v.message}</span>
-                 </div>
-               )) : (
-                 <div className="flex gap-2 text-slate-400">
-                    <span>Session secure. No violations detected.</span>
-                 </div>
-               )}
-            </div>
-          </section>
+            <section className="flex flex-col">
+              <div className="flex items-center justify-between mb-6">
+                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em]">Real-time Audit Log</h4>
+                <Badge variant="secondary" className="text-[8px] opacity-60">AUTO_SAVE_ENABLED</Badge>
+              </div>
+              <div className="bg-slate-900 rounded-[2.5rem] p-8 space-y-5 font-mono text-[10px] min-h-[300px] border border-slate-800 shadow-inner overflow-y-auto custom-scrollbar-dark">
+                 {violations.length > 0 ? violations.map((v, i) => (
+                   <motion.div 
+                    initial={{ opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    key={i} 
+                    className={`flex gap-4 p-4 rounded-2xl border ${v.severity === 'high' || v.severity === 'critical' ? 'bg-rose-500/10 border-rose-500/20 text-rose-400' : 'bg-white/5 border-white/10 text-slate-400'}`}
+                   >
+                      <span className="opacity-50 font-black tabular-nums">{new Date().toLocaleTimeString().slice(0,5)}</span>
+                      <span className="leading-relaxed">>> {v.message}</span>
+                   </motion.div>
+                 )) : (
+                   <div className="flex flex-col items-center justify-center py-20 text-center space-y-4 opacity-30">
+                      <Shield size={32} />
+                      <p className="text-[9px] font-black uppercase tracking-[0.2em]">Protocol Secure.<br/>Monitoring constant.</p>
+                   </div>
+                 )}
+              </div>
+            </section>
+          </div>
         </aside>
       </div>
 
-      {/* Overlays: Initiation and Submission */}
+      {/* Initiation Overlay */}
       <AnimatePresence mode="wait">
         {isSubmitting ? (
           <motion.div 
             key="generating"
-            className="fixed inset-0 z-[300] flex items-center justify-center p-8 bg-slate-900/80 backdrop-blur-xl"
+            className="fixed inset-0 z-[300] flex items-center justify-center p-8 bg-slate-900/90 backdrop-blur-2xl"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <div className="w-full max-w-lg bg-white rounded-[3rem] p-16 text-center relative overflow-hidden shadow-2xl">
-               <div className="absolute top-0 left-0 w-full h-2 bg-indigo-600 animate-pulse" />
+            <div className="w-full max-w-xl bg-white rounded-[4rem] p-20 text-center relative overflow-hidden shadow-2xl">
+               <div className="absolute top-0 left-0 w-full h-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 animate-pulse" />
                
-               {/* Animated AI Scanning Effect */}
-               <div className="relative w-24 h-24 mx-auto mb-10">
-                  <div className="absolute inset-0 border-4 border-indigo-600/20 rounded-2xl" />
-                  <motion.div 
-                    className="absolute inset-x-0 h-1 bg-indigo-600 shadow-[0_0_15px_rgba(79,70,229,0.5)] z-10"
-                    animate={{ top: ["0%", "100%", "0%"] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                  />
+               <div className="relative w-32 h-32 mx-auto mb-12">
+                  <div className="absolute inset-0 border-[6px] border-indigo-600/10 rounded-[2rem] animate-spin-slow" />
                   <div className="w-full h-full flex items-center justify-center text-indigo-600">
-                     <Cpu size={48} className="animate-pulse" />
+                     <Cpu size={64} className="animate-pulse" />
                   </div>
                </div>
 
-               <h3 className="text-3xl font-black mb-4 text-slate-900 tracking-tight italic uppercase">Result Generating.</h3>
-               <p className="text-slate-500 text-sm font-bold uppercase tracking-[0.2em] mb-12">AI Engine is processing your telemetry & performance</p>
+               <h3 className="text-4xl font-black mb-6 text-slate-900 tracking-tighter italic uppercase">Processing Certification.</h3>
+               <p className="text-slate-500 text-xs font-black uppercase tracking-[0.3em] mb-16 leading-relaxed">Synthesizing telemetry data & <br/>technical performance metrics</p>
                
-               <div className="space-y-4">
-                  <div className="flex items-center justify-between px-6 py-4 bg-slate-50 rounded-2xl border border-slate-100">
-                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Protocol Audit</span>
-                     <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" /> Verified
+               <div className="space-y-4 max-w-sm mx-auto">
+                  <div className="flex items-center justify-between px-8 py-5 bg-slate-50 rounded-[2rem] border border-slate-100 shadow-sm">
+                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Protocol Audit</span>
+                     <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-3">
+                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-ping" /> SECURE
                      </span>
                   </div>
-                  <div className="flex items-center justify-between px-6 py-4 bg-slate-50 rounded-2xl border border-slate-100">
-                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Score Synthesis</span>
-                     <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest animate-pulse">Processing...</span>
+                  <div className="flex items-center justify-between px-8 py-5 bg-slate-50 rounded-[2rem] border border-slate-100 shadow-sm">
+                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Score Vector</span>
+                     <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest animate-pulse">Calculating...</span>
                   </div>
                </div>
             </div>
@@ -598,37 +660,54 @@ export function AIProctoringInterface() {
         ) : !isActive ? (
           <motion.div 
             key="initiation"
-            className="fixed inset-0 z-[200] flex items-center justify-center p-8 bg-slate-900/60 backdrop-blur-md"
+            className="fixed inset-0 z-[200] flex items-center justify-center p-8 bg-slate-900/70 backdrop-blur-xl"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <div className="w-full max-w-lg bg-white rounded-[2rem] p-12 text-center relative overflow-hidden shadow-2xl">
-              <div className="w-20 h-20 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-sm">
-                <Shield size={40} className="animate-pulse" />
+            <div className="w-full max-w-xl bg-white rounded-[3rem] p-16 text-center relative overflow-hidden shadow-2xl border border-white/20">
+              <div className="w-24 h-24 bg-indigo-50 text-indigo-600 rounded-[2rem] flex items-center justify-center mx-auto mb-10 shadow-inner group">
+                <Shield size={48} className="animate-pulse group-hover:scale-110 transition-transform" />
               </div>
-              <h3 className="text-3xl font-bold mb-4 text-slate-900 tracking-tight">Proctoring Ready</h3>
-              <p className="text-slate-500 text-sm font-medium leading-relaxed mb-10">
-                Ensure you are in a quiet, well-lit environment. Your camera, microphone, and screen will be monitored during the assessment.
+              <h3 className="text-4xl font-black mb-6 text-slate-900 tracking-tighter">Initialize Secure Link</h3>
+              <p className="text-slate-500 text-sm font-bold leading-relaxed mb-12 max-w-sm mx-auto uppercase tracking-wide opacity-80">
+                Environmental diagnostics complete. <br/>Biometric synchronization required for <br/>certification validity.
               </p>
-              <div className="space-y-6">
+              <div className="space-y-8">
                 <button 
                    onClick={startProctoring}
-                   className="w-full py-5 bg-indigo-600 text-white rounded-2xl text-sm font-bold hover:bg-indigo-700 transition-all shadow-md shadow-indigo-200"
+                   className="w-full py-6 bg-slate-900 text-white rounded-[2rem] text-[11px] font-black uppercase tracking-[0.3em] hover:bg-slate-800 transition-all shadow-2xl active:scale-95"
                 >
-                  Start Assessment
+                  Confirm & Start Session
                 </button>
-                <div className="flex items-center justify-center gap-6 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                   <span className="flex items-center gap-1"><Lock size={12}/> Secure</span>
-                   <span className="w-1 h-1 bg-slate-300 rounded-full" />
-                   <span className="flex items-center gap-1"><Shield size={12}/> AI Verified</span>
+                <div className="flex items-center justify-center gap-8 text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                   <span className="flex items-center gap-2"><Lock size={14} className="text-emerald-500"/> AES_256_SECURE</span>
+                   <span className="w-1.5 h-1.5 bg-slate-200 rounded-full" />
+                   <span className="flex items-center gap-2"><Shield size={14} className="text-indigo-500"/> AI_AUDITED</span>
                 </div>
               </div>
             </div>
           </motion.div>
         ) : null}
       </AnimatePresence>
+
+      <style jsx>{`
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 10px; }
+        
+        .custom-scrollbar-dark::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar-dark::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar-dark::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
+        @keyframes spin-slow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow { animation: spin-slow 8s linear infinite; }
+      `}</style>
     </div>
+
   );
 }
 
