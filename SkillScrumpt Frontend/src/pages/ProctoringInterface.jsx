@@ -38,6 +38,13 @@ export function AIProctoringInterface() {
   const [timeLeft, setTimeLeft] = useState(3600); // 1 hour in seconds
   const [answers, setAnswers] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [submissionResult, setSubmissionResult] = useState(null);
+  const [feedbackText, setFeedbackText] = useState("");
+  const [feedbackRating, setFeedbackRating] = useState(5);
+  const [genTimeLeft, setGenTimeLeft] = useState(30); 
+  const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
+
   const [realScore, setRealScore] = useState(100);
   const [isRunning, setIsRunning] = useState(false);
   const [consoleOutput, setConsoleOutput] = useState("");
@@ -151,6 +158,16 @@ export function AIProctoringInterface() {
   }, [violations, isActive]);
 
   useEffect(() => {
+    let timer;
+    if (showFeedback && genTimeLeft > 0) {
+      timer = setInterval(() => {
+        setGenTimeLeft(prev => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [showFeedback, genTimeLeft]);
+
+  useEffect(() => {
     const handleResize = () => setIsDesktop(window.innerWidth >= 1024);
     window.addEventListener('resize', handleResize);
     const timer = setInterval(() => {
@@ -217,18 +234,18 @@ export function AIProctoringInterface() {
         proctoringReport: report,
       });
 
-      navigate('/assessments/result', { 
-          state: { 
-              score: response.data.score || technicalScore,
-              proctoringScore: report?.proctoring_score || 100,
-              report: {
-                ...report,
-                aiAnalysis: response.data.aiAnalysis // Include the backend analysis
-              },
-              status: response.data.status,
-              assessmentId: testId
-          } 
+      setSubmissionResult({ 
+          score: response.data.score || technicalScore,
+          proctoringScore: report?.proctoring_score || 100,
+          report: {
+            ...report,
+            aiAnalysis: response.data.aiAnalysis 
+          },
+          status: response.data.status,
+          assessmentId: testId
       });
+      setIsSubmitting(false);
+      setShowFeedback(true);
     } catch (error) {
       console.error("Error submitting assessment:", error);
       navigate('/assessments/result', { 
@@ -239,6 +256,20 @@ export function AIProctoringInterface() {
               status: 'failed'
           } 
       });
+    }
+  };
+
+  const submitFeedback = async () => {
+    setIsSubmittingFeedback(true);
+    try {
+      await api.post('/users/feedbacks', {
+        text: feedbackText || "No comment provided.",
+        rating: feedbackRating
+      });
+      navigate('/assessments/result', { state: submissionResult });
+    } catch (err) {
+      console.error("Feedback failed", err);
+      navigate('/assessments/result', { state: submissionResult });
     }
   };
 
@@ -606,7 +637,7 @@ export function AIProctoringInterface() {
                     className={`flex gap-4 p-4 rounded-2xl border ${v.severity === 'high' || v.severity === 'critical' ? 'bg-rose-500/10 border-rose-500/20 text-rose-400' : 'bg-white/5 border-white/10 text-slate-400'}`}
                    >
                       <span className="opacity-50 font-black tabular-nums">{new Date().toLocaleTimeString().slice(0,5)}</span>
-                      <span className="leading-relaxed">>> {v.message}</span>
+                      <span className="leading-relaxed">{" >> "} {v.message}</span>
                    </motion.div>
                  )) : (
                    <div className="flex flex-col items-center justify-center py-20 text-center space-y-4 opacity-30">
@@ -620,9 +651,71 @@ export function AIProctoringInterface() {
         </aside>
       </div>
 
-      {/* Initiation Overlay */}
+      {/* Overlays: Initiation and Submission */}
       <AnimatePresence mode="wait">
-        {isSubmitting ? (
+        {showFeedback ? (
+          <motion.div 
+            key="feedback"
+            className="fixed inset-0 z-[400] flex items-center justify-center p-8 bg-slate-900/90 backdrop-blur-2xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <div className="w-full max-w-2xl bg-white rounded-[3rem] p-16 relative overflow-hidden shadow-2xl">
+               <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-600 to-violet-600" />
+               
+               <div className="flex flex-col items-center text-center mb-10">
+                 <div className="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mb-6 shadow-sm">
+                   <Clock size={32} className="animate-pulse" />
+                 </div>
+                 <h3 className="text-3xl font-black mb-2 text-slate-900 tracking-tight italic uppercase">Finalizing Analysis</h3>
+                 <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mb-4">Results generating in: <span className="text-indigo-600">{genTimeLeft} seconds</span></p>
+                 <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                    <motion.div 
+                      className="h-full bg-indigo-600"
+                      initial={{ width: "0%" }}
+                      animate={{ width: `${((30 - genTimeLeft) / 30) * 100}%` }}
+                    />
+                 </div>
+               </div>
+
+               <div className="space-y-8">
+                 <div>
+                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 block text-center">Rate your experience</label>
+                   <div className="flex justify-center gap-4">
+                     {[1, 2, 3, 4, 5].map((star) => (
+                       <button 
+                        key={star} 
+                        onClick={() => setFeedbackRating(star)}
+                        className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${feedbackRating >= star ? 'bg-indigo-600 text-white shadow-lg' : 'bg-slate-50 text-slate-300 border border-slate-100'}`}
+                       >
+                         <CheckCircle size={20} fill={feedbackRating >= star ? "currentColor" : "none"} />
+                       </button>
+                     ))}
+                   </div>
+                 </div>
+
+                 <div>
+                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 block">Tell us about the assessment</label>
+                   <textarea 
+                    value={feedbackText}
+                    onChange={(e) => setFeedbackText(e.target.value)}
+                    placeholder="Was the level appropriate? Any technical issues?..."
+                    className="w-full p-6 bg-slate-50 border border-slate-100 rounded-2xl text-sm outline-none focus:border-indigo-300 transition-all resize-none h-32"
+                   />
+                 </div>
+
+                 <button 
+                  onClick={submitFeedback}
+                  disabled={isSubmittingFeedback}
+                  className="w-full py-5 bg-slate-900 text-white rounded-[2rem] text-xs font-black uppercase tracking-[0.2em] hover:bg-slate-800 transition-all shadow-xl active:scale-95 disabled:opacity-50"
+                 >
+                   {isSubmittingFeedback ? 'Transmitting...' : 'Submit & View Results'}
+                 </button>
+               </div>
+            </div>
+          </motion.div>
+        ) : isSubmitting ? (
           <motion.div 
             key="generating"
             className="fixed inset-0 z-[300] flex items-center justify-center p-8 bg-slate-900/90 backdrop-blur-2xl"
