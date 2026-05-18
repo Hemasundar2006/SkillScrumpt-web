@@ -14,7 +14,8 @@ import {
   Link as LinkIcon,
   Twitter,
   Code,
-  Linkedin
+  Linkedin,
+  MessageSquare
 } from 'lucide-react';
 import { Card, Badge, Button, GlassContainer } from '../components/UI';
 
@@ -26,6 +27,7 @@ export function StudentProfile() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
+  const [reviews, setReviews] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const currentUserStr = localStorage.getItem('user');
   const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
@@ -33,10 +35,14 @@ export function StudentProfile() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await api.get(`/users/profile/${id}`);
-        setProfile(res.data);
+        const [profileRes, reviewsRes] = await Promise.all([
+          api.get(`/users/profile/${id}`),
+          api.get(`/reviews/user/${id}`)
+        ]);
+        setProfile(profileRes.data);
+        setReviews(reviewsRes.data);
       } catch (err) {
-        console.error('Error fetching profile:', err);
+        console.error('Error fetching profile and reviews:', err);
       } finally {
         setIsLoading(false);
       }
@@ -103,12 +109,16 @@ export function StudentProfile() {
                 {profile.role === 'professional' && <Badge variant="primary" className="bg-primary/20 text-blue-300 border-none px-4 py-1.5 uppercase tracking-widest font-bold">Professional</Badge>}
                 {profile.role === 'client' && <Badge variant="primary" className="bg-primary/20 text-emerald-300 border-none px-4 py-1.5 uppercase tracking-widest font-bold">Client</Badge>}
               </div>
-              <p className="text-xl text-gray-400 mb-6 font-medium">{profile.role === 'professional' ? (profile.skills?.[0] || 'Professional Talent') : 'Client Account'}</p>
+              <p className="text-xl text-gray-400 mb-6 font-medium">
+                {profile.role === 'professional' ? (profile.skills?.[0] || 'Technical Expert') : 'Client'}
+              </p>
               
               <div className="flex flex-wrap justify-center md:justify-start gap-6 text-sm font-bold text-gray-400 uppercase tracking-widest">
                 {profile.location && <span className="flex items-center gap-2"><MapPin size={16} /> {profile.location}</span>}
                 {profile.timezone && <span className="flex items-center gap-2"><Globe size={16} /> {profile.timezone}</span>}
-                {profile.rating && <span className="flex items-center gap-2 text-primary"><Star size={16} className="fill-primary" /> {profile.rating}</span>}
+                <span className="flex items-center gap-2 text-primary">
+                  <Star size={16} className="fill-primary" /> {profile.rating ? profile.rating.toFixed(1) : '5.0'} ({reviews.length} reviews)
+                </span>
               </div>
             </div>
 
@@ -117,8 +127,8 @@ export function StudentProfile() {
                 <Button onClick={() => navigate(currentUser.role === 'professional' ? '/dashboard/student/settings' : '/settings')} className="h-12 px-8 shadow-primary/20">Edit Profile</Button>
               ) : (
                 <>
-                  <Button className="h-12 px-8 shadow-primary/20">Hire for Project</Button>
-                  <Button variant="outline" className="h-12 px-8 border-white/10 text-white hover:bg-white/5">Send Message</Button>
+                  <Button onClick={() => navigate('/marketplace')} className="h-12 px-8 shadow-primary/20">Hire for Project</Button>
+                  <Button onClick={() => navigate('/marketplace/gigs')} variant="outline" className="h-12 px-8 border-white/10 text-white hover:bg-white/5">Browse Services</Button>
                 </>
               )}
             </div>
@@ -154,11 +164,14 @@ export function StudentProfile() {
             <Card className="p-8 border-none shadow-xl">
               <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-6">Verified Badges</h3>
               <div className="grid grid-cols-3 gap-4">
-                {[1, 2, 3, 4, 5, 6].map(i => (
-                  <div key={i} className="aspect-square bg-primary/5 rounded-custom flex items-center justify-center text-primary group cursor-pointer hover:bg-primary hover:text-white transition-all">
-                    <Award size={24} className="group-hover:scale-110 transition-transform" />
+                {profile.badges && profile.badges.length > 0 ? profile.badges.map((badge, idx) => (
+                  <div key={idx} title={badge.name} className="aspect-square bg-primary/5 rounded-custom flex flex-col items-center justify-center text-primary group cursor-pointer hover:bg-primary hover:text-white transition-all p-2 text-center">
+                    <Award size={24} className="group-hover:scale-110 transition-transform mb-1" />
+                    <span className="text-[8px] font-black uppercase tracking-tighter truncate w-full">{badge.name}</span>
                   </div>
-                ))}
+                )) : (
+                  <div className="col-span-3 py-6 text-center text-gray-400 text-xs font-medium">No verified badges yet.</div>
+                )}
               </div>
             </Card>
 
@@ -188,27 +201,40 @@ export function StudentProfile() {
             <section>
               <h3 className="text-xl font-bold text-secondary mb-6 px-2">Featured Work</h3>
               <div className="grid md:grid-cols-2 gap-6">
-                <PortfolioCard 
-                  title="Web3 Analytics Engine" 
-                  desc="A decentralized data processing engine for real-time blockchain analytics."
-                  tech={['Rust', 'React', 'GraphQL']}
-                />
-                <PortfolioCard 
-                  title="Global Payment Gateway" 
-                  desc="Optimized checkout experience for cross-border transactions in 50+ currencies."
-                  tech={['Node.js', 'Next.js', 'Redis']}
-                />
+                {profile.portfolio && profile.portfolio.length > 0 ? profile.portfolio.map((project, idx) => (
+                  <PortfolioCard 
+                    key={idx}
+                    title={project.title} 
+                    desc={project.description}
+                    tech={project.techStack || []}
+                    codeLink={project.codeLink}
+                    liveLink={project.liveLink}
+                  />
+                )) : (
+                  <div className="col-span-2 py-12 text-center bg-white border border-slate-100 rounded-custom">
+                    <p className="text-gray-400 font-bold text-xs uppercase tracking-wider">No portfolio items published yet.</p>
+                  </div>
+                )}
               </div>
             </section>
 
             <section>
               <h3 className="text-xl font-bold text-secondary mb-6 px-2">Client Testimonials</h3>
               <div className="space-y-4">
-                <TestimonialCard 
-                  client="Sarah Connor" 
-                  company="Stripe" 
-                  text="Alex is a rare talent who combines deep technical expertise with a strong product sense. Delivered the rebrand ahead of schedule with flawless execution."
-                />
+                {reviews.length > 0 ? reviews.map((review, idx) => (
+                  <TestimonialCard 
+                    key={idx}
+                    client={`${review.from?.firstName || 'Client'} ${review.from?.lastName || ''}`}
+                    company={review.reviewType === 'client_to_professional' ? 'Client Partner' : 'Contract Operative'} 
+                    text={review.comment}
+                    rating={review.rating}
+                  />
+                )) : (
+                  <div className="py-12 text-center bg-white border border-slate-100 rounded-custom">
+                    <MessageSquare className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                    <p className="text-gray-400 font-bold text-xs uppercase tracking-wider">No reviews received yet.</p>
+                  </div>
+                )}
               </div>
             </section>
           </div>
@@ -252,30 +278,36 @@ function SocialLink({ icon: Icon, label, handle, href }) {
   );
 }
 
-function PortfolioCard({ title, desc, tech }) {
+function PortfolioCard({ title, desc, tech = [], codeLink, liveLink }) {
   return (
-    <Card className="p-6 border-none shadow-md hover:shadow-xl transition-all group">
-      <div className="aspect-video bg-gray-100 rounded-custom mb-6 overflow-hidden relative">
-        <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-          <Button variant="outline" size="sm" className="bg-white border-none shadow-lg">View Case Study</Button>
+    <Card className="p-6 border-none shadow-md hover:shadow-xl transition-all group flex flex-col justify-between">
+      <div>
+        <div className="aspect-video bg-slate-50 rounded-custom mb-6 overflow-hidden relative flex items-center justify-center text-slate-300 font-black tracking-widest text-lg italic border border-slate-100 bg-gradient-to-br from-slate-50 to-indigo-50/20">
+          PRO_PROJECT
         </div>
+        <h4 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors">{title}</h4>
+        <p className="text-xs text-gray-500 leading-relaxed mb-4 line-clamp-3">{desc}</p>
       </div>
-      <h4 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors">{title}</h4>
-      <p className="text-xs text-gray-500 leading-relaxed mb-4">{desc}</p>
-      <div className="flex gap-2">
-        {tech.map((t, i) => (
-          <Badge key={i} variant="neutral" className="text-[9px] px-2">{t}</Badge>
-        ))}
+      <div className="mt-auto">
+        <div className="flex flex-wrap gap-1.5 mb-4">
+          {tech.map((t, i) => (
+            <Badge key={i} variant="neutral" className="text-[9px] px-2 uppercase">{t}</Badge>
+          ))}
+        </div>
+        <div className="flex gap-4 text-xs font-black text-primary uppercase tracking-widest pt-3 border-t border-slate-100">
+          {codeLink && <a href={codeLink} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">Source</a>}
+          {liveLink && <a href={liveLink} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">Live Demo</a>}
+        </div>
       </div>
     </Card>
   );
 }
 
-function TestimonialCard({ client, company, text }) {
+function TestimonialCard({ client, company, text, rating = 5 }) {
   return (
     <Card className="p-8 border-none shadow-md">
       <div className="flex gap-1 mb-4 text-yellow-400">
-        {[1, 2, 3, 4, 5].map(i => <Star key={i} size={14} className="fill-yellow-400" />)}
+        {Array.from({ length: rating }).map((_, i) => <Star key={i} size={14} className="fill-yellow-400 text-yellow-400" />)}
       </div>
       <p className="text-gray-600 italic mb-6 leading-relaxed">"{text}"</p>
       <div className="flex items-center gap-3">

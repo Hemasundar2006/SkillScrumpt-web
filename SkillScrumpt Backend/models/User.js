@@ -30,6 +30,14 @@ const userSchema = new mongoose.Schema({
     issuedAt: { type: Date, default: Date.now },
     assessmentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Assessment' }
   }],
+  portfolio: [{
+    title: { type: String, required: true },
+    description: { type: String, required: true },
+    imageUrl: { type: String },
+    techStack: [{ type: String }],
+    codeLink: { type: String },
+    liveLink: { type: String }
+  }],
   
   // Stats
   rating: { type: Number, default: 0 },

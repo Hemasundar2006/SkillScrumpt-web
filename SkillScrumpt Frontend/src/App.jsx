@@ -13,6 +13,7 @@ import { AIProctoringInterface } from './pages/ProctoringInterface';
 import { AssessmentResult } from './pages/AssessmentResult';
 import { PostNewProject, HelpCenter } from './pages/UtilityPages';
 import { ProjectMarketplace } from './pages/ProjectMarketplace';
+import { GigMarketplace } from './pages/GigMarketplace';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import { StudentEarnings } from './pages/EarningsPage';
@@ -211,6 +212,11 @@ function App() {
           <Route path="/marketplace" element={
             <PageWrapper>
               <ProjectMarketplace />
+            </PageWrapper>
+          } />
+          <Route path="/marketplace/gigs" element={
+            <PageWrapper>
+              <GigMarketplace />
             </PageWrapper>
           } />
           <Route path="/settings" element={
