@@ -40,12 +40,16 @@ export function useProctoring({ userId, examId, onAlert }) {
         try {
           const stream = await navigator.mediaDevices.getUserMedia({
             video: { width: 640, height: 480, facingMode: "user" },
-            audio: false,
+            audio: true, // Audio enabled for ambient noise checking
           });
           
           const displayStream = await navigator.mediaDevices.getDisplayMedia({
-            video: { displaySurface: "monitor" }
+            video: { displaySurface: "monitor" },
+            audio: true // System audio
           });
+
+          // Store all tracks securely to guarantee full shutdown
+          allTracksRef.current = [...stream.getTracks(), ...displayStream.getTracks()];
 
           const screenTrack = displayStream.getVideoTracks()[0];
           if (screenTrack.getSettings().displaySurface !== 'monitor') {
@@ -108,7 +112,13 @@ export function useProctoring({ userId, examId, onAlert }) {
   const stopProctoring = useCallback(async () => {
     clearInterval(intervalRef.current);
     wsRef.current?.close();
-    streamRef.current?.getTracks().forEach((t) => t.stop());
+    // Guarantee all tracks (video, audio, screen) are terminated
+    allTracksRef.current.forEach(t => {
+      try { t.stop(); } catch(e){}
+    });
+    streamRef.current?.getTracks().forEach((t) => {
+      try { t.stop(); } catch(e){}
+    });
     setIsActive(false);
     setCameraReady(false);
 
