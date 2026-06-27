@@ -36,20 +36,40 @@ export function useProctoring({ userId, examId, onAlert }) {
         setSessionId(session_id);
         sessionIdRef.current = session_id;
 
-        // 2. Request camera
+        // 2. Request camera & screen
         try {
           const stream = await navigator.mediaDevices.getUserMedia({
             video: { width: 640, height: 480, facingMode: "user" },
             audio: false,
           });
+          
+          const displayStream = await navigator.mediaDevices.getDisplayMedia({
+            video: { displaySurface: "monitor" }
+          });
+
+          const screenTrack = displayStream.getVideoTracks()[0];
+          if (screenTrack.getSettings().displaySurface !== 'monitor') {
+            screenTrack.stop();
+            throw new Error("Must share Entire Screen");
+          }
+
+          screenTrack.onended = () => {
+            addAlert({ type: "screen_stopped", message: "🚨 Screen sharing stopped! Exam compromised.", severity: "critical" });
+            stopProctoring();
+          };
+
           streamRef.current = stream;
+          // Store screen track so we can stop it later
+          streamRef.current.addTrack(screenTrack);
+
           if (videoRef.current) {
             videoRef.current.srcObject = stream;
             await videoRef.current.play();
             setCameraReady(true);
           }
         } catch (err) {
-          console.error("Camera access denied:", err);
+          console.error("Hardware access denied:", err);
+          alert("You must allow Camera and Entire Screen sharing to start the exam.");
           return;
         }
 
@@ -132,33 +152,39 @@ export function useProctoring({ userId, examId, onAlert }) {
     if (!isActive) return;
 
     const handleVisibility = async () => {
-      if (!sessionIdRef.current) return;
-      try {
-          await fetch(`${API_BASE}/proctoring/tab-event`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              session_id: sessionIdRef.current,
-              event: document.hidden ? "hidden" : "visible",
-              timestamp: Date.now() / 1000,
-            }),
-          });
-
-          if (document.hidden) {
-            addAlert({
-              type: "tab_switch",
-              message: "⚠️ You switched tabs! This has been recorded.",
-              severity: "high",
+      if (document.hidden) {
+        addAlert({
+          type: "tab_switch",
+          message: "🚨 You switched tabs! The exam has been terminated.",
+          severity: "critical",
+        });
+        
+        // Throw a blocking browser alert
+        alert("SECURITY VIOLATION: You navigated away from the exam tab! Tab-switching is strictly prohibited. Your exam session has been terminated.");
+        
+        // Terminate the exam
+        stopProctoring();
+        
+        if (!sessionIdRef.current) return;
+        try {
+            await fetch(`${API_BASE}/proctoring/tab-event`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                session_id: sessionIdRef.current,
+                event: "hidden",
+                timestamp: Date.now() / 1000,
+              }),
             });
-          }
-      } catch (error) {
-          console.error("Failed to report tab event:", error);
+        } catch (error) {
+            console.error("Failed to report tab event:", error);
+        }
       }
     };
 
     document.addEventListener("visibilitychange", handleVisibility);
     return () => document.removeEventListener("visibilitychange", handleVisibility);
-  }, [isActive]);
+  }, [isActive, stopProctoring]);
 
 
   // ── Alert helper (auto-dismiss after 5s) ──────────────────────────────────

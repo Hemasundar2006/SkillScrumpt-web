@@ -1,53 +1,52 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Briefcase, 
-  Award, 
-  TrendingUp, 
-  ChevronRight,
-  Shield,
-  Zap,
-  Clock,
-  DollarSign,
-  Users,
+  Play, 
+  Flame, 
+  Clock, 
+  Trophy, 
+  Shield, 
+  AlertCircle, 
   CheckCircle,
-  Loader2,
   ArrowRight,
-  Star,
+  TrendingUp,
   Activity,
   Code,
-  BadgeCheck
+  Star,
+  Zap,
+  BookOpen,
+  Target
 } from 'lucide-react';
-import { Card, Badge, Button } from '../components/UI';
+import { Badge } from '../components/UI';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '../layout/DashboardLayout';
 import api from '../utils/api';
 import RazorpayPayment from '../components/RazorpayPayment';
 
 const UpgradeModal = ({ onClose }) => {
-  const [pricing, setPricing] = useState({ currentPrice: 1, isPromoActive: true, remainingPromoSpots: 198 });
+  const [pricing] = useState({ currentPrice: 1, isPromoActive: true, remainingPromoSpots: 198 });
 
   return (
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#1E293B]/60 backdrop-blur-md"
     >
       <motion.div 
         initial={{ scale: 0.95, y: 20 }}
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.95, y: 20 }}
-        className="max-w-md w-full bg-white p-10 relative overflow-hidden rounded-[2rem] shadow-2xl"
+        className="max-w-md w-full bg-white p-10 relative overflow-hidden rounded-[16px] shadow-2xl"
       >
-        <div className="absolute top-0 left-0 w-full h-1.5 bg-indigo-600" />
+        <div className="absolute top-0 left-0 w-full h-1.5 bg-[#F97316]" />
         
         <div className="text-center mb-10">
-          <div className="text-xs font-bold text-indigo-600 uppercase tracking-widest mb-4 flex items-center justify-center gap-2">
-            <Star size={14} className="fill-indigo-600" /> Elite Access
+          <div className="text-xs font-bold text-[#F97316] uppercase tracking-wider mb-4 flex items-center justify-center gap-2">
+            <Star size={14} className="fill-[#F97316]" /> Elite Access
           </div>
-          <h3 className="text-3xl font-bold text-slate-900 tracking-tight mb-6">Upgrade to Pro</h3>
-          <div className="inline-block px-4 py-2 bg-indigo-50 text-indigo-700 text-xs font-bold uppercase tracking-widest mb-6 rounded-full">
+          <h3 className="text-3xl font-bold text-[#1E293B] tracking-tight mb-6">Upgrade to Pro</h3>
+          <div className="inline-block px-4 py-2 bg-[#FFF0E5] text-[#F97316] text-xs font-bold uppercase tracking-wider mb-6 rounded-full">
             ₹1 SPECIAL OFFER ({pricing.remainingPromoSpots} spots left)
           </div>
         </div>
@@ -59,8 +58,8 @@ const UpgradeModal = ({ onClose }) => {
             'Unlimited Verified Badges',
             '24/7 Career Support'
           ].map((feature, i) => (
-            <div key={i} className="flex items-center gap-4 text-sm font-medium text-slate-600">
-              <CheckCircle size={20} className="text-indigo-600" />
+            <div key={i} className="flex items-center gap-4 text-sm font-medium text-[#1E293B]/70">
+              <CheckCircle size={20} className="text-[#38BDF8]" />
               {feature}
             </div>
           ))}
@@ -70,7 +69,7 @@ const UpgradeModal = ({ onClose }) => {
           <RazorpayPayment 
             amount={pricing.currentPrice} 
             buttonText={`Authorize Upgrade (₹${pricing.currentPrice})`}
-            className="w-full py-4 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-all shadow-md"
+            className="w-full py-4 bg-[#F97316] text-white font-bold rounded-[12px] hover:bg-[#EA580C] hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(249,115,22,0.25)] transition-all duration-200"
             onSuccess={async (data) => {
               alert('Identity Upgraded to Pro Status.');
               onClose();
@@ -81,7 +80,7 @@ const UpgradeModal = ({ onClose }) => {
           />
           <button 
             onClick={onClose}
-            className="w-full py-4 text-slate-500 font-bold rounded-2xl hover:bg-slate-50 transition-colors"
+            className="w-full py-4 text-[#1E293B]/50 font-bold rounded-[12px] hover:bg-[#FFF0E5] hover:text-[#1E293B] transition-all duration-200"
           >
             Maintain Standard Status
           </button>
@@ -148,373 +147,273 @@ export function StudentDashboard() {
     const cachedUser = cachedUserStr ? JSON.parse(cachedUserStr) : null;
     return (
       <DashboardLayout user={cachedUser}>
-        <div className="min-h-[60vh] flex items-center justify-center">
-          <Loader2 className="animate-spin text-indigo-600" size={48} />
+        <div className="min-h-[60vh] flex items-center justify-center bg-[#FFF0E5]">
+          <div className="w-12 h-12 border-4 border-[#38BDF8]/30 border-t-[#38BDF8] rounded-full animate-spin" />
         </div>
       </DashboardLayout>
     );
   }
 
+  // Calculate some mock analytics based on user data
+  const totalHoursMastered = user?.badges?.length * 15 || 45;
+  const currentStreak = user?.activeContractsCount > 0 ? 5 : 2;
+  const progressPercent = Math.min(100, Math.round((totalHoursMastered / 100) * 100));
+
   return (
     <DashboardLayout user={user}>
-      <AnimatePresence>
-        {showUpgradeModal && <UpgradeModal onClose={() => setShowUpgradeModal(false)} />}
-      </AnimatePresence>
+      <div className="bg-[#FFF0E5] min-h-screen p-6 md:p-10 font-sans text-[#1E293B]">
+        <AnimatePresence>
+          {showUpgradeModal && <UpgradeModal onClose={() => setShowUpgradeModal(false)} />}
+        </AnimatePresence>
 
-      <div className="max-w-7xl mx-auto space-y-8">
-        <header className="mb-4">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col md:flex-row md:items-end justify-between gap-4"
-          >
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight text-slate-900 mb-1 flex items-center gap-3">
+        <div className="max-w-[1400px] mx-auto space-y-8">
+          
+          {/* Header Section */}
+          <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+              <h1 className="text-4xl font-bold tracking-tight text-[#1E293B] mb-2 flex items-center gap-4">
                 {getGreeting()}, {user?.firstName}
                 {user?.isPro && (
-                  <span className="flex items-center gap-1 px-3 py-1 bg-indigo-600 text-white text-[10px] font-bold rounded-full shadow-sm">
-                    <Zap size={12} fill="currentColor" /> PRO
+                  <span className="flex items-center gap-1 px-3 py-1 bg-[#F97316] text-white text-xs font-bold rounded-full shadow-[0_4px_10px_rgba(249,115,22,0.3)]">
+                    <Zap size={14} fill="currentColor" /> PRO
                   </span>
                 )}
               </h1>
-              <p className="text-slate-500 text-sm font-medium">
-                Here is what's happening with your account today.
+              <p className="text-[#1E293B]/60 text-base font-medium">
+                Let's accelerate your skills and secure your next big opportunity.
               </p>
+            </motion.div>
+            
+            <div className="flex items-center gap-4">
+              <button 
+                onClick={() => navigate('/assessments')}
+                className="px-6 py-3 bg-white border border-[#38BDF8]/20 text-[#38BDF8] font-bold text-sm rounded-[12px] hover:-translate-y-0.5 hover:shadow-[0_8px_16px_rgba(56,189,248,0.15)] transition-all duration-200"
+              >
+                Browse Catalog
+              </button>
+              {!user?.isPro && (
+                <button 
+                  onClick={() => setShowUpgradeModal(true)}
+                  className="px-6 py-3 bg-[#1E293B] text-white font-bold text-sm rounded-[12px] hover:-translate-y-0.5 hover:shadow-[0_8px_16px_rgba(30,41,59,0.2)] transition-all duration-200 flex items-center gap-2"
+                >
+                  <Star size={16} className="text-[#F97316]" /> Upgrade Access
+                </button>
+              )}
             </div>
-          </motion.div>
-        </header>
+          </header>
 
-        {/* Bento Grid Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-12 gap-6">
-          
-          {/* Stats Row */}
-          <div className="lg:col-span-12 grid grid-cols-2 md:grid-cols-4 gap-6">
-            <StatCard icon={Briefcase} label="Active Contracts" value={user?.activeContractsCount || 0} delay={0.1} />
-            <StatCard icon={Award} label="Skill Badges" value={user?.badges?.length || 0} delay={0.2} />
-            <StatCard icon={Star} label="AI Rating" value={user?.rating || '0.0'} delay={0.3} />
-            <StatCard icon={DollarSign} label="Available Credit" value={`$${user?.earnings?.toLocaleString() || 0}`} delay={0.4} />
+          {/* Top Priority Row */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            {/* Persistent Core CTA: Resume Last Lesson */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="lg:col-span-2 bg-[#1E293B] rounded-[16px] p-8 md:p-10 text-white relative overflow-hidden shadow-[0_10px_30px_rgba(30,41,59,0.15)]"
+            >
+              <div className="absolute top-0 right-0 w-64 h-64 bg-[#38BDF8] opacity-10 rounded-full blur-[60px] translate-x-1/2 -translate-y-1/2" />
+              
+              <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+                <div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="px-3 py-1 bg-[#38BDF8]/20 text-[#38BDF8] text-xs font-bold uppercase tracking-wider rounded-full">
+                      In Progress
+                    </span>
+                    <span className="text-white/50 text-sm font-medium">Module 3 of 8</span>
+                  </div>
+                  <h2 className="text-3xl font-bold mb-3 tracking-tight">Advanced System Architecture</h2>
+                  <p className="text-white/70 font-medium max-w-md">
+                    Mastering scalable microservices and resilient data pipelines. You're 60% through this module.
+                  </p>
+                </div>
+                
+                <button className="group shrink-0 px-8 py-5 bg-[#F97316] text-white font-bold rounded-[12px] hover:bg-[#EA580C] hover:-translate-y-1 hover:shadow-[0_12px_24px_rgba(249,115,22,0.3)] transition-all duration-200 flex items-center gap-3">
+                  <Play size={20} className="fill-current" />
+                  Resume Learning
+                </button>
+              </div>
+            </motion.div>
+
+            {/* Performance Analytics Panel */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="bg-white rounded-[16px] p-8 border border-[#38BDF8]/10 shadow-[0_4px_20px_rgba(56,189,248,0.05)] flex flex-col justify-between"
+            >
+              <div className="flex justify-between items-start mb-6">
+                <div>
+                  <h3 className="text-sm font-bold text-[#1E293B]/50 uppercase tracking-wider mb-1">Total Mastery</h3>
+                  <div className="text-3xl font-bold text-[#1E293B]">{totalHoursMastered} <span className="text-lg text-[#1E293B]/40 font-medium">hrs</span></div>
+                </div>
+                
+                {/* Active Learning Streak */}
+                <div className="flex flex-col items-center justify-center p-3 bg-[#FFF0E5] rounded-[12px]">
+                  <Flame size={24} className="text-[#F97316] mb-1" />
+                  <span className="text-xs font-bold text-[#F97316] uppercase tracking-wider">{currentStreak} Day Streak</span>
+                </div>
+              </div>
+
+              <div>
+                <div className="flex justify-between text-xs font-bold text-[#1E293B]/60 mb-2">
+                  <span>Weekly Goal Progress</span>
+                  <span className="text-[#38BDF8]">{progressPercent}%</span>
+                </div>
+                {/* Linear Progress Meter */}
+                <div className="w-full h-2 bg-[#FFF0E5] rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-[#38BDF8] rounded-full transition-all duration-1000 ease-out" 
+                    style={{ width: `${progressPercent}%` }} 
+                  />
+                </div>
+              </div>
+            </motion.div>
           </div>
 
-          {/* Main Content Area */}
-          <div className="lg:col-span-8 space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
-            {/* Proctoring Challenges - Large Bento Card */}
-            <motion.section 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="bg-white rounded-[2rem] p-8 shadow-sm border border-slate-100"
-            >
-              <div className="flex justify-between items-center mb-8">
-                <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                  <Shield className="text-indigo-600" /> Active Proctoring Challenges
+            {/* Interactive Course Modules / Assessments */}
+            <div className="lg:col-span-8 space-y-6">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-bold text-[#1E293B] flex items-center gap-2">
+                  <Target className="text-[#38BDF8]" /> Available Skill Assessments
                 </h3>
-              </div>
-              <div className="grid sm:grid-cols-2 gap-6">
-                {assessments.length > 0 ? assessments.map((assessment, i) => (
-                  <AssessmentCard 
-                    key={assessment._id}
-                    title={assessment.title} 
-                    duration={`${assessment.duration} MIN`} 
-                    difficulty={assessment.difficulty} 
-                    reward={assessment.reward}
-                    icon={assessment.icon}
-                    delay={0.6 + (i * 0.1)}
-                  />
-                )) : (
-                  <div className="col-span-2 py-16 text-center rounded-2xl bg-slate-50 border border-slate-100">
-                    <p className="text-slate-500 font-semibold text-sm">No active proctoring tasks.</p>
-                  </div>
-                )}
-              </div>
-            </motion.section>
-
-            {/* Matched Projects - Wide Bento Card */}
-            <motion.section
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }}
-              className="bg-white rounded-[2rem] p-8 shadow-sm border border-slate-100"
-            >
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                  <Activity className="text-indigo-600" /> Matched Projects
-                </h3>
-                <Link to="/dashboard/student/browse" className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 transition-colors">
-                  View Market <ArrowRight size={14} />
+                <Link to="/assessments" className="text-sm font-bold text-[#38BDF8] hover:text-[#F97316] transition-colors flex items-center gap-1">
+                  View All <ArrowRight size={16} />
                 </Link>
               </div>
-              <div className="space-y-4">
-                {projects.length > 0 ? projects.map((proj, i) => (
-                  <ProjectRow 
-                    key={proj._id}
-                    id={proj._id}
-                    title={proj.title} 
-                    client={proj.client?.firstName || 'Elite Client'} 
-                    status={proj.status} 
-                    deadline={new Date(proj.deadline).toLocaleDateString()} 
-                    amount={`$${proj.budget?.toLocaleString()}`}
-                    delay={0.8 + (i * 0.1)}
-                  />
-                )) : (
-                  <div className="py-12 text-center rounded-2xl bg-slate-50 border border-slate-100">
-                    <p className="text-slate-500 text-sm font-medium">No projects available matching your skill profile.</p>
-                  </div>
-                )}
+              
+              <div className="grid sm:grid-cols-2 gap-6">
+                {assessments.slice(0,4).map((assessment, i) => (
+                  <motion.div 
+                    key={assessment._id || i}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.3 + (i * 0.1) }}
+                    className="bg-white rounded-[16px] p-6 border border-slate-100 shadow-[0_4px_15px_rgba(0,0,0,0.02)] hover:border-[#38BDF8]/30 hover:shadow-[0_10px_30px_rgba(56,189,248,0.08)] transition-all duration-200 hover:-translate-y-1 group"
+                  >
+                    <div className="flex justify-between items-start mb-5">
+                      <div className="w-12 h-12 bg-[#E0F2FE] text-[#38BDF8] rounded-[12px] flex items-center justify-center group-hover:bg-[#38BDF8] group-hover:text-white transition-colors duration-300">
+                        {assessment.icon ? <assessment.icon size={22} /> : <BookOpen size={22} />}
+                      </div>
+                      <Badge variant="outline" className="text-xs font-bold uppercase tracking-wider text-[#1E293B]/60 border-[#1E293B]/10">
+                        {assessment.difficulty}
+                      </Badge>
+                    </div>
+                    
+                    <h4 className="text-lg font-bold text-[#1E293B] mb-3 group-hover:text-[#38BDF8] transition-colors">{assessment.title}</h4>
+                    
+                    <div className="flex items-center gap-4 text-sm text-[#1E293B]/60 font-medium mb-6">
+                      <span className="flex items-center gap-1.5"><Clock size={16} className="text-[#38BDF8]" /> {assessment.duration} min</span>
+                      <span className="flex items-center gap-1.5"><Trophy size={16} className="text-[#F97316]" /> {assessment.reward}</span>
+                    </div>
+                    
+                    <button 
+                      onClick={() => navigate('/assessments')} 
+                      className="w-full py-3 bg-[#FFF0E5] text-[#F97316] rounded-[10px] text-sm font-bold hover:bg-[#F97316] hover:text-white transition-colors duration-200"
+                    >
+                      Start Module
+                    </button>
+                  </motion.div>
+                ))}
               </div>
-            </motion.section>
+            </div>
 
-            {/* Assessment History - Wide Bento Card */}
-            <motion.section
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.9 }}
-              className="bg-white rounded-[2rem] p-8 shadow-sm border border-slate-100"
-            >
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                  <Clock className="text-indigo-600" /> Assessment History
-                </h3>
-              </div>
-              <div className="space-y-4">
-                {testHistory.length > 0 ? testHistory.map((history, i) => (
-                  <HistoryRow 
-                    key={history._id}
-                    title={history.assessment?.title || 'General Assessment'} 
-                    score={history.score} 
-                    status={history.status} 
-                    date={new Date(history.createdAt).toLocaleDateString()}
-                    delay={1.0 + (i * 0.1)}
-                  />
-                )) : (
-                  <div className="py-12 text-center rounded-2xl bg-slate-50 border border-slate-100">
-                    <p className="text-slate-500 text-sm font-medium">No assessment history recorded yet.</p>
-                  </div>
-                )}
-              </div>
-            </motion.section>
-          </div>
-
-          {/* Right Sidebar Area */}
-          <div className="lg:col-span-4 space-y-6">
-            
-            {/* Status Card - Tall Bento */}
-            <motion.section
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4 }}
-              className={`p-8 rounded-[2rem] shadow-sm border ${user?.isVerified ? 'bg-indigo-600 border-indigo-700 text-white' : 'bg-white border-slate-100 text-slate-900'}`}
-            >
-              <div className="flex items-center gap-2 mb-6">
-                <div className={`w-2.5 h-2.5 rounded-full ${user?.isVerified ? 'bg-emerald-400' : 'bg-amber-500'}`} />
-                <span className="text-xs font-bold uppercase tracking-wider opacity-90">
-                  {user?.isVerified ? 'SYSTEM VERIFIED' : 'VERIFICATION REQUIRED'}
-                </span>
-              </div>
-              <h4 className="text-2xl font-bold mb-3">
-                {user?.isVerified ? 'Elite Status Active' : 'Unlock Potential'}
-              </h4>
-              <p className={`text-sm leading-relaxed mb-8 ${user?.isVerified ? 'text-indigo-100' : 'text-slate-500'}`}>
-                  {user?.isVerified 
-                  ? 'Your skills are cryptographically verified by our AI proctoring system.' 
-                  : 'Engage our AI proctoring system to validate your skills and access premium contracts.'}
-              </p>
-              <button 
-                onClick={() => navigate(user?.isVerified ? '/pricing' : '/assessments')}
-                className={`w-full py-4 rounded-2xl text-sm font-bold transition-all shadow-sm ${user?.isVerified ? 'bg-white text-indigo-900 hover:bg-slate-50' : 'bg-slate-900 text-white hover:bg-slate-800'}`}
-              >
-                {user?.isVerified ? 'Manage Subscription' : 'Initialize AI Proctor'}
-              </button>
-            </motion.section>
-
-            {/* Verified Credentials */}
-            <motion.section
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.5 }}
-              className="bg-white rounded-[2rem] p-8 shadow-sm border border-slate-100"
-            >
-              <h3 className="text-base font-bold text-slate-900 mb-6 flex items-center gap-2">
-                <BadgeCheck size={20} className="text-emerald-500" /> Verified Credentials
+            {/* Critical Milestone Stream */}
+            <div className="lg:col-span-4 space-y-6">
+              <h3 className="text-xl font-bold text-[#1E293B] flex items-center gap-2">
+                <AlertCircle className="text-[#F97316]" /> Action Required
               </h3>
               
-              {user?.badges && user.badges.length > 0 ? (
-                <div className="space-y-4">
-                  {user.badges.map((badge, i) => (
-                    <div key={i} className="p-4 bg-slate-50 border border-slate-100 rounded-2xl flex items-center gap-4 group hover:bg-emerald-50 hover:border-emerald-100 transition-all">
-                      <div className="w-10 h-10 bg-white text-emerald-500 rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
-                        <Award size={20} />
+              <div className="bg-white rounded-[16px] border border-slate-100 shadow-[0_4px_15px_rgba(0,0,0,0.02)] overflow-hidden flex flex-col h-[calc(100%-2rem)]">
+                <div className="p-6 space-y-4 flex-1">
+                  
+                  {/* Urgent Item */}
+                  <div className="p-4 bg-[#FFF0E5] border border-[#F97316]/20 rounded-[12px] relative overflow-hidden group hover:-translate-y-0.5 transition-transform duration-200">
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#F97316]" />
+                    <div className="flex justify-between items-start mb-2">
+                      <span className="text-xs font-bold text-[#F97316] uppercase tracking-wider">Due in 14h</span>
+                      <AlertCircle size={16} className="text-[#F97316]" />
+                    </div>
+                    <h4 className="font-bold text-[#1E293B] mb-1 leading-tight">Submit Backend Architecture Plan</h4>
+                    <p className="text-xs text-[#1E293B]/60 font-medium mb-3">Project: E-Commerce Refactor</p>
+                    <button className="text-sm font-bold text-[#F97316] hover:text-[#EA580C] flex items-center gap-1 transition-colors">
+                      Complete Task <ArrowRight size={14} />
+                    </button>
+                  </div>
+
+                  {projects.length > 0 ? projects.map((proj, i) => (
+                    <div key={proj._id} className="p-4 bg-slate-50 border border-slate-100 rounded-[12px] group hover:bg-[#E0F2FE] hover:border-[#38BDF8]/30 transition-all duration-200 hover:-translate-y-0.5">
+                      <div className="flex justify-between items-start mb-2">
+                        <span className="text-xs font-bold text-[#38BDF8] uppercase tracking-wider">Active Project</span>
                       </div>
-                      <div className="flex-1">
-                        <p className="text-xs font-bold text-slate-900 leading-tight mb-0.5">{badge.name}</p>
-                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest italic">Verified: {new Date(badge.earnedAt).toLocaleDateString()}</p>
-                      </div>
-                      <div className="text-right">
-                         <p className="text-sm font-black text-emerald-600">{badge.score}%</p>
+                      <h4 className="font-bold text-[#1E293B] mb-1 leading-tight group-hover:text-[#38BDF8] transition-colors">{proj.title}</h4>
+                      <div className="flex justify-between items-end mt-3">
+                        <p className="text-xs text-[#1E293B]/60 font-medium">Due: {new Date(proj.deadline).toLocaleDateString()}</p>
+                        <p className="text-sm font-bold text-[#1E293B]">${proj.budget?.toLocaleString()}</p>
                       </div>
                     </div>
-                  ))}
+                  )) : (
+                    <div className="py-8 text-center">
+                      <p className="text-sm text-[#1E293B]/50 font-medium">No active milestones.</p>
+                    </div>
+                  )}
+                  
                 </div>
-              ) : (
-                <div className="py-8 text-center border-2 border-dashed border-slate-100 rounded-2xl">
-                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest italic">No Badges Authenticated</p>
+                <div className="p-4 border-t border-slate-100 bg-slate-50 text-center">
+                  <Link to="/dashboard/student/browse" className="text-sm font-bold text-[#38BDF8] hover:text-[#1E293B] transition-colors">
+                    Find New Projects
+                  </Link>
                 </div>
-              )}
-            </motion.section>
-
-            {/* Quick Actions */}
-            <motion.section
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.6 }}
-              className="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-100"
-            >
-              <h3 className="text-base font-bold text-slate-900 mb-4 px-2">Command Center</h3>
-              <div className="space-y-2">
-                {user?.isPro ? (
-                  <QuickActionButton onClick={() => {}} icon={CheckCircle} label="Already Upgraded to Pro" disabled />
-                ) : (
-                  <QuickActionButton onClick={() => setShowUpgradeModal(true)} icon={Zap} label="Upgrade Access Level" />
-                )}
-                <QuickActionButton onClick={() => navigate('/assessments')} icon={Shield} label="Launch AI Proctoring" />
-                <QuickActionButton onClick={() => navigate('/dashboard/student/browse')} icon={Briefcase} label="Browse Project Market" />
-                <QuickActionButton icon={Users} label="Collaborator Network" />
               </div>
-            </motion.section>
+            </div>
+
           </div>
+
+          {/* Verification Status (Re-styled) */}
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className={`p-8 md:p-10 rounded-[16px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border flex flex-col md:flex-row items-center justify-between gap-8 ${
+              user?.isVerified 
+                ? 'bg-[#E0F2FE] border-[#38BDF8]/30 text-[#1E293B]' 
+                : 'bg-white border-slate-200 text-[#1E293B]'
+            }`}
+          >
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-4">
+                <div className={`w-2.5 h-2.5 rounded-full ${user?.isVerified ? 'bg-[#38BDF8]' : 'bg-[#F97316]'}`} />
+                <span className={`text-xs font-bold uppercase tracking-wider ${user?.isVerified ? 'text-[#38BDF8]' : 'text-[#F97316]'}`}>
+                  {user?.isVerified ? 'AI VERIFIED EXPERT' : 'VERIFICATION PENDING'}
+                </span>
+              </div>
+              <h4 className="text-2xl font-bold mb-2">
+                {user?.isVerified ? 'You are a Verified Professional' : 'Unlock Premium Opportunities'}
+              </h4>
+              <p className={`text-sm leading-relaxed font-medium ${user?.isVerified ? 'text-[#1E293B]/70' : 'text-[#1E293B]/60'}`}>
+                {user?.isVerified 
+                  ? 'Your skills have been cryptographically verified by our AI proctoring system. You now have priority access to top clients.' 
+                  : 'Complete an AI-proctored challenge to validate your skills and gain access to high-paying, zero-brokerage contracts.'}
+              </p>
+            </div>
+            <div className="shrink-0 w-full md:w-auto">
+              <button 
+                onClick={() => navigate(user?.isVerified ? '/profile' : '/assessments')}
+                className={`w-full md:w-auto px-8 py-4 rounded-[12px] text-sm font-bold transition-all duration-200 hover:-translate-y-0.5 ${
+                  user?.isVerified 
+                    ? 'bg-[#1E293B] text-white hover:bg-[#38BDF8] hover:shadow-[0_8px_20px_rgba(56,189,248,0.25)]' 
+                    : 'bg-[#F97316] text-white hover:bg-[#EA580C] hover:shadow-[0_8px_20px_rgba(249,115,22,0.25)]'
+                }`}
+              >
+                {user?.isVerified ? 'View Public Profile' : 'Initialize AI Proctor'}
+              </button>
+            </div>
+          </motion.section>
+
         </div>
       </div>
     </DashboardLayout>
-  );
-}
-
-function StatCard({ icon: Icon, label, value, delay }) {
-  return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay }}
-      className="p-6 bg-white border border-slate-100 rounded-[2rem] shadow-sm hover:shadow-md transition-shadow group"
-    >
-      <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-6 bg-slate-50 text-indigo-600 group-hover:scale-110 transition-transform duration-300">
-        <Icon size={24} />
-      </div>
-      <p className="text-sm font-medium text-slate-500 mb-1">{label}</p>
-      <p className="text-3xl font-bold text-slate-900">{value}</p>
-    </motion.div>
-  );
-}
-
-function ProjectRow({ id, title, client, status, deadline, amount, delay }) {
-  const navigate = useNavigate();
-  return (
-    <motion.div 
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay }}
-      onClick={() => navigate(`/projects/${id}`)} 
-      className="p-4 bg-white border border-slate-100 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-slate-200 hover:bg-slate-50 transition-all cursor-pointer group"
-    >
-      <div className="flex items-center gap-4">
-        <div className="w-12 h-12 bg-slate-100 text-indigo-600 rounded-2xl flex items-center justify-center font-bold text-lg group-hover:bg-white transition-colors shadow-sm">
-          {title[0].toUpperCase()}
-        </div>
-        <div>
-          <h4 className="font-bold text-slate-900 mb-0.5">{title}</h4>
-          <p className="text-sm text-slate-500 font-medium">{client}</p>
-        </div>
-      </div>
-      
-      <div className="flex items-center gap-6">
-        <div className="text-right hidden sm:block">
-          <p className="text-base font-bold text-slate-900">{amount}</p>
-          <p className="text-xs text-slate-500 font-medium mt-0.5">Due: {deadline}</p>
-        </div>
-        <div className="px-3 py-1.5 bg-slate-100 text-xs font-bold text-slate-600 rounded-lg">
-          {status}
-        </div>
-        <ChevronRight size={18} className="text-slate-400 group-hover:text-indigo-600 transition-colors" />
-      </div>
-    </motion.div>
-  );
-}
-
-function AssessmentCard({ title, duration, difficulty, reward, icon: Icon = Zap, delay }) {
-  const navigate = useNavigate();
-  return (
-    <motion.div 
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay }}
-      className="p-6 bg-slate-50 rounded-[1.5rem] border border-slate-100 hover:shadow-md transition-all group"
-    >
-      <div className="flex justify-between items-start mb-6">
-        <div className="w-12 h-12 bg-white text-indigo-600 shadow-sm rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-          <Icon size={24} />
-        </div>
-        <div className="text-xs font-bold text-indigo-600 px-3 py-1 bg-indigo-50 rounded-full">
-          {difficulty}
-        </div>
-      </div>
-      
-      <h4 className="text-lg font-bold text-slate-900 mb-4 group-hover:text-indigo-600 transition-colors">{title}</h4>
-      
-      <div className="flex flex-col gap-2 text-sm text-slate-600 font-medium mb-8">
-        <span className="flex items-center gap-2"><Clock size={16} className="text-slate-400" /> {duration}</span>
-        <span className="flex items-center gap-2"><Award size={16} className="text-slate-400" /> {reward}</span>
-      </div>
-      
-      <button 
-        onClick={() => navigate('/assessments')} 
-        className="w-full py-3.5 bg-white text-slate-900 shadow-sm rounded-xl text-sm font-bold hover:bg-indigo-600 hover:text-white transition-all border border-slate-200"
-      >
-        Initialize Test
-      </button>
-    </motion.div>
-  );
-}
-
-function HistoryRow({ title, score, status, date, delay }) {
-  return (
-    <motion.div 
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay }}
-      className="p-4 bg-slate-50 border border-slate-100 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-slate-200 transition-all group"
-    >
-      <div className="flex items-center gap-4">
-        <div className="w-12 h-12 bg-white text-indigo-600 rounded-2xl flex items-center justify-center font-bold text-lg shadow-sm">
-          {title[0].toUpperCase()}
-        </div>
-        <div>
-          <h4 className="font-bold text-slate-900 mb-0.5">{title}</h4>
-          <p className="text-xs text-slate-500 font-medium">Attempted on {date}</p>
-        </div>
-      </div>
-      
-      <div className="flex items-center gap-6">
-        <div className="text-right">
-          <p className={`text-base font-bold ${status === 'passed' ? 'text-emerald-600' : 'text-red-500'}`}>
-            {score}%
-          </p>
-          <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{status}</p>
-        </div>
-        <div className={`w-2 h-2 rounded-full ${status === 'passed' ? 'bg-emerald-500' : 'bg-red-500'}`} />
-      </div>
-    </motion.div>
-  );
-}
-
-function QuickActionButton({ icon: Icon, label, onClick, disabled }) {
-  return (
-    <button onClick={onClick} disabled={disabled} className={`flex items-center justify-between w-full p-4 rounded-2xl transition-all group ${disabled ? 'bg-slate-50 opacity-80 cursor-default' : 'bg-white hover:bg-slate-50'}`}>
-      <div className="flex items-center gap-4">
-        <div className={`p-2.5 rounded-xl transition-colors ${disabled ? 'bg-indigo-50 text-indigo-400' : 'bg-slate-50 text-indigo-600 group-hover:bg-indigo-100'}`}>
-          <Icon size={20} />
-        </div>
-        <span className={`text-sm font-bold ${disabled ? 'text-slate-500' : 'text-slate-700'}`}>{label}</span>
-      </div>
-      {!disabled && <ChevronRight size={18} className="text-slate-300 group-hover:text-indigo-600 transition-colors transform group-hover:translate-x-1" />}
-    </button>
   );
 }

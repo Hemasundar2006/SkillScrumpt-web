@@ -1,39 +1,21 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Star, Plus, Shield, ShieldCheck, Zap, Monitor, Lock, Target, ExternalLink, Mail, Instagram, Linkedin, Twitter, Menu, X, ChevronRight, CheckCircle, Award } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowRight, Star, Shield, Target, Menu, CheckCircle, Mail, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import api from '../utils/api';
-
-const Asterisk = ({ className }) => (
-  <svg viewBox="0 0 100 100" className={`asterisk-spin ${className}`} fill="currentColor">
-    <path d="M50 0L54.3 35.7L85.4 14.6L64.3 45.7L100 50L64.3 54.3L85.4 85.4L54.3 64.3L50 100L45.7 64.3L14.6 85.4L35.7 54.3L0 50L35.7 45.7L14.6 14.6L45.7 35.7L50 0Z" />
-  </svg>
-);
 
 const SectionReveal = ({ children, className, id }) => (
   <motion.div
     id={id}
-    initial={{ opacity: 0, y: 50 }}
+    initial={{ opacity: 0, y: 30 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true, margin: "-100px" }}
-    transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
     className={className}
   >
     {children}
   </motion.div>
-);
-
-const Marquee = ({ children, reverse = false, vertical = false, verticalReverse = false, speed = 30 }) => (
-  <div className={`overflow-hidden ${vertical ? 'h-[250px] md:h-[600px] relative before:absolute before:inset-0 before:bg-gradient-to-b before:from-black before:via-transparent before:to-black before:z-10' : 'whitespace-nowrap py-10 border-y border-white/10'}`}>
-    <div 
-      className={vertical ? (verticalReverse ? "marquee-content-vertical-reverse" : "marquee-content-vertical") : (reverse ? "marquee-content-reverse" : "marquee-content")}
-      style={{ animationDuration: `${speed}s` }}
-    >
-      {children}
-      {children}
-    </div>
-  </div>
 );
 
 const Loader = ({ onFinish }) => {
@@ -59,9 +41,9 @@ const Loader = ({ onFinish }) => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, y: -100 }}
       transition={{ duration: 0.8, ease: "easeInOut" }}
-      className="loader-container"
+      className="fixed inset-0 z-[100] bg-[#FFF0E5] flex items-center justify-center font-sans"
     >
-      <div className="loader-counter">{count}%</div>
+      <div className="text-[#F97316] text-6xl font-black tracking-tighter">{count}%</div>
     </motion.div>
   );
 
@@ -70,61 +52,35 @@ const Loader = ({ onFinish }) => {
 
 export function LandingPage() {
   const [loading, setLoading] = useState(true);
-  const [showVideoPreview, setShowVideoPreview] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [stats, setStats] = useState({
-    students: "0",
-    assessments: "0",
-    clients: "0",
-    hired: "0"
+    students: "10K+",
+    assessments: "50K+",
+    clients: "2K+",
+    hired: "8K+"
   });
+  
   const [feedbacks, setFeedbacks] = useState([
-    { user: { firstName: "Sarah", lastName: "Jenkins", role: "professional" }, text: "SkillScrumpt.in helped me land a high-paying freelance gig at a top tech company. The verification process is tough, but it really sets you apart.", createdAt: "2024-07-31" },
+    { user: { firstName: "Sarah", lastName: "Jenkins", role: "professional" }, text: "SkillScrumpt helped me land a high-paying freelance gig at a top tech company. The verification process is tough, but it really sets you apart.", createdAt: "2024-07-31" },
     { user: { firstName: "Michael", lastName: "Chen", role: "client" }, text: "As a client, I love the peace of mind knowing that the talent I hire is actually as good as they say they are. The proctored test results don't lie.", createdAt: "2024-08-15" },
     { user: { firstName: "David", lastName: "Miller", role: "professional" }, text: "The zero brokerage model is a game-changer. I get to keep 100% of what I earn, which is a huge motivator.", createdAt: "2024-09-02" },
-    { user: { firstName: "Aria", lastName: "Gupta", role: "professional" }, text: "Finally a platform that values actual skills over bidding wars. The proctoring system ensures only the best rise to the top.", createdAt: "2024-09-10" }
   ]);
-  
-  useEffect(() => {
-    // SEO Optimization
-    document.title = "SkillScrumpt.in | AI-Proctored Student Freelancing Platform";
-    const metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) {
-      metaDesc.setAttribute("content", "SkillScrumpt is the world's first AI-proctored freelancing platform for students. Verify your skills through live proctoring and keep 100% of your earnings with our zero-brokerage model.");
-    }
 
+  useEffect(() => {
+    document.title = "SkillScrumpt.in | Master Your Next Skill";
     const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
     
-    // Fetch real stats from backend
-    api.get('/users/stats')
-      .then(res => {
-        const data = res.data;
-        if(data && !data.message) {
-          setStats({
-            students: data.students,
-            assessments: data.assessments,
-            clients: data.clients,
-            hired: data.hired
-          });
-        }
-      })
-      .catch(err => console.error("Could not fetch stats", err));
+    // Simulate fetching real stats from backend
+    api.get('/users/stats').then(res => {
+      if(res.data && !res.data.message) setStats(res.data);
+    }).catch(err => console.error(err));
 
-    // Fetch real feedbacks
-    api.get('/users/feedbacks')
-      .then(res => {
-        const data = res.data;
-        if(data && Array.isArray(data) && data.length > 0) {
-          // If we have less than 4, append defaults to make it scroll nicely
-          if (data.length < 4) {
-            setFeedbacks([...data, ...feedbacks.slice(0, 4 - data.length)]);
-          } else {
-            setFeedbacks(data);
-          }
-        }
-      })
-      .catch(err => console.error("Could not fetch feedbacks", err));
+    api.get('/users/feedbacks').then(res => {
+      if(res.data && Array.isArray(res.data) && res.data.length > 0) {
+        setFeedbacks(res.data.slice(0, 3));
+      }
+    }).catch(err => console.error(err));
 
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -132,698 +88,303 @@ export function LandingPage() {
   if (loading) return <Loader onFinish={() => setLoading(false)} />;
 
   return (
-    <div className="bg-black text-white selection:bg-white selection:text-black">
+    <div className="bg-[#FFF0E5] text-[#1E293B] min-h-screen font-sans selection:bg-[#38BDF8] selection:text-white overflow-x-hidden">
+      
       {/* NAVIGATION */}
-      <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${scrolled ? 'nav-blur py-4 border-b border-white/10' : 'py-8'}`}>
-        <div className="max-w-[1400px] mx-auto px-6 flex items-center justify-between">
-          <Link to="/" className="text-2xl font-black tracking-tighter uppercase italic">SkillScrumpt.in</Link>
+      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? 'bg-[#FFF0E5]/80 backdrop-blur-xl border-b border-[#38BDF8]/10 py-3 shadow-[0_4px_20px_rgba(0,0,0,0.02)]' : 'py-6'}`}>
+        <div className="max-w-[1400px] mx-auto px-6 lg:px-12 flex items-center justify-between">
+          <Link to="/" className="text-xl lg:text-2xl font-bold tracking-tight text-[#1E293B] hover:opacity-80 transition-opacity">
+            Skill<span className="text-[#F97316]">Scrumpt</span>
+          </Link>
           
-          <div className="hidden md:flex items-center gap-10 text-[11px] font-bold uppercase tracking-[0.2em]">
-            <Link to="/about" className="hover:text-muted transition-colors">About</Link>
-            <Link to="/proctoring" className="hover:text-muted transition-colors">Proctoring</Link>
-            <Link to="/marketplace" className="hover:text-muted transition-colors">Marketplace</Link>
-            <Link to="/pricing" className="hover:text-muted transition-colors">Pricing</Link>
+          <div className="hidden md:flex items-center gap-8 text-[13px] font-bold text-[#1E293B] uppercase tracking-wider">
+            <Link to="/about" className="hover:text-[#38BDF8] transition-colors">About</Link>
+            <Link to="/proctoring" className="hover:text-[#38BDF8] transition-colors">Proctoring</Link>
+            <Link to="/marketplace" className="hover:text-[#38BDF8] transition-colors">Marketplace</Link>
           </div>
 
           <div className="flex items-center gap-6">
-            <Link to="/login" className="hidden sm:block text-[11px] font-bold uppercase tracking-widest hover:text-muted transition-colors">Login</Link>
-            <Link to="/register" className="px-6 py-2 border border-white text-white hover:bg-white hover:text-black transition-all duration-300 text-[11px] font-bold uppercase tracking-widest">
-              Join Now
+            <Link to="/login" className="hidden sm:block text-[13px] font-bold text-[#1E293B] hover:text-[#38BDF8] transition-colors uppercase tracking-wider">Log In</Link>
+            <Link to="/register">
+              <button className="px-6 py-2.5 bg-[#F97316] text-white text-[13px] font-bold uppercase tracking-wider rounded-[8px] hover:bg-[#EA580C] hover:shadow-[0_4px_12px_rgba(249,115,22,0.25)] transition-all">
+                Get Started
+              </button>
             </Link>
           </div>
         </div>
       </nav>
 
       {/* HERO SECTION */}
-      <section className="relative min-h-screen flex items-center pt-32 overflow-hidden">
-        <div className="max-w-[1400px] mx-auto px-6 w-full grid lg:grid-cols-2 items-center gap-20">
-          <div className="relative z-10">
+      <section className="relative min-h-[90vh] flex items-center pt-24 overflow-hidden">
+        <div className="max-w-[1400px] mx-auto px-6 lg:px-12 w-full grid lg:grid-cols-2 items-center gap-12 relative z-10">
+          <div>
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-500 mb-6"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-[6px] bg-white border border-[#38BDF8]/20 mb-6 shadow-sm"
             >
-              The Next-Gen Student Freelance Network
+              <span className="w-1.5 h-1.5 rounded-full bg-[#38BDF8] animate-pulse" />
+              <span className="text-[10px] font-bold text-[#38BDF8] uppercase tracking-wider">The Future of Work</span>
             </motion.div>
+            
             <motion.h1 
-              initial={{ opacity: 0, x: -50 }}
+              initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 1, ease: "easeOut" }}
-              className="text-6xl md:text-8xl lg:text-[8rem] font-black leading-[0.9] tracking-tighter mb-10"
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="text-4xl md:text-5xl lg:text-6xl font-black leading-[1.1] tracking-tight mb-6 text-[#1E293B]"
             >
-              EARN AS <br />YOU GROW.
+              Master Your Next Skill with <span className="text-[#F97316]">SkillScrumpt</span>.
             </motion.h1>
             
             <motion.p 
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.5, duration: 1 }}
-              className="text-xl text-muted max-w-md mb-12 leading-relaxed"
+              transition={{ delay: 0.2, duration: 0.8 }}
+              className="text-base md:text-lg text-[#1E293B]/70 max-w-xl mb-8 leading-relaxed font-medium"
             >
-              SkillScrumpt is a freelancing platform for students where skills are verified by our <span className="text-white font-bold italic text-xl uppercase tracking-tighter">AI proctoring system</span>. Stop guessing and start hiring verified expertise.
+              A high-energy, AI-proctored freelancing platform that verifies expertise and matches top talent with premium global clients.
             </motion.p>
 
             <motion.div 
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 }}
-              className="flex flex-col sm:flex-row items-center gap-6"
+              transition={{ delay: 0.4 }}
+              className="flex flex-col sm:flex-row items-center gap-4"
             >
-              <Link to="/register?role=professional" className="w-full sm:w-auto">
-                <button className="px-12 py-6 border border-white text-white font-black uppercase tracking-[0.4em] text-xs hover:bg-white/10 transition-all rounded-full">
-                  Get started
+              <Link to="/register" className="w-full sm:w-auto">
+                <button className="w-full sm:w-auto px-8 py-3.5 bg-[#1E293B] text-white text-[13px] font-bold uppercase tracking-wider rounded-[12px] hover:bg-[#0F172A] hover:shadow-[0_8px_20px_rgba(30,41,59,0.2)] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-3">
+                  Start Learning Now <ArrowRight size={16} />
                 </button>
               </Link>
-              <Link to="/register?role=client" className="w-full sm:w-auto">
-                <button className="w-full px-10 py-5 border border-white text-white font-black uppercase tracking-widest text-xs hover:bg-white/10 transition-all flex items-center justify-center gap-2 rounded-full">
-                  Hire Elite Talent <ArrowRight size={16} />
-                </button>
-              </Link>
-            </motion.div>
-
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="mt-16 flex items-center gap-12"
-            >
-               <div>
-                 <p className="text-[10px] font-black text-muted uppercase tracking-[0.2em] mb-2">Volume</p>
-                 <p className="text-2xl font-black">₹12.4Cr+</p>
-               </div>
-               <div className="w-px h-10 bg-white/10" />
-               <div>
-                 <p className="text-[10px] font-black text-muted uppercase tracking-[0.2em] mb-2">Integrity</p>
-                 <p className="text-2xl font-black">99.9%</p>
-               </div>
             </motion.div>
           </div>
 
-          <div className="relative flex justify-center lg:justify-end">
+          <div className="relative flex justify-center lg:justify-end mt-12 lg:mt-0">
+            <div className="absolute inset-0 bg-[#38BDF8] blur-[80px] opacity-10 rounded-full scale-125 animate-pulse"></div>
             <motion.div
-              initial={{ opacity: 0, scale: 0.8, rotate: 10 }}
+              initial={{ opacity: 0, scale: 0.95, rotate: 2 }}
               animate={{ opacity: 1, scale: 1, rotate: 0 }}
-              transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
-              className="relative w-full max-w-[600px] radius-design p-4 bg-white/5 border border-white/10"
+              transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+              className="relative w-full max-w-[500px] z-10"
             >
               <img 
                 src="/hero_mineral_3d_1778513348174.png" 
-                alt="SkillScrumpt.in Core" 
-                className="w-full drop-shadow-[0_0_100px_rgba(255,255,255,0.1)] rounded-[20px]"
+                alt="SkillScrumpt 3D UI" 
+                className="w-full rounded-[24px] shadow-[0_24px_60px_rgba(56,189,248,0.12)] bg-white border border-[#38BDF8]/10 object-cover"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.parentElement.innerHTML = '<div class="w-full aspect-square bg-gradient-to-br from-[#38BDF8]/20 to-[#F97316]/20 rounded-[24px] border border-[#38BDF8]/20 flex items-center justify-center"><span class="text-[#38BDF8] font-bold uppercase tracking-wider text-sm">Dashboard Preview</span></div>'
+                }}
               />
-              <Asterisk className="absolute -top-6 -right-6 w-24 h-24 text-white/20" />
             </motion.div>
           </div>
         </div>
-        
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4">
-          <div className="text-[10px] font-bold uppercase tracking-[0.4em] text-muted">Discover</div>
-          <div className="w-px h-20 bg-gradient-to-b from-white/20 to-transparent" />
+      </section>
+
+      {/* STATS BANNER */}
+      <section className="bg-[#1E293B] text-white py-12 w-full">
+        <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-x divide-white/10">
+            {[
+              { val: stats.students, label: "Active Students" },
+              { val: stats.assessments, label: "Proctored Tests" },
+              { val: stats.hired, label: "Successful Hires" },
+              { val: "100%", label: "Zero Brokerage" }
+            ].map((s, i) => (
+              <div key={i} className="flex flex-col items-center justify-center">
+                <div className="text-3xl md:text-4xl font-black mb-1 text-white">{s.val}</div>
+                <div className="text-[10px] font-bold text-[#38BDF8] uppercase tracking-wider">{s.label}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* STUDIO/INTRO SECTION */}
-      <SectionReveal className="py-40 border-t border-white/10">
-        <div className="max-w-[1400px] mx-auto px-6 grid md:grid-cols-[200px_1fr] gap-20">
-          <div className="text-[11px] font-black uppercase tracking-[0.3em] text-muted">Our Vision</div>
-          <div className="border-l border-white/20 pl-10 md:pl-20">
-            <h2 className="text-3xl md:text-7xl font-bold leading-[1.1] tracking-tight mb-12 uppercase italic">
-              SkillScrumpt is a freelancing platform for students <br className="hidden md:block" /> 
-              where your skills are verified by our <br className="hidden md:block" />
-              AI proctoring system.
+      {/* FEATURES GRID */}
+      <SectionReveal className="py-24 bg-[#FFF0E5]">
+        <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
+          <div className="text-center mb-16 max-w-2xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-black tracking-tight text-[#1E293B] mb-4">
+              Why Professionals Choose Us
             </h2>
-            <Link to="/about" className="inline-flex items-center gap-4 text-[11px] font-black uppercase tracking-[0.4em] text-white/40 hover:text-white transition-colors group">
-              Learn More <ArrowRight size={14} className="group-hover:translate-x-2 transition-transform" />
-            </Link>
+            <p className="text-sm md:text-base text-[#1E293B]/70 font-medium">
+              We provide a transparent, secure, and rewarding ecosystem designed specifically to accelerate your career growth.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              { title: "Live AI Monitoring", desc: "Real-time visual verification during every assessment to ensure pure merit.", icon: Shield },
+              { title: "Zero Brokerage", desc: "Keep 100% of your earnings. No hidden service fees or commission cuts.", icon: Star },
+              { title: "Skill-Matched Feed", desc: "Verified talent only sees projects matching their exact badge level.", icon: Target }
+            ].map((card, i) => (
+              <div key={i} className="bg-white rounded-[24px] p-8 shadow-[0_4px_20px_rgba(30,41,59,0.02)] hover:shadow-[0_12px_30px_rgba(56,189,248,0.08)] transition-all duration-300 hover:-translate-y-1 border border-[#38BDF8]/10 group">
+                <div className="w-12 h-12 rounded-[12px] bg-[#E0F2FE] flex items-center justify-center mb-6 group-hover:bg-[#38BDF8] transition-colors">
+                  <card.icon size={20} className="text-[#F97316] group-hover:text-white transition-colors" />
+                </div>
+                <h4 className="text-xl font-bold mb-3 text-[#1E293B]">{card.title}</h4>
+                <p className="text-[13px] text-[#1E293B]/60 leading-relaxed font-medium">
+                  {card.desc}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </SectionReveal>
 
-      {/* STATS MARQUEE */}
-      <section className="py-20 border-y border-white/10">
-        <Marquee speed={15} vertical={true}>
-          {[
-            `${stats.students} TRUSTED STUDENTS`, 
-            `${stats.assessments} ASSESSMENTS TAKEN`, 
-            `${stats.clients} TRUSTED CLIENTS`, 
-            `${stats.hired} PROFESSIONALS HIRED`, 
-            "1 COUNTRY (INDIA)",
-            "ZERO BROKERAGE"
-          ].map((stat, i) => (
-            <div key={i} className="my-8 flex flex-col md:flex-row items-center justify-center gap-4 md:gap-10 text-4xl md:text-7xl font-black italic text-outline hover:text-white transition-all cursor-default text-center px-4">
-              <span>{stat}</span>
-              <span className="text-white/20 text-2xl md:text-5xl">✳</span>
-            </div>
-          ))}
-        </Marquee>
-      </section>
-
-      {/* PROCTORING SECTION */}
-      <SectionReveal className="py-40" id="proctoring">
-        <div className="max-w-[1400px] mx-auto px-6 grid lg:grid-cols-2 gap-20 items-center">
+      {/* HOW IT WORKS / TRUST PROTOCOL */}
+      <SectionReveal className="py-24 bg-white border-y border-[#38BDF8]/10">
+        <div className="max-w-[1400px] mx-auto px-6 lg:px-12 grid lg:grid-cols-2 gap-16 items-center">
           <div>
-            <div className="text-[11px] font-black uppercase tracking-[0.3em] text-muted mb-10">AI Proctoring</div>
-            <motion.h2 
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="text-6xl md:text-8xl font-black tracking-tighter mb-20 leading-[0.9]"
-            >
-              The Standard <br />of Integrity.
-            </motion.h2>
+            <div className="inline-block px-3 py-1 rounded-[6px] bg-[#F97316]/10 text-[#F97316] font-bold text-[10px] uppercase tracking-wider mb-6 border border-[#F97316]/20">
+              The Process
+            </div>
+            <h2 className="text-3xl md:text-4xl font-black mb-8 leading-tight text-[#1E293B] tracking-tight">
+              Your Path to <br />Verified Expertise.
+            </h2>
             
-            <div className="grid gap-0 border-t border-white/10">
+            <div className="space-y-8">
               {[
-                { title: "Live Webcam Monitoring", desc: "Real-time visual verification during every assessment.", icon: Shield },
-                { title: "Tab-Switch Detection", desc: "Strict anti-cheat environment to ensure original work.", icon: Monitor },
-                { title: "Skill-Matched Feed", desc: "Verified talent only sees projects matching their badge level.", icon: Target }
-              ].map((service, i) => (
-                <div key={i} className="py-10 border-b border-white/10 flex items-center justify-between group hover:pl-4 transition-all">
-                  <div className="flex gap-6 items-center">
-                    <service.icon className="text-white/30 group-hover:text-white transition-colors" size={24} />
-                    <div>
-                      <h4 className="text-2xl font-bold mb-2">{service.title}</h4>
-                      <p className="text-muted text-sm">{service.desc}</p>
-                    </div>
+                { step: "1", title: "Verify Identity", desc: "Sign up using your college email for instant validation." },
+                { step: "2", title: "Take Assessment", desc: "Perform a live-proctored skill test to prove your knowledge." },
+                { step: "3", title: "Get Hired", desc: "Apply to premium projects with 100% earnings and direct access." }
+              ].map((item, i) => (
+                <div key={i} className="flex gap-6 group">
+                  <div className="w-12 h-12 rounded-[12px] bg-[#FFF0E5] text-[#F97316] flex items-center justify-center text-lg font-bold shrink-0 group-hover:bg-[#F97316] group-hover:text-white transition-colors shadow-sm border border-[#F97316]/10">
+                    {item.step}
                   </div>
-                  <Plus className="text-white/30 group-hover:text-white transition-colors" />
+                  <div>
+                    <h4 className="text-lg font-bold mb-1 text-[#1E293B]">{item.title}</h4>
+                    <p className="text-[13px] text-[#1E293B]/60 leading-relaxed font-medium">{item.desc}</p>
+                  </div>
                 </div>
               ))}
             </div>
 
-            <div className="mt-20 flex flex-wrap items-center gap-10">
-              <Link to="/proctoring">
-                <button className="flex items-center gap-4 text-sm font-black uppercase tracking-widest group">
-                  Full Security Protocol <ArrowRight className="group-hover:translate-x-2 transition-transform" />
-                </button>
-              </Link>
-              <button 
-                onClick={() => setShowVideoPreview(true)}
-                className="flex items-center gap-4 text-sm font-black uppercase tracking-widest group text-muted hover:text-white transition-colors"
-              >
-                Watch System Demo <Monitor size={18} className="group-hover:scale-110 transition-transform" />
+            <Link to="/register" className="inline-block mt-10">
+              <button className="px-8 py-3 bg-[#38BDF8] text-white text-[13px] font-bold uppercase tracking-wider rounded-[12px] hover:bg-[#0284C7] transition-all shadow-[0_4px_12px_rgba(56,189,248,0.25)]">
+                Join the Network
               </button>
-            </div>
+            </Link>
           </div>
-
-          <div className="relative">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              className="radius-design p-4 bg-white/5 border border-white/10"
-            >
-              <img 
-                src="/proctoring_system_3d_1778513881929.png" 
-                alt="AI Proctoring System" 
-                className="w-full drop-shadow-[0_0_80px_rgba(255,255,255,0.05)] rounded-[20px]"
-              />
-            </motion.div>
+          
+          <div className="relative flex justify-end mt-12 lg:mt-0">
+            <div className="absolute inset-0 bg-[#F97316] blur-[100px] opacity-10 rounded-full"></div>
+            <img 
+              src="/proctoring_system_3d_1778513881929.png" 
+              alt="System Workflow" 
+              className="relative z-10 w-full max-w-md rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.08)] bg-white border border-[#38BDF8]/10"
+              onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.parentElement.innerHTML = '<div class="w-full aspect-square bg-[#E0F2FE] rounded-[24px] border border-[#38BDF8]/20 flex items-center justify-center"><span class="text-[#38BDF8] font-bold uppercase tracking-wider text-sm">System Workflow Preview</span></div>'
+              }}
+            />
           </div>
         </div>
       </SectionReveal>
 
-      {/* TRUST PROTOCOL HUB */}
-      <section className="py-40 bg-white text-black overflow-hidden" id="trust-protocol">
-        <div className="max-w-[1400px] mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-10">
-            <div className="max-w-2xl">
-              <div className="text-[11px] font-black uppercase tracking-[0.3em] text-black/40 mb-6">Security Layer</div>
-              <h2 className="text-5xl md:text-8xl font-black tracking-tighter leading-[0.85]">THE TRUST <br />PROTOCOL.</h2>
-            </div>
-            <div className="text-right">
-              <p className="text-xl text-black/60 max-w-sm mb-8 leading-relaxed">
-                Our proprietary AI monitoring engine ensures a <span className="font-bold text-black italic">zero-compromise</span> environment for all technical assessments.
-              </p>
-              <div className="flex justify-end gap-10">
-                 <div>
-                   <p className="text-[10px] font-black uppercase tracking-widest text-black/40 mb-1">Latency</p>
-                   <p className="text-2xl font-black">12ms</p>
-                 </div>
-                 <div>
-                   <p className="text-[10px] font-black uppercase tracking-widest text-black/40 mb-1">Accuracy</p>
-                   <p className="text-2xl font-black">99.98%</p>
-                 </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid lg:grid-cols-3 gap-6">
-            {/* Feature 1: Live Monitoring */}
-            <div className="lg:col-span-2 group relative bg-black rounded-[2.5rem] p-12 overflow-hidden border border-black/5 hover:border-black/20 transition-all">
-              <div className="relative z-10">
-                <div className="flex items-center gap-3 mb-10">
-                   <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                   <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Active Monitoring Hub</span>
-                </div>
-                <h3 className="text-4xl md:text-5xl font-black text-white mb-8 italic tracking-tighter">LIVE AI <br />INSPECTION.</h3>
-                <p className="text-white/50 max-w-md text-sm leading-relaxed mb-10 uppercase tracking-widest font-bold">
-                  Continuous gaze tracking, ambient noise analysis, and browser-lock enforcement in real-time.
-                </p>
-                <div className="flex gap-4">
-                  {[1, 2, 3, 4].map(i => (
-                    <div key={i} className="w-12 h-1.5 rounded-full bg-white/10 overflow-hidden">
-                       <motion.div 
-                         initial={{ x: "-100%" }}
-                         animate={{ x: "100%" }}
-                         transition={{ duration: 2, repeat: Infinity, delay: i * 0.5 }}
-                         className="w-full h-full bg-white/40"
-                       />
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <img 
-                src="/proctoring_system_3d_1778513881929.png" 
-                className="absolute top-1/2 right-0 -translate-y-1/2 w-2/3 opacity-40 group-hover:opacity-60 transition-opacity grayscale hover:grayscale-0 duration-1000"
-                alt=""
-              />
-            </div>
-
-            {/* Feature 2: Integrity Score */}
-            <div className="bg-zinc-100 rounded-[2.5rem] p-12 flex flex-col justify-between border border-black/5 hover:border-black/10 transition-all">
-               <div>
-                 <ShieldCheck className="text-black mb-8" size={32} />
-                 <h4 className="text-3xl font-black italic mb-4">INTEGRITY <br />SCORE.</h4>
-                 <p className="text-black/40 text-[10px] font-black uppercase tracking-widest leading-loose">
-                   A dynamic trust rating earned through consistent, proctored performance.
-                 </p>
-               </div>
-               <div className="mt-10">
-                 <div className="text-6xl font-black tracking-tighter">982</div>
-                 <div className="text-[10px] font-black uppercase tracking-widest text-black/40 mt-2">Elite Threshold: 950+</div>
-               </div>
-            </div>
-
-            {/* Feature 3: Verified Badges */}
-            <div className="bg-zinc-100 rounded-[2.5rem] p-12 flex flex-col justify-between border border-black/5 hover:border-black/10 transition-all">
-               <div>
-                 <Award className="text-black mb-8" size={32} />
-                 <h4 className="text-3xl font-black italic mb-4">VERIFIED <br />BADGES.</h4>
-                 <p className="text-black/40 text-[10px] font-black uppercase tracking-widest leading-loose">
-                   Immutable skill validation issued on the blockchain network.
-                 </p>
-               </div>
-               <div className="relative mt-10 h-24 flex items-center justify-center">
-                  <img src="/verified_badge_3d_1778513897472.png" className="w-32 absolute hover:scale-110 transition-transform duration-500" alt="" />
-               </div>
-            </div>
-
-            {/* Feature 4: Proof of Skill */}
-            <div className="lg:col-span-2 bg-zinc-900 rounded-[2.5rem] p-12 relative overflow-hidden border border-white/5 hover:border-white/10 transition-all">
-               <div className="relative z-10 flex flex-col h-full justify-between">
-                  <div className="flex justify-between items-start">
-                    <h3 className="text-4xl font-black text-white italic tracking-tighter">PROOF OF <br />SKILL.</h3>
-                    <div className="px-4 py-2 bg-white/10 rounded-full text-[10px] font-black text-white uppercase tracking-widest">Protocol V2.0</div>
-                  </div>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-10">
-                    {[
-                      { label: "Tests Conducted", val: "140K+" },
-                      { label: "Cheating Detected", val: "0.02%" },
-                      { label: "Talent Verified", val: "85K" },
-                      { label: "Global Reach", val: "IND" }
-                    ].map((s, i) => (
-                      <div key={i}>
-                        <p className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-1">{s.label}</p>
-                        <p className="text-2xl font-black text-white">{s.val}</p>
-                      </div>
-                    ))}
-                  </div>
-               </div>
-               <div className="absolute inset-0 bg-gradient-to-r from-black to-transparent opacity-60" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* APPROACH SECTION (BENTO) */}
-      <section className="py-40">
-        <div className="max-w-[1400px] mx-auto px-6">
-          <div className="text-center mb-20">
-            <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9]">
-              Why SkillScrumpt
-            </h2>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[
-              { title: "48h Cooling Period", desc: "Forced improvement periods between test attempts." },
-              { title: "Verified Elite Badge", desc: "Earned only after scoring 70%+ on proctored tests.", large: true, img: "/verified_badge_3d_1778513897472.png" },
-              { title: "College Verification", desc: "Mandatory .edu or college-domain email validation." },
-              { title: "Post-Payment Chat", desc: "Secure interaction unlocked after milestone funding." },
-              { title: "Zero Brokerage", desc: "Keep 100% of your earnings. No hidden service fees." },
-              { title: "Resume Builder", desc: "Free premium access to ATS-friendly resume templates.", img: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1000&auto=format&fit=crop" }
-            ].map((card, i) => (
-              <div key={i} className={`p-10 border border-white/10 relative overflow-hidden group hover:border-white/40 transition-colors radius-design ${card.large ? 'lg:col-span-2' : ''}`}>
-                {card.img && <img src={card.img} className={`absolute inset-0 w-full h-full object-cover ${card.large ? 'opacity-40 group-hover:opacity-60' : 'opacity-20 group-hover:opacity-40'} transition-opacity`} alt="" />}
-                <div className="relative z-10 h-full flex flex-col justify-between">
-                  <h4 className="text-2xl font-bold mb-4 italic uppercase">{card.title}</h4>
-                  <p className="text-muted text-sm leading-relaxed uppercase tracking-widest font-black text-[10px]">{card.desc}</p>
-                </div>
-                <Asterisk className="absolute -bottom-4 -right-4 w-12 h-12 text-white/5 group-hover:text-white/20 transition-all" />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* HOW IT WORKS */}
-      <section className="py-40 border-t border-white/10">
-        <div className="max-w-[1400px] mx-auto px-6">
-          <div className="grid lg:grid-cols-2 gap-20 items-center">
-            <div>
-              <div className="text-[11px] font-black uppercase tracking-[0.3em] text-muted mb-4">How it works</div>
-              <h2 className="text-5xl font-black mb-10 leading-tight">Your path to <br />Verified Pro.</h2>
-              
-              <div className="space-y-16">
-                {[
-                  { step: "01", title: "Verify Identity", desc: "Sign up using your college email or professional ID for immediate validation." },
-                  { step: "02", title: "Take Assessment", desc: "Perform a live-proctored skill test to prove your technical expertise." },
-                  { step: "03", title: "Earn Badge", desc: "Score 70%+ to unlock your 'Verified Elite' badge and appear in top search results." },
-                  { step: "04", title: "Get Hired", desc: "Apply to premium projects with 100% earnings and direct client access." }
-                ].map((item, i) => (
-                  <div key={i} className="flex gap-10">
-                    <div className="text-3xl font-black text-muted/30">{item.step}</div>
-                    <div>
-                      <h4 className="text-2xl font-bold mb-4 flex items-center gap-4">
-                        <Star size={16} className="text-white" /> {item.title}
-                      </h4>
-                      <p className="text-muted leading-relaxed">{item.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <Link to="/register">
-                <button className="mt-16 px-10 py-5 bg-white text-black font-black uppercase tracking-widest text-xs hover:bg-muted transition-all rounded-full">
-                  Get started
-                </button>
-              </Link>
-            </div>
-            
-            <div className="relative">
-              <motion.div
-                initial={{ opacity: 0, x: 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 1 }}
-                className="relative p-1 border border-white/10 bg-white/5"
-              >
-                <img 
-                  src="/system_workflow_3d_1778514263388.png" 
-                  alt="SkillScrumpt Workflow" 
-                  className="w-full grayscale hover:grayscale-0 transition-all duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
-              </motion.div>
-              
-              {/* Decorative text overlay */}
-              <div className="absolute -bottom-10 -right-10 text-[120px] font-black text-white/5 tracking-tighter italic select-none">
-                PROCESS
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* TESTIMONIALS */}
-      <section className="py-40">
-        <div className="max-w-[1400px] mx-auto px-6 text-center mb-20">
-          <div className="text-[11px] font-black uppercase tracking-[0.3em] text-muted mb-4">Testimonials</div>
-          <h2 className="text-4xl md:text-6xl font-black">Trusted by Professionals.</h2>
-        </div>
+      <section className="py-24 bg-[#FFF0E5]">
+        <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-black text-[#1E293B] tracking-tight">Loved by Professionals.</h2>
+          </div>
 
-        <div className="max-w-[1400px] mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[600px] md:h-[800px] overflow-hidden relative">
-            <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black z-10 pointer-events-none" />
-            
-            {[0, 1, 2].map((colIndex) => {
-              const displayFeedbacks = [...feedbacks, ...feedbacks, ...feedbacks, ...feedbacks];
-              const colFeedbacks = displayFeedbacks.filter((_, i) => i % 3 === colIndex);
-              
-              // Column 1 and 3 go down (vertical), Column 2 goes up (vertical-reverse)
-              const isReverse = colIndex === 1;
-              const speed = colIndex === 0 ? 50 : colIndex === 1 ? 60 : 45;
-
-              return (
-                <div key={colIndex} className={`overflow-hidden ${colIndex > 0 ? 'hidden md:block' : ''}`}>
-                  <div 
-                    className={`flex flex-col gap-6 ${isReverse ? 'marquee-content-vertical-reverse' : 'marquee-content-vertical'}`}
-                    style={{ animationDuration: `${speed}s` }}
-                  >
-                    {[...colFeedbacks, ...colFeedbacks].map((item, i) => (
-                      <div key={i} className="p-8 md:p-10 border border-white/10 flex flex-col justify-between hover:border-white/40 transition-colors bg-white/5 relative group">
-                        <div className="absolute top-6 right-6 text-white/10 group-hover:text-white/30 transition-colors">
-                          <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
-                          </svg>
-                        </div>
-                        <p className="text-lg italic text-muted mb-8 leading-relaxed z-10 relative">
-                          "{item.text}"
-                        </p>
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center font-bold text-xl uppercase overflow-hidden shrink-0">
-                            {item.user?.firstName?.[0] || "U"}
-                          </div>
-                          <div>
-                            <div className="font-bold text-sm">{item.user?.firstName} {item.user?.lastName}</div>
-                            <div className="text-[10px] text-muted uppercase tracking-widest mt-1 flex gap-2">
-                              <span className="font-black text-indigo-400">{item.user?.role === 'professional' ? 'Talent' : 'Client'}</span>
-                              •
-                              <span>{new Date(item.createdAt).toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'})}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
+          <div className="grid md:grid-cols-3 gap-6">
+            {feedbacks.map((item, i) => (
+              <div key={i} className="bg-white rounded-[24px] p-8 shadow-[0_4px_20px_rgba(30,41,59,0.02)] border border-[#38BDF8]/10 hover:border-[#38BDF8]/30 transition-colors flex flex-col justify-between h-full">
+                <div className="mb-6 flex gap-1">
+                  {[1,2,3,4,5].map(s => <Star key={s} size={16} className="fill-[#F97316] text-[#F97316]" />)}
+                </div>
+                <p className="text-[13px] text-[#1E293B]/70 font-medium mb-8 leading-relaxed">
+                  "{item.text}"
+                </p>
+                <div className="flex items-center gap-4 border-t border-[#38BDF8]/10 pt-6 mt-auto">
+                  <div className="w-10 h-10 rounded-[10px] bg-[#E0F2FE] flex items-center justify-center font-bold text-sm text-[#38BDF8]">
+                    {item.user?.firstName?.[0] || "U"}
+                  </div>
+                  <div>
+                    <div className="font-bold text-sm text-[#1E293B]">{item.user?.firstName} {item.user?.lastName}</div>
+                    <div className="text-[10px] font-bold text-[#F97316] uppercase tracking-wider mt-0.5">
+                      {item.user?.role === 'professional' ? 'Talent' : 'Client'}
+                    </div>
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* PRICING SECTION */}
-      <section className="py-40 bg-white text-black">
-        <div className="max-w-[1400px] mx-auto px-6 text-center mb-20">
-          <div className="text-[11px] font-black uppercase tracking-[0.3em] text-black/50 mb-4">Pricing Model</div>
-          <h2 className="text-5xl md:text-7xl font-black tracking-tighter mb-10">Access for ₹1.</h2>
-          <Link to="/pricing" className="inline-flex items-center gap-4 text-[11px] font-black uppercase tracking-[0.4em] text-black/40 hover:text-black transition-colors group">
-            View Full Tiers <ArrowRight size={14} className="group-hover:translate-x-2 transition-transform" />
-          </Link>
-        </div>
-
-        <div className="max-w-[1200px] mx-auto px-6 grid md:grid-cols-2 gap-10">
-          {[
-            { 
-              name: "Student Pro", 
-              price: "1", 
-              originalPrice: "69",
-              tag: "FOR TALENT",
-              spots: "198 Spots Left!",
-              features: [
-                "Verified Elite Status",
-                "AI Proctoring Priority",
-                "Apply to Premium Projects",
-                "Zero Service Fees"
-              ]
-            },
-            { 
-              name: "Client Pro", 
-              price: "1", 
-              originalPrice: "49",
-              tag: "FOR HIRERS",
-              spots: "198 Spots Left!",
-              features: [
-                "Elite Verified Talent",
-                "Priority Project Promotion",
-                "Direct Chat Access",
-                "Dedicated Support"
-              ]
-            }
-          ].map((tier, i) => (
-            <div key={i} className="p-12 border border-black/10 flex flex-col justify-between hover:border-black transition-all group relative overflow-hidden">
-              <div className="absolute top-6 right-6 text-[10px] font-black bg-black text-white px-3 py-1 uppercase tracking-widest animate-pulse">
-                {tier.spots}
               </div>
-              
-              <div>
-                <div className="text-[10px] font-black uppercase tracking-widest text-black/40 mb-6">{tier.tag}</div>
-                <h3 className="text-4xl font-black mb-4">{tier.name}</h3>
-                
-                <div className="flex items-end gap-4 mb-10">
-                  <div className="text-6xl font-black italic">₹{tier.price}</div>
-                  <div className="text-2xl font-bold text-black/30 line-through mb-1">₹{tier.originalPrice}</div>
-                </div>
-
-                <ul className="space-y-4 mb-10">
-                  {tier.features.map((f, j) => (
-                    <li key={j} className="flex items-center gap-3 text-sm font-bold text-black/60">
-                      <CheckCircle size={16} className="text-black" /> {f}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <Link to="/register?upgrade=true" className="w-full">
-                <button className="w-full py-5 bg-black text-white font-black uppercase tracking-widest text-[10px] group-hover:scale-105 transition-transform">
-                  Get {tier.name}
-                </button>
-              </Link>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* FAQ SECTION */}
-      <section className="py-40 border-t border-white/10">
-        <div className="max-w-[1000px] mx-auto px-6">
-          <div className="text-center mb-20">
-            <div className="text-[11px] font-black uppercase tracking-[0.3em] text-muted mb-4">Answers</div>
-            <h2 className="text-4xl md:text-6xl font-black tracking-tighter">Frequently Asked.</h2>
-          </div>
-
-          <div className="grid gap-6">
-            {[
-              { q: "How does the AI proctoring actually work?", a: "Our AI continuously monitors your webcam, audio, and screen activity during the assessment. It checks for multiple faces, gaze deviation, tab switching, and background noise to guarantee the authenticity of your skills." },
-              { q: "Is the Verified Elite Badge permanent?", a: "Yes, but to maintain the highest quality standards, clients can leave feedback. Severe drops in rating may require a re-verification test. Otherwise, once you earn it, it's yours." },
-              { q: "Do I have to be a student to join?", a: "While we prioritize students with valid .edu or college-domain emails, professionals without college emails can still join but must pass a more stringent verification protocol." },
-              { q: "How does SkillScrumpt make money with zero brokerage?", a: "We charge clients a flat subscription fee to access our verified talent pool and use our AI proctoring tech. The freelancers keep exactly 100% of what the client pays them for the job." },
-              { q: "What happens if my internet disconnects during a test?", a: "The AI Proctoring system has a brief tolerance window for connection drops. If it's a short blip, you can continue. If it's extended, the test is voided, and you must wait the 48-hour cooling period to try again." }
-            ].map((faq, i) => (
-              <details key={i} className="group border border-white/10 bg-white/5 radius-design p-8 cursor-pointer hover:border-white/40 transition-colors">
-                <summary className="text-xl font-bold flex justify-between items-center outline-none list-none">
-                  {faq.q}
-                  <Plus className="group-open:rotate-45 transition-transform duration-300 text-muted group-hover:text-white" />
-                </summary>
-                <div className="mt-6 text-muted leading-relaxed">
-                  {faq.a}
-                </div>
-              </details>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* FINAL CTA */}
-      <section className="py-60 text-center relative overflow-hidden">
-        <Asterisk className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] text-white/5 pointer-events-none" />
-        <div className="max-w-4xl mx-auto px-6 relative z-10">
-          <h2 className="text-6xl md:text-9xl font-black tracking-tighter mb-10 leading-[0.8]">READY TO <br />JOIN THE <br />ELITE?</h2>
-          <Link to="/register">
-            <button className="px-16 py-8 bg-white text-black font-black uppercase tracking-[0.3em] text-sm hover:scale-105 transition-transform flex items-center gap-4 mx-auto group rounded-full">
-              Get started <ArrowRight className="group-hover:translate-x-2 transition-transform" />
-            </button>
-          </Link>
         </div>
       </section>
 
       {/* FOOTER */}
-      <footer className="py-20 border-t border-white/10">
-        <div className="max-w-[1400px] mx-auto px-6">
-          <div className="grid md:grid-cols-[1fr_2fr_1fr] gap-20 mb-20">
-            <div>
-              <div className="text-2xl font-black tracking-tighter uppercase italic mb-6">SkillScrumpt.in</div>
-              <p className="text-muted text-sm leading-relaxed max-w-xs">
-                The world's first AI-proctored skill verification and freelance marketplace. Bridging the gap between verified talent and global opportunities.
+      <footer className="bg-[#1E293B] text-white pt-20 pb-10 border-t-4 border-[#F97316]">
+        <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
+          <div className="grid lg:grid-cols-12 gap-12 mb-16">
+            
+            <div className="lg:col-span-5">
+              <Link to="/" className="text-2xl font-bold tracking-tight mb-6 block text-white">
+                Skill<span className="text-[#F97316]">Scrumpt</span>
+              </Link>
+              <p className="text-white/50 text-[13px] leading-relaxed max-w-sm mb-8 font-medium">
+                The world's premier tech learning and AI-proctored freelancing platform. We bridge the gap between verified talent and global opportunities.
               </p>
+              
+              <div className="flex items-center gap-3 text-white/50 font-medium text-[13px] mb-3">
+                <MapPin size={16} className="text-[#38BDF8]" /> Innovation Hub, Bangalore, India
+              </div>
+              <div className="flex items-center gap-3 text-white/50 font-medium text-[13px]">
+                <Mail size={16} className="text-[#38BDF8]" /> hello@skillscrumpt.in
+              </div>
             </div>
             
-            <div className="grid grid-cols-2 gap-10">
-              <div className="space-y-4 flex flex-col">
-                <div className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2">Platform</div>
-                <Link to="/projects" className="text-sm font-bold hover:text-white transition-colors">Browse Jobs</Link>
-                <Link to="/talent" className="text-sm font-bold hover:text-white transition-colors">Find Talent</Link>
-                <Link to="/assessments" className="text-sm font-bold hover:text-white transition-colors">Assessments</Link>
-              </div>
-              <div className="space-y-4 flex flex-col">
-                <div className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2">Legal</div>
-                <Link to="/terms" className="text-sm font-bold hover:text-white transition-colors">Terms</Link>
-                <Link to="/privacy" className="text-sm font-bold hover:text-white transition-colors">Privacy</Link>
-                <Link to="/help" className="text-sm font-bold hover:text-white transition-colors">Support</Link>
+            <div className="lg:col-span-2 space-y-5">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-[#38BDF8] mb-4">Platform</div>
+              <div className="flex flex-col gap-3 font-semibold text-[13px]">
+                <Link to="/marketplace" className="text-white/70 hover:text-[#F97316] transition-colors">Marketplace</Link>
+                <Link to="/proctoring" className="text-white/70 hover:text-[#F97316] transition-colors">Proctoring</Link>
+                <Link to="/pricing" className="text-white/70 hover:text-[#F97316] transition-colors">Pricing</Link>
               </div>
             </div>
 
-            <div className="space-y-6">
-              <div className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2">Social</div>
-              <div className="flex gap-6">
-                <Twitter size={20} className="text-muted hover:text-white transition-colors" />
-                <Instagram size={20} className="text-muted hover:text-white transition-colors" />
-                <Linkedin size={20} className="text-muted hover:text-white transition-colors" />
+            <div className="lg:col-span-2 space-y-5">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-[#38BDF8] mb-4">Company</div>
+              <div className="flex flex-col gap-3 font-semibold text-[13px]">
+                <Link to="/about" className="text-white/70 hover:text-[#F97316] transition-colors">About Us</Link>
+                <Link to="/terms" className="text-white/70 hover:text-[#F97316] transition-colors">Terms of Service</Link>
+                <Link to="/privacy" className="text-white/70 hover:text-[#F97316] transition-colors">Privacy Policy</Link>
               </div>
-              <div className="text-sm font-bold border-b border-white/10 pb-2 inline-block">hello@skillscrumpt.in</div>
             </div>
+
+            <div className="lg:col-span-3">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-[#38BDF8] mb-4">Stay Updated</div>
+              <div className="flex flex-col gap-3">
+                <input 
+                  type="email" 
+                  placeholder="Enter your email" 
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-[12px] focus:outline-none focus:border-[#38BDF8] focus:bg-white/10 transition-colors text-white placeholder-white/30 text-[13px]"
+                />
+                <button className="w-full py-3 bg-[#F97316] hover:bg-[#EA580C] text-white font-bold rounded-[12px] transition-colors shadow-sm text-[13px] uppercase tracking-wider">
+                  Subscribe Now
+                </button>
+              </div>
+            </div>
+
           </div>
 
-          <div className="pt-10 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] font-bold uppercase tracking-widest text-muted">
-            <div>© 2026 SkillScrumpt.in All Rights Reserved.</div>
-            <div>Made with ❤️ for verified talent.</div>
+          <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div className="text-white/30 text-[12px] font-bold uppercase tracking-wider">
+              © 2026 SkillScrumpt.in. All Rights Reserved.
+            </div>
+            <div className="flex gap-6 text-[12px] font-bold text-white/50 uppercase tracking-wider">
+              <span className="hover:text-white cursor-pointer transition-colors">Twitter</span>
+              <span className="hover:text-white cursor-pointer transition-colors">LinkedIn</span>
+              <span className="hover:text-white cursor-pointer transition-colors">Instagram</span>
+            </div>
           </div>
         </div>
       </footer>
-
-      {/* AI Proctoring Video Preview Modal */}
-      <AnimatePresence>
-        {showVideoPreview && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
-          >
-            <motion.div 
-              initial={{ scale: 0.98, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.98, y: 20 }}
-              className="max-w-6xl w-full bg-zinc-900 rounded-[2rem] border border-white/10 overflow-hidden relative shadow-2xl"
-            >
-              <button 
-                onClick={() => setShowVideoPreview(false)}
-                className="absolute top-6 right-6 w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-all z-20 font-bold shadow-sm"
-              >
-                ✕
-              </button>
-              
-              <div className="flex flex-col lg:flex-row items-stretch min-h-[600px]">
-                <div className="lg:w-[70%] bg-black relative flex flex-col border-r border-white/10 overflow-hidden">
-                  <video 
-                    src="/the_new_standard_of_trust_unlock_your_potential_wi.mp4" 
-                    className="w-full h-full object-contain"
-                    controls 
-                    autoPlay
-                  />
-                </div>
-
-                <div className="lg:w-[30%] p-12 flex flex-col justify-center bg-zinc-900">
-                  <h3 className="text-3xl font-bold tracking-tight text-white mb-8">AI Proctoring <br /><span className="text-zinc-500">Security</span></h3>
-                  <div className="space-y-6">
-                    {[
-                      { title: 'Gaze Tracking', desc: 'Ensures focus remains on the assessment.' },
-                      { title: 'Audio Analysis', desc: 'Detects unauthorized background noise.' },
-                      { title: 'Browser Lock', desc: 'Prevents switching tabs or windows.' }
-                    ].map((item, i) => (
-                      <div key={i} className="flex gap-4 p-4 bg-white/5 rounded-xl border border-white/5">
-                         <div className="mt-0.5"><Shield size={16} className="text-white/60" /></div>
-                         <div>
-                           <p className="text-sm font-bold text-white mb-1">{item.title}</p>
-                           <p className="text-xs text-zinc-400 font-medium leading-relaxed">{item.desc}</p>
-                         </div>
-                      </div>
-                    ))}
-                  </div>
-                  <Link to="/register" className="mt-10 block">
-                    <button className="w-full py-4 bg-white text-black font-black uppercase tracking-widest text-[10px] hover:bg-zinc-200 transition-all shadow-md rounded-xl">
-                      Create Account to Start
-                    </button>
-                  </Link>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
-
