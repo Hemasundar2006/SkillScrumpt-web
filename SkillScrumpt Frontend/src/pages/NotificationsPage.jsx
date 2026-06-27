@@ -4,7 +4,7 @@ import { Bell, CheckCircle, Clock, Info, ExternalLink, CheckCircle2 } from 'luci
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 
-export default function NotificationsPage() {
+export function NotificationsPage() {
   const [notifications, setNotifications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();

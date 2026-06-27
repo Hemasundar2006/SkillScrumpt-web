@@ -404,6 +404,27 @@ export function SubmitBid() {
  const [deliveryTime, setDeliveryTime] = useState(7);
  const [coverLetter, setCoverLetter] = useState('');
  const [isSubmitting, setIsSubmitting] = useState(false);
+ const [isGenerating, setIsGenerating] = useState(false);
+
+ const handleAIGenerate = async () => {
+   const userStr = localStorage.getItem('user');
+   const user = userStr ? JSON.parse(userStr) : null;
+   if (!user) return;
+   
+   setIsGenerating(true);
+   try {
+     const response = await api.post('/support/generate-proposal', {
+       projectDetails: project,
+       userProfile: user
+     });
+     setCoverLetter(response.data.proposal);
+   } catch (error) {
+     console.error('AI Generation failed', error);
+     alert('Failed to generate AI proposal. Please try again.');
+   } finally {
+     setIsGenerating(false);
+   }
+ };
 
  useEffect(() => {
  const userStr = localStorage.getItem('user');
@@ -500,7 +521,17 @@ export function SubmitBid() {
  </div>
 
  <div className="space-y-2 mb-8">
- <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Cover Letter</label>
+ <div className="flex justify-between items-center ml-1 mb-2">
+  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Cover Letter</label>
+  <button 
+    onClick={handleAIGenerate} 
+    disabled={isGenerating || !project}
+    className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-[10px] font-bold uppercase tracking-wider rounded-lg shadow-sm hover:shadow-md transition-all disabled:opacity-50"
+  >
+    {isGenerating ? <Loader2 size={12} className="animate-spin" /> : <Cpu size={12} />}
+    {isGenerating ? 'Generating...' : 'AI Generate'}
+  </button>
+ </div>
  <textarea 
  rows={8} 
  value={coverLetter}

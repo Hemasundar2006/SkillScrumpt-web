@@ -22,6 +22,7 @@ export function useProctoring({ userId, examId, onAlert }) {
   const streamRef      = useRef(null);
   const intervalRef    = useRef(null);
   const sessionIdRef   = useRef(null);   // stable ref for cleanup
+  const allTracksRef   = useRef([]);     // stable ref for all media tracks
 
   // ── Start proctoring ───────────────────────────────────────────────────────
   const startProctoring = useCallback(async () => {
@@ -214,8 +215,11 @@ export function useProctoring({ userId, examId, onAlert }) {
     return () => {
       clearInterval(intervalRef.current);
       wsRef.current?.close();
+      if (allTracksRef.current) {
+        allTracksRef.current.forEach(t => { try { t.stop(); } catch(e) {} });
+      }
       if (streamRef.current) {
-        streamRef.current.getTracks().forEach((t) => t.stop());
+        streamRef.current.getTracks().forEach((t) => { try { t.stop(); } catch(e) {} });
       }
     };
   }, []);

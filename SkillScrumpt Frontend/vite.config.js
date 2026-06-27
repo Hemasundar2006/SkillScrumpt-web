@@ -8,4 +8,5 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  envPrefix: ['VITE_', 'OPENAI_API_KEY'],
 })

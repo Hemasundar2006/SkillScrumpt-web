@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Navbar, Footer } from './layout/LayoutItems';
+import { DashboardLayout } from './layout/DashboardLayout';
 import { LandingPage } from './pages/LandingPage';
 import { Login, Register } from './pages/AuthPages';
 import { StudentDashboard } from './pages/StudentDashboard';
@@ -36,8 +37,10 @@ import { ZeroBrokeragePage } from './pages/ZeroBrokerage';
 import { AssessmentsPage } from './pages/AssessmentsPage';
 import { AdminDashboard, CreateProctoringTest } from './pages/AdminDashboard';
 import { MaintenancePage } from './pages/MaintenancePage';
+import { NotificationsPage } from './pages/NotificationsPage';
 import { ProctoringSetup } from './pages/ProctoringSetup';
 import { MouseTrail } from './components/MouseTrail';
+import { SupportChat } from './components/SupportChat';
 
 import { Navigate } from 'react-router-dom';
 
@@ -69,6 +72,7 @@ function AppLayout({ children }) {
         {children}
       </main>
       {!isDashboard && !isAuth && !isHome && <Footer />}
+      <SupportChat />
     </div>
   );
 }
@@ -351,7 +355,7 @@ function App() {
           {/* Fallback to 404 */}
           <Route path="/notifications" element={
             <ProtectedRoute>
-              <LayoutWrapper><NotificationsPage /></LayoutWrapper>
+              <DashboardLayout user={JSON.parse(localStorage.getItem('user') || '{}')}><NotificationsPage /></DashboardLayout>
             </ProtectedRoute>
           } />
           <Route path="/dashboard" element={<ProtectedRoute><DashboardRedirect /></ProtectedRoute>} />

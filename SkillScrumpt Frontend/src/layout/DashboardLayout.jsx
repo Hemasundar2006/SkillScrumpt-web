@@ -159,10 +159,10 @@ export function DashboardLayout({ children, user }) {
           </button>
 
           <div className="flex items-center gap-4 lg:gap-8 ml-auto">
-            <button className="p-2 text-slate-500 hover:text-[#38BDF8] transition-all relative bg-white/60 border border-white/50 rounded-[12px] hidden sm:block backdrop-blur-md hover:-translate-y-0.5">
+            <Link to="/notifications" className="p-2 text-slate-500 hover:text-[#38BDF8] transition-all relative bg-white/60 border border-white/50 rounded-[12px] hidden sm:block backdrop-blur-md hover:-translate-y-0.5">
               <Bell size={20} />
               <div className="absolute top-2 right-2 w-2.5 h-2.5 bg-[#F97316] rounded-full border-2 border-white shadow-[0_0_8px_rgba(249,115,22,0.8)]" />
-            </button>
+            </Link>
             <div className="flex items-center gap-4 lg:pl-8 lg:border-l border-slate-200">
               <div className="text-right hidden sm:block">
                 <div className="text-sm font-bold text-slate-900 flex items-center gap-2 justify-end">

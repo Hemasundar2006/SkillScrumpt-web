@@ -5,6 +5,7 @@ const User = require('../models/User');
 const Settings = require('../models/Settings');
 const { sendEmail, templates } = require('../utils/mailService');
 const { createNotification } = require('./notificationController');
+const OpenAI = require('openai');
 
 // @desc    Get all assessments
 // @route   GET /api/v1/assessments
@@ -192,6 +193,31 @@ exports.submitResult = async (req, res) => {
 
     await User.findByIdAndUpdate(req.user._id, updateData);
 
+    // Call OpenAI API for personalized analysis
+    try {
+      if (status === 'passed') {
+        const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+        const response = await openai.chat.completions.create({
+          model: "gpt-4o-mini",
+          messages: [
+            {
+              role: "system",
+              content: "You are the elite AI Support Assistant for SkillScrumpt (https://skillscrumpt.vercel.app/). Your mission is to provide fast, accurate, and high-energy technical and operational support to users on the platform. Keep answers crisp and actionable. Avoid robotic phrases like 'As an AI...' or 'How can I help you today?'. Cut straight to the solution. Format using markdown bolding and bullet points. Do not guess database info."
+            },
+            {
+              role: "user",
+              content: `Generate a highly technical and professional feedback summary for a user who passed their exam. Score: ${finalScore}. Integrity: ${proctoringSummary}. Time taken: ${timeTaken}s.`
+            }
+          ],
+        });
+        
+        result.aiAnalysis.summary = response.choices[0].message.content;
+        await result.save();
+      }
+    } catch (openaiErr) {
+      console.error("OpenAI Error:", openaiErr);
+    }
+    
     // Send Assessment Result Email
     try {
       // Find assessment - handle potential non-ObjectId errors
