@@ -4,6 +4,7 @@ const AssessmentResult = require('../models/AssessmentResult');
 const User = require('../models/User');
 const Settings = require('../models/Settings');
 const { sendEmail, templates } = require('../utils/mailService');
+const { createNotification } = require('./notificationController');
 
 // @desc    Get all assessments
 // @route   GET /api/v1/assessments

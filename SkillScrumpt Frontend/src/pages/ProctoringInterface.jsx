@@ -38,6 +38,25 @@ export function AIProctoringInterface() {
  const [timeLeft, setTimeLeft] = useState(3600); // 1 hour in seconds
  const [answers, setAnswers] = useState({});
  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loadingStep, setLoadingStep] = useState(0);
+
+  const loadingTexts = [
+    "Synthesizing telemetry data...",
+    "Analyzing proctoring logs...",
+    "Calculating technical score...",
+    "Finalizing certification...",
+    "Generating secure results..."
+  ];
+
+  useEffect(() => {
+    let interval;
+    if (isSubmitting) {
+      interval = setInterval(() => {
+        setLoadingStep(prev => (prev + 1) % loadingTexts.length);
+      }, 2000);
+    }
+    return () => clearInterval(interval);
+  }, [isSubmitting]);
  const [showFeedback, setShowFeedback] = useState(false);
  const [submissionResult, setSubmissionResult] = useState(null);
  const [feedbackText, setFeedbackText] = useState("");
@@ -745,7 +764,15 @@ export function AIProctoringInterface() {
  </div>
 
  <h3 className="text-4xl font-bold mb-6 text-slate-900 tracking-tight">Processing Certification</h3>
- <p className="text-slate-500 text-sm font-bold uppercase tracking-wider mb-16 leading-relaxed">Synthesizing telemetry data & <br/>technical performance metrics</p>
+ <motion.p 
+            key={loadingStep}
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -5 }}
+            className="text-[#F97316] text-sm font-black uppercase tracking-widest mb-16 h-8 flex items-center justify-center"
+          >
+            {loadingTexts[loadingStep]}
+          </motion.p>
  
  <div className="space-y-4 max-w-lg mx-auto">
               {violations && violations.length > 0 ? (

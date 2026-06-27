@@ -49,6 +49,7 @@ app.use('/api/v1/payments', require('./routes/paymentRoutes'));
 app.use('/api/v1/compiler', require('./routes/compilerRoutes'));
 app.use('/api/v1/gigs', require('./routes/gigRoutes'));
 app.use('/api/v1/reviews', require('./routes/reviewRoutes'));
+app.use('/api/v1/notifications', require('./routes/notificationRoutes'));
 
 app.get('/', (req, res) => {
   res.send('SkillScrumpt API is running...');

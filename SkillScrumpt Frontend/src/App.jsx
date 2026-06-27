@@ -349,6 +349,11 @@ function App() {
           <Route path="/maintenance" element={<MaintenancePage />} />
 
           {/* Fallback to 404 */}
+          <Route path="/notifications" element={
+            <ProtectedRoute>
+              <LayoutWrapper><NotificationsPage /></LayoutWrapper>
+            </ProtectedRoute>
+          } />
           <Route path="/dashboard" element={<ProtectedRoute><DashboardRedirect /></ProtectedRoute>} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
