@@ -374,7 +374,7 @@ function ComparisonRow({ label, student, client }) {
 
   return (
     <tr className="hover:bg-[#FFF0E5]/50 transition-colors group">
-      <td className="px-6 md:px-10 py-5 text-[10px] font-bold text-[#1E293B]/50 group-hover:text-[#1E293B] uppercase tracking-[0.2em] transition-colors">{label}</td>
+      <td className="px-6 md:px-10 py-5 text-[10px] font-bold text-[#1E293B] group-hover:text-[#0284C7] uppercase tracking-[0.2em] transition-colors">{label}</td>
       <td className="px-6 md:px-10 py-5 text-center w-24 md:w-32">{renderValue(student)}</td>
       <td className="px-6 md:px-10 py-5 text-center w-24 md:w-32">{renderValue(client)}</td>
     </tr>

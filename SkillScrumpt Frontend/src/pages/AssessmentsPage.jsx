@@ -126,7 +126,7 @@ export const AssessmentsPage = () => {
                     const Icon = getIcon(test.category);
                     return (
                       <motion.div
-                        key={test._id}
+                        key={test._id || test.id || test.testId}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.05 }}
@@ -156,7 +156,7 @@ export const AssessmentsPage = () => {
                           
                           <div className="pt-6 border-t border-[#E0F2FE]">
                             <button 
-                              onClick={() => navigate(`/assessments/setup/${test._id}`)} 
+                              onClick={() => navigate(`/assessments/setup/${test._id || test.id || test.testId}`)} 
                               className="w-full py-4 bg-[#1E293B] text-white font-bold rounded-[12px] text-sm hover:bg-[#0F172A] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 group/btn shadow-[0_8px_20px_rgba(30,41,59,0.2)]"
                             >
                               Start Assessment <Lock size={14} className="opacity-50 group-hover/btn:opacity-100 transition-opacity" />

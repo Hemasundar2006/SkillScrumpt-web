@@ -73,7 +73,7 @@ export function Login() {
  }, []);
 
  return (
- <div className="min-h-screen flex items-center justify-center bg-[#FFF0E5] text-slate-900 selection:bg-[#F97316] selection:text-white pt-32 pb-20 px-4 relative overflow-hidden">
+ <div className="h-screen flex flex-col items-center justify-center bg-[#FFF0E5] text-slate-900 selection:bg-[#F97316] selection:text-white py-4 px-4 relative overflow-hidden">
  {/* Background elements */}
  <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-50">
  <Asterisk className="absolute -top-20 -right-20 w-96 h-96 text-[#38BDF8]/10" />
@@ -86,16 +86,16 @@ export function Login() {
  transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
  className="w-full max-w-lg relative z-10"
  >
- <div className="text-center mb-12">
- <Link to="/" className="inline-block text-3xl font-bold tracking-tight mb-8 hover:scale-105 transition-transform text-slate-900">
+ <div className="text-center mb-4">
+ <Link to="/" className="inline-block text-2xl font-bold tracking-tight mb-4 hover:scale-105 transition-transform text-slate-900">
  SkillScrumpt
  </Link>
- <h2 className="text-5xl font-bold tracking-tight mb-4 text-slate-900">WELCOME <br />BACK.</h2>
+ <h2 className="text-4xl font-bold tracking-tight mb-2 text-slate-900">WELCOME <br />BACK.</h2>
  <p className="text-slate-500 text-sm font-bold uppercase tracking-wider">Secure Login Portal</p>
  </div>
 
  <div className="p-1">
- <div className="p-8 md:p-12 border border-white/50 bg-white/40 backdrop-blur-xl rounded-3xl shadow-xl shadow-slate-200/50">
+ <div className="p-6 md:p-8 border border-white/50 bg-white/40 backdrop-blur-xl rounded-3xl shadow-xl shadow-slate-200/50">
  {error && (
  <motion.div 
  initial={{ opacity: 0, x: -10 }}
@@ -107,7 +107,7 @@ export function Login() {
  </motion.div>
  )}
  
- <form className="space-y-8" onSubmit={handleLogin}>
+ <form className="space-y-4" onSubmit={handleLogin}>
  <div className="space-y-4">
  <label className="text-sm font-bold uppercase tracking-wider text-slate-500 ml-1">Email Address</label>
  <input 
@@ -115,7 +115,7 @@ export function Login() {
  required
  value={formData.email}
  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
- className="w-full px-6 py-4 bg-white/60 border border-white/50 focus:border-[#38BDF8] outline-none transition-all font-bold placeholder:text-slate-400 uppercase rounded-xl shadow-sm text-slate-900"
+ className="w-full px-4 py-3 bg-white/60 border border-white/50 focus:border-[#38BDF8] outline-none transition-all font-bold placeholder:text-slate-400 uppercase rounded-xl shadow-sm text-slate-900"
  placeholder="YOUR@EMAIL.COM"
  />
  </div>
@@ -223,7 +223,7 @@ export function Register() {
  };
 
  return (
- <div className="min-h-screen flex items-center justify-center bg-[#FFF0E5] text-slate-900 selection:bg-[#F97316] selection:text-white pt-32 pb-20 px-4 relative overflow-hidden">
+ <div className="h-screen flex flex-col items-center justify-center bg-[#FFF0E5] text-slate-900 selection:bg-[#F97316] selection:text-white py-4 px-4 relative overflow-hidden">
  <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-50">
  <Asterisk className="absolute top-1/4 -left-20 w-80 h-80 text-[#F97316]/10" />
  <div className="absolute bottom-1/4 -right-20 w-[400px] h-[400px] border border-[#38BDF8]/10 rotate-45" />
@@ -235,19 +235,19 @@ export function Register() {
  transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
  className="w-full max-w-2xl relative z-10"
  >
- <div className="text-center mb-16">
- <Link to="/" className="inline-block text-3xl font-bold tracking-tight mb-8 hover:scale-105 transition-transform text-slate-900">
+ <div className="text-center mb-4">
+ <Link to="/" className="inline-block text-2xl font-bold tracking-tight mb-4 hover:scale-105 transition-transform text-slate-900">
  SkillScrumpt
  </Link>
- <h2 className="text-5xl font-bold tracking-tight mb-4 text-slate-900">JOIN US.</h2>
+ <h2 className="text-4xl font-bold tracking-tight mb-2 text-slate-900">JOIN US.</h2>
  <p className="text-slate-500 text-sm font-bold uppercase tracking-wider">Create your account to start</p>
  </div>
 
- <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
  <button type="button" className="text-left group relative" onClick={() => setRole('professional')}>
- <div className={`p-8 border rounded-2xl transition-all ${role === 'professional' ? 'bg-[#F97316] text-white border-[#F97316] shadow-sm' : 'bg-white/50 border-white/50 hover:border-[#F97316] text-slate-700'}`}>
+ <div className={`p-4 border rounded-2xl transition-all ${role === 'professional' ? 'bg-[#F97316] text-white border-[#F97316] shadow-sm' : 'bg-white/50 border-white/50 hover:border-[#F97316] text-slate-700'}`}>
  <Monitor size={24} className={role === 'professional' ? 'text-white' : 'text-slate-400'} />
- <h4 className="font-bold text-xl mt-6 mb-2">PROFESSIONAL.</h4>
+ <h4 className="font-bold text-lg mt-2 mb-1">PROFESSIONAL.</h4>
  <p className="text-xs font-bold uppercase tracking-wider opacity-80">Verify Expertise</p>
  {role === 'professional' && (
  <div className="absolute top-6 right-6">
@@ -260,7 +260,7 @@ export function Register() {
  <button type="button" className="text-left group relative" onClick={() => setRole('client')}>
  <div className={`p-8 border rounded-2xl transition-all ${role === 'client' ? 'bg-[#F97316] text-white border-[#F97316] shadow-sm' : 'bg-white/50 border-white/50 hover:border-[#F97316] text-slate-700'}`}>
  <Code size={24} className={role === 'client' ? 'text-white' : 'text-slate-400'} />
- <h4 className="font-bold text-xl mt-6 mb-2">EMPLOYER.</h4>
+ <h4 className="font-bold text-lg mt-2 mb-1">EMPLOYER.</h4>
  <p className="text-xs font-bold uppercase tracking-wider opacity-80">Source Talent</p>
  {role === 'client' && (
  <div className="absolute top-6 right-6">
@@ -272,7 +272,7 @@ export function Register() {
  </div>
 
  <div className="p-1">
- <div className="p-8 md:p-12 border border-white/50 bg-white/40 backdrop-blur-xl rounded-3xl shadow-xl shadow-slate-200/50">
+ <div className="p-6 md:p-8 border border-white/50 bg-white/40 backdrop-blur-xl rounded-3xl shadow-xl shadow-slate-200/50">
  {error && (
  <motion.div 
  initial={{ opacity: 0, x: -10 }}
@@ -290,7 +290,7 @@ export function Register() {
  type="text" required
  value={formData.firstName}
  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
- className="w-full px-6 py-4 bg-white/60 border border-white/50 focus:border-[#38BDF8] outline-none transition-all font-bold placeholder:text-slate-400 uppercase rounded-xl shadow-sm text-slate-900"
+ className="w-full px-4 py-3 bg-white/60 border border-white/50 focus:border-[#38BDF8] outline-none transition-all font-bold placeholder:text-slate-400 uppercase rounded-xl shadow-sm text-slate-900"
  placeholder="EX: JOHN"
  />
  </div>
@@ -300,7 +300,7 @@ export function Register() {
  type="text" required
  value={formData.lastName}
  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
- className="w-full px-6 py-4 bg-white/60 border border-white/50 focus:border-[#38BDF8] outline-none transition-all font-bold placeholder:text-slate-400 uppercase rounded-xl shadow-sm text-slate-900"
+ className="w-full px-4 py-3 bg-white/60 border border-white/50 focus:border-[#38BDF8] outline-none transition-all font-bold placeholder:text-slate-400 uppercase rounded-xl shadow-sm text-slate-900"
  placeholder="EX: DOE"
  />
  </div>
@@ -310,7 +310,7 @@ export function Register() {
  type="email" required
  value={formData.email}
  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
- className="w-full px-6 py-4 bg-white/60 border border-white/50 focus:border-[#38BDF8] outline-none transition-all font-bold placeholder:text-slate-400 uppercase rounded-xl shadow-sm text-slate-900"
+ className="w-full px-4 py-3 bg-white/60 border border-white/50 focus:border-[#38BDF8] outline-none transition-all font-bold placeholder:text-slate-400 uppercase rounded-xl shadow-sm text-slate-900"
  placeholder="EX: NAME@STUDENT.IN"
  />
  </div>
@@ -323,7 +323,7 @@ export function Register() {
  type="text" required
  value={formData.college}
  onChange={(e) => setFormData({ ...formData, college: e.target.value })}
- className="w-full px-6 py-4 bg-white/60 border border-white/50 focus:border-[#38BDF8] outline-none transition-all font-bold placeholder:text-slate-400 uppercase rounded-xl shadow-sm text-slate-900"
+ className="w-full px-4 py-3 bg-white/60 border border-white/50 focus:border-[#38BDF8] outline-none transition-all font-bold placeholder:text-slate-400 uppercase rounded-xl shadow-sm text-slate-900"
  placeholder="EX: IIT DELHI"
  />
  </div>
