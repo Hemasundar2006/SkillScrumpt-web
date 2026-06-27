@@ -20,7 +20,7 @@ export function SupportChat() {
     scrollToBottom();
   }, [history, isOpen]);
 
-  const handleSend = async () => {
+    const handleSend = async () => {
     if (!message.trim()) return;
     const userMsg = { role: 'user', text: message };
     setHistory(prev => [...prev, userMsg]);
@@ -28,17 +28,9 @@ export function SupportChat() {
     setIsLoading(true);
 
     try {
-      const apiKey = import.meta.env.OPENAI_API_KEY || import.meta.env.VITE_OPENAI_API_KEY || import.meta.env.VITE_API_KEY;
-      if (!apiKey) throw new Error("Missing OpenAI API Key");
-
-      const msgs = history ? history.map(msg => ({
-        role: msg.role === 'user' ? 'user' : 'assistant',
-        content: msg.text
-      })) : [];
-
-      msgs.unshift({
-        role: "system",
-        content: `You are the elite AI Support Assistant for SkillScrumpt (https://skillscrumpt.vercel.app/). Your mission is to provide fast, accurate, and high-energy technical and operational support to users on the platform.
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.OPENAI_API_KEY;
+      
+      const systemInstruction = `You are the elite AI Support Assistant for SkillScrumpt (https://skillscrumpt.vercel.app/). Your mission is to provide fast, accurate, and high-energy technical and operational support to users on the platform.
 
 CRITICAL OPERATIONAL RULES:
 1. IDENTITY & TONE: You are an expert peer—knowledgeable, direct, and conversational. Keep answers crisp and actionable. Avoid robotic phrases like "As an AI..." or "How can I help you today?". Cut straight to the solution.
@@ -46,26 +38,31 @@ CRITICAL OPERATIONAL RULES:
 3. ACCURACY: If a user asks about a feature or account issue that requires backend database access (like resetting a specific user's token or checking a live payment status), explicitly direct them to open a support ticket or contact the admin. Do not guess or fake data.
 4. FORMATTING: Use markdown bolding and bullet points to break down multi-step fixes so they are easy to read on a mobile or web chat widget.
 
-If any questions are irrelevant, don't answer them and say "Ask me about the app".`
-      });
-      msgs.push({ role: "user", content: userMsg.text });
+If any questions are irrelevant, don't answer them and say "Ask me about the app".`;
 
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      // Filter out the initial greeting so Gemini doesn't reject a conversation starting with 'model'
+      const contents = history.slice(1).map(msg => ({
+        role: msg.role === 'user' ? 'user' : 'model',
+        parts: [{ text: msg.text }]
+      }));
+      
+      contents.push({ role: 'user', parts: [{ text: userMsg.text }] });
+
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: "gpt-4o-mini",
-          messages: msgs
+          systemInstruction: { parts: [{ text: systemInstruction }] },
+          contents: contents
         })
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error?.message || "Failed to fetch response");
+      if (!response.ok) throw new Error(data.error?.message || "Failed to fetch Gemini response");
 
-      setHistory(prev => [...prev, { role: 'assistant', text: data.choices[0].message.content }]);
+      const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "I'm having trouble thinking right now.";
+      
+      setHistory(prev => [...prev, { role: 'assistant', text: reply }]);
     } catch (err) {
       console.error(err);
       setHistory(prev => [...prev, { role: 'assistant', text: 'Error connecting to support network. Please try again.' }]);

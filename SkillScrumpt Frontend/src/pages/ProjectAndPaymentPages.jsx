@@ -406,25 +406,51 @@ export function SubmitBid() {
  const [isSubmitting, setIsSubmitting] = useState(false);
  const [isGenerating, setIsGenerating] = useState(false);
 
- const handleAIGenerate = async () => {
-   const userStr = localStorage.getItem('user');
-   const user = userStr ? JSON.parse(userStr) : null;
-   if (!user) return;
-   
-   setIsGenerating(true);
-   try {
-     const response = await api.post('/support/generate-proposal', {
-       projectDetails: project,
-       userProfile: user
-     });
-     setCoverLetter(response.data.proposal);
-   } catch (error) {
-     console.error('AI Generation failed', error);
-     alert('Failed to generate AI proposal. Please try again.');
-   } finally {
-     setIsGenerating(false);
-   }
- };
+   const handleAIGenerate = async () => {
+    const userStr = localStorage.getItem('user');
+    const user = userStr ? JSON.parse(userStr) : null;
+    if (!user) return;
+    
+    setIsGenerating(true);
+    try {
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.OPENAI_API_KEY;
+
+      const prompt = `You are an expert AI proposal writer. 
+Write a concise, highly professional, and compelling project proposal/cover letter (max 150 words).
+Focus on highlighting why the freelancer is the perfect fit.
+
+PROJECT DETAILS:
+Title: ${project.title}
+Description: ${project.description}
+Required Skills: ${project.skills?.join(', ') || 'None specified'}
+
+FREELANCER DETAILS:
+Name: ${user.firstName} ${user.lastName}
+Skills: ${user.skills?.join(', ') || 'General Professional'}
+Bio: ${user.bio || ''}
+
+Write ONLY the proposal text. No pleasantries or meta-comments.`;
+
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ role: 'user', parts: [{ text: prompt }] }]
+        })
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error?.message || "Failed to generate proposal via Gemini");
+
+      const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+      setCoverLetter(reply);
+    } catch (error) {
+      console.error('AI Generation failed', error);
+      alert('Failed to generate AI proposal. Please try again.');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
  useEffect(() => {
  const userStr = localStorage.getItem('user');
